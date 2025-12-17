@@ -29,7 +29,7 @@ A modern web application for biodiversity analysis workflows, built with NiceGUI
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd bmd-app
+cd bat-nicegui
 
 # Copy environment configuration
 cp .env.example .env

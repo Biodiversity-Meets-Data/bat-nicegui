@@ -6,12 +6,12 @@ A NiceGUI + FastAPI application for biodiversity analysis workflows
 import os
 import uuid
 import asyncio
-import secrets
+import random
 from datetime import datetime, timedelta
 from typing import Optional
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException, Depends, Request
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
@@ -24,6 +24,9 @@ from database import (
     create_user,
     get_user_by_email,
     get_user_by_id,
+    update_user,
+    delete_user,
+    check_email_exists,
     create_workflow,
     get_user_workflows,
     update_workflow_status,
@@ -34,26 +37,14 @@ from database import (
 SECRET_KEY = os.getenv("SECRET_KEY", "bmd-secret-key-change-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_HOURS = 24
-WORKFLOW_WAIT_TIME = int(os.getenv("WORKFLOW_WAIT_TIME", "20"))  # seconds
+WORKFLOW_WAIT_TIME = int(os.getenv("WORKFLOW_WAIT_TIME", "20"))
 
+# Static files
 app.add_static_files("/static", "static")
+
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
-
-# BMD Theme Colors (from logo)
-BMD_COLORS = {
-    "primary_green": "#2ECC71",
-    "dark_green": "#1A9F53",
-    "teal": "#17A2B8",
-    "blue": "#0077B6",
-    "gradient_start": "#2ECC71",
-    "gradient_end": "#0077B6",
-    "bg_light": "#F0F9F4",
-    "bg_dark": "#0A1F14",
-    "text_dark": "#1A3A2A",
-    "text_light": "#E8F5E9",
-}
 
 
 # Pydantic Models
@@ -110,7 +101,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 # Initialize database on startup
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(fastapi: FastAPI):
     init_db()
     yield
 
@@ -153,7 +144,7 @@ async def api_submit_workflow(
 
     workflow_id = str(uuid.uuid4())
 
-    # Print the workflow object as requested
+    # Print the workflow object
     print("=" * 60)
     print(f"WORKFLOW SUBMITTED - ID: {workflow_id}")
     print(f"User ID: {user_id}")
@@ -181,7 +172,7 @@ async def api_submit_workflow(
         status="submitted",
     )
 
-    # Simulate workflow processing (in production, this would be an actual API call)
+    # Simulate workflow processing
     asyncio.create_task(simulate_workflow_processing(workflow_id))
 
     return {"workflow_id": workflow_id, "status": "submitted"}
@@ -193,8 +184,6 @@ async def simulate_workflow_processing(workflow_id: str):
     await asyncio.sleep(WORKFLOW_WAIT_TIME)
 
     # Simulate SDM results
-    import random
-
     results = {
         "summary": {
             "total_species": random.randint(15, 45),
@@ -264,9 +253,7 @@ async def workflow_webhook(workflow_id: str, webhook_data: WorkflowWebhook):
     print(f"Results: {webhook_data.results}")
 
     if webhook_data.status == "completed":
-        update_workflow_status(
-            workflow_id, "completed", results=str(webhook_data.results)
-        )
+        update_workflow_status(workflow_id, "completed", results=str(webhook_data.results))
     elif webhook_data.status == "failed":
         update_workflow_status(workflow_id, "failed", error=webhook_data.error_message)
 
@@ -284,14 +271,36 @@ async def api_get_workflows(
     workflows = get_user_workflows(user_id)
     return {"workflows": workflows}
 
+# --------------------------------------------------------------------------
+# Permanent Workflow Deletion Endpoint
+# --------------------------------------------------------------------------
+@fastapi_app.delete("/api/workflows/{workflow_id}")
+async def api_delete_workflow(
+    workflow_id: str,
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+):
+    user_id = verify_token(credentials.credentials)
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
 
+    workflow = get_workflow_by_id(workflow_id)
+    if not workflow or workflow["user_id"] != user_id:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+
+    # permanent delete
+    from database import delete_workflow
+    delete_workflow(workflow_id)
+
+    return {"status": "deleted", "workflow_id": workflow_id}
+
+
+# ============================================================================
 # NiceGUI UI Components
-
+# ============================================================================
 
 def apply_bmd_theme():
     """Apply BMD theme styling"""
-    ui.add_head_html(
-        """
+    ui.add_head_html("""
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -308,19 +317,33 @@ def apply_bmd_theme():
             --bmd-bg: #F0F9F4;
             --bmd-text: #1A3A2A;
         }
-        
+
         body {
             font-family: 'Outfit', sans-serif !important;
-            background: linear-gradient(135deg, #F0F9F4 0%, #E3F2E8 50%, #D4EEE8 100%) !important;
             min-height: 100vh;
+            background: #F0F9F4; /* default for app/dashboard */
         }
-        
+
+        /* ------------------------------------------------------------------
+           Public pages (login / signup only)
+           ------------------------------------------------------------------ */
+        body.public-auth {
+            background-image:
+                url("https://www.transparenttextures.com/patterns/leaves.png"),
+                radial-gradient(circle at 25% 30%, rgba(46,204,113,0.35), transparent 45%),
+                radial-gradient(circle at 75% 70%, rgba(23,162,184,0.35), transparent 45%),
+                linear-gradient(135deg, #EAF6F0 0%, #DDEFE5 50%, #CFE8E3 100%);
+            background-size: 180px 180px, auto, auto, cover;
+            background-repeat: repeat;
+            background-attachment: fixed;
+        }
+
         .bmd-header {
             background: linear-gradient(135deg, #2ECC71 0%, #17A2B8 50%, #0077B6 100%);
             padding: 1rem 2rem;
             box-shadow: 0 4px 20px rgba(46, 204, 113, 0.3);
         }
-        
+
         .bmd-card {
             background: white;
             border-radius: 16px;
@@ -328,12 +351,12 @@ def apply_bmd_theme():
             border: 1px solid rgba(46, 204, 113, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        
+
         .bmd-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 12px 40px rgba(46, 204, 113, 0.15);
         }
-        
+
         .bmd-btn {
             background: linear-gradient(135deg, #2ECC71 0%, #1A9F53 100%);
             color: white;
@@ -346,29 +369,25 @@ def apply_bmd_theme():
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
         }
-        
+
         .bmd-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
         }
-        
+
         .bmd-btn-secondary {
             background: linear-gradient(135deg, #17A2B8 0%, #0077B6 100%);
         }
-        
-        .bmd-input {
-            border: 2px solid #E8F5E9;
-            border-radius: 12px;
-            padding: 12px 16px;
-            font-family: 'Outfit', sans-serif;
-            transition: border-color 0.3s ease;
+
+        .bmd-btn-danger {
+            background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
         }
-        
-        .bmd-input:focus {
-            border-color: #2ECC71;
-            outline: none;
+
+        .bmd-btn-danger:hover {
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
         }
-        
+
         .bmd-logo-text {
             font-family: 'Outfit', sans-serif;
             font-weight: 700;
@@ -378,56 +397,25 @@ def apply_bmd_theme():
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
+
         .bmd-subtitle {
             font-family: 'Space Mono', monospace;
             font-size: 0.85rem;
             color: rgba(255, 255, 255, 0.9);
             letter-spacing: 0.5px;
         }
-        
+
         #map {
             height: 400px;
             width: 100%;
             border-radius: 12px;
             border: 2px solid rgba(46, 204, 113, 0.2);
         }
-        
+
         .leaflet-draw-toolbar a {
             background-color: #2ECC71 !important;
         }
-        
-        .status-submitted { color: #F39C12; font-weight: 600; }
-        .status-running { color: #17A2B8; font-weight: 600; }
-        .status-completed { color: #2ECC71; font-weight: 600; }
-        .status-failed { color: #E74C3C; font-weight: 600; }
-        
-        .workflow-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-        }
-        
-        .workflow-table th {
-            background: linear-gradient(135deg, #2ECC71 0%, #17A2B8 100%);
-            color: white;
-            padding: 16px;
-            font-weight: 600;
-            text-align: left;
-        }
-        
-        .workflow-table th:first-child { border-radius: 12px 0 0 0; }
-        .workflow-table th:last-child { border-radius: 0 12px 0 0; }
-        
-        .workflow-table td {
-            padding: 14px 16px;
-            border-bottom: 1px solid #E8F5E9;
-        }
-        
-        .workflow-table tr:hover td {
-            background: #F0F9F4;
-        }
-        
+
         .nav-link {
             color: rgba(255, 255, 255, 0.9);
             text-decoration: none;
@@ -436,42 +424,88 @@ def apply_bmd_theme():
             border-radius: 8px;
             transition: all 0.3s ease;
         }
-        
+
         .nav-link:hover {
             background: rgba(255, 255, 255, 0.15);
             color: white;
         }
-        
+
         .nav-link.active {
             background: rgba(255, 255, 255, 0.2);
             color: white;
         }
+
+        .required-asterisk {
+            color: #E74C3C;
+            margin-left: 2px;
+        }
+
+        .field-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 4px;
+        }
+
+        .optional-hint {
+            font-size: 0.75rem;
+            color: #9CA3AF;
+            font-weight: 400;
+        }
+
+        /* (removed #app::before and #app background/position styles, no longer needed) */
     </style>
-    """
-    )
+    """)
+
+
+def required_label(text: str) -> None:
+    """Create a label with required asterisk"""
+    with ui.row().classes("items-center gap-0 mb-1"):
+        ui.label(text).classes("field-label")
+        ui.label("*").classes("required-asterisk")
+
+
+def optional_label(text: str) -> None:
+    """Create a label with optional hint"""
+    with ui.row().classes("items-center gap-2 mb-1"):
+        ui.label(text).classes("field-label")
+        ui.label("(optional)").classes("optional-hint")
+
 
 def create_header(current_page: str = ""):
     """Create the BMD header with navigation"""
+    user_name = app.storage.user.get("user_name", "User")
+    
     with ui.header().classes("bmd-header items-center justify-between"):
         with ui.row().classes("items-center gap-3"):
-            ui.image("/static/logo.png").classes("w-10 h-10 object-contain")
-            with ui.column().classes("gap-0"):
+            ui.image("/static/logo.png").classes("w-12 h-12 object-contain cursor-pointer").on(
+                "click", lambda: ui.navigate.to("/workflows")
+            )
+            with ui.column().classes("gap-0 cursor-pointer").on("click", lambda: ui.navigate.to("/workflows")):
                 ui.label("BMD").classes("bmd-logo-text")
                 ui.label("Biodiversity Meets Data").classes("bmd-subtitle")
 
         with ui.row().classes("gap-3 items-center"):
-            ui.button("+ New Workflow", on_click=lambda: ui.navigate.to("/create")).props(
-                "unelevated rounded" + (" color=white text-color=primary" if current_page != "create" else "")
-            ).classes("font-semibold")
-            
             ui.link("Workflows", "/workflows").classes(
                 f'nav-link {"active" if current_page == "workflows" else ""}'
             )
-            ui.button("Logout", on_click=lambda: logout()).props("flat text-color=white")
+            ui.button("+ New Workflow", on_click=lambda: ui.navigate.to("/create")).props(
+                "unelevated rounded color=white text-color=primary"
+            ).classes("font-semibold")
             
+            # User dropdown menu
+            with ui.button(icon="account_circle").props("flat round color=white"):
+                with ui.menu().classes("min-w-48"):
+                    with ui.row().classes("px-4 py-3 border-b border-gray-100"):
+                        with ui.column().classes("gap-0"):
+                            ui.label(user_name).classes("font-semibold text-gray-800")
+                            ui.label("Logged in").classes("text-xs text-gray-500")
+                    ui.menu_item("Account Settings", on_click=lambda: ui.navigate.to("/account")).classes("py-2")
+                    ui.separator()
+                    ui.menu_item("Logout", on_click=lambda: do_logout()).classes("py-2 text-red-600")
 
 
-async def logout():
+async def do_logout():
     app.storage.user.clear()
     ui.navigate.to("/login")
 
@@ -485,10 +519,13 @@ def check_auth() -> Optional[str]:
     return user_id
 
 
+# ============================================================================
 # Login Page
+# ============================================================================
 @ui.page("/login")
 def login_page():
     apply_bmd_theme()
+    ui.run_javascript("document.body.classList.add('public-auth')")
 
     async def do_login():
         email = email_input.value
@@ -507,52 +544,56 @@ def login_page():
         app.storage.user["token"] = token
         app.storage.user["user_id"] = user["user_id"]
         app.storage.user["user_name"] = user["name"]
-        ui.navigate.to("/create")
+        ui.navigate.to("/workflows")
 
-    with ui.column().classes("w-full min-h-screen items-center justify-center p-8"):
-        with ui.card().classes("bmd-card p-8 w-full max-w-md"):
-            with ui.column().classes("items-center gap-2 mb-8"):
-                ui.image("/static/logo.png").classes("w-24 h-24")
-                ui.label("BMD").classes("text-3xl font-bold").style(
-                    "background: linear-gradient(135deg, #2ECC71, #0077B6); "
-                    "-webkit-background-clip: text; -webkit-text-fill-color: transparent;"
-                )
-                ui.label("Biodiversity Analysis Tool").classes("text-gray-500")
-
-            ui.label("Welcome Back").classes(
-                "text-2xl font-semibold text-gray-800 mb-4"
+    with ui.column().classes("w-full min-h-screen items-center p-8 overflow-visible"):
+        # Brand header (NOT vertically centered)
+        with ui.column().classes("items-center gap-4 mt-10 mb-10 overflow-visible"):
+            ui.label("BMD").classes(
+                "text-7xl font-bold leading-none text-green-600"
+            )
+            ui.label("Biodiversity Analysis Tool").classes(
+                "text-3xl font-semibold tracking-wide text-gray-700"
             )
 
-            email_input = ui.input("Email").props("outlined").classes("w-full mb-4")
-            password_input = (
-                ui.input("Password", password=True)
-                .props("outlined")
-                .classes("w-full mb-6")
-            )
-            password_input.on("keydown.enter", do_login)
+        # Centered card
+        with ui.column().classes("w-full items-center"):
+            with ui.card().classes("bmd-card p-8 w-full max-w-md"):
+                ui.label("Welcome Back").classes("text-2xl font-semibold text-gray-800 mb-4")
 
-            ui.button("Sign In", on_click=do_login).classes(
-                "w-full bmd-btn text-lg py-3"
-            )
+                with ui.column().classes("w-full gap-1"):
+                    required_label("Email")
+                    email_input = ui.input(placeholder="your@email.com").props("outlined").classes("w-full")
+                
+                with ui.column().classes("w-full gap-1 mt-4"):
+                    required_label("Password")
+                    password_input = ui.input(placeholder="Enter password", password=True).props("outlined").classes("w-full")
+                password_input.on("keydown.enter", do_login)
 
-            with ui.row().classes("w-full justify-center mt-4 gap-1"):
-                ui.label("Don't have an account?").classes("text-gray-500")
-                ui.link("Sign up", "/signup").classes("text-teal-600 font-semibold")
+                ui.button("Sign In", on_click=do_login).classes("w-full bmd-btn text-lg py-3 mt-6")
+
+                with ui.row().classes("w-full justify-center mt-4 gap-1"):
+                    ui.label("Don't have an account?").classes("text-gray-500")
+                    ui.link("Sign up", "/signup").classes("text-teal-600 font-semibold")
 
 
+# ============================================================================
 # Signup Page
+# ============================================================================
 @ui.page("/signup")
 def signup_page():
     apply_bmd_theme()
+    ui.run_javascript("document.body.classList.add('public-auth')")
 
     async def do_signup():
         name = name_input.value
         email = email_input.value
         password = password_input.value
         confirm = confirm_input.value
+        orcid = orcid_input.value.strip() if orcid_input.value else None
 
         if not all([name, email, password, confirm]):
-            ui.notify("Please fill in all fields", type="negative")
+            ui.notify("Please fill in all required fields", type="negative")
             return
 
         if password != confirm:
@@ -563,72 +604,241 @@ def signup_page():
             ui.notify("Password must be at least 6 characters", type="negative")
             return
 
+        # Validate ORCID format if provided
+        if orcid:
+            import re
+            orcid_pattern = r'^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$'
+            if not re.match(orcid_pattern, orcid):
+                ui.notify("Invalid ORCID format. Use: 0000-0000-0000-0000", type="negative")
+                return
+
         existing = get_user_by_email(email)
         if existing:
             ui.notify("Email already registered", type="negative")
             return
 
         hashed_pw = hash_password(password)
-        user_id = create_user(email, hashed_pw, name)
+        user_id = create_user(email, hashed_pw, name, orcid=orcid)
         token = create_access_token(user_id)
 
         app.storage.user["token"] = token
         app.storage.user["user_id"] = user_id
         app.storage.user["user_name"] = name
-        ui.navigate.to("/create")
+        ui.navigate.to("/workflows")
 
-    with ui.column().classes("w-full min-h-screen items-center justify-center p-8"):
-        with ui.card().classes("bmd-card p-8 w-full max-w-md"):
-            with ui.column().classes("items-center gap-2 mb-8"):
-                ui.image("/static/logo.png").classes("w-24 h-24")
-                ui.label("BMD").classes("text-3xl font-bold").style(
-                    "background: linear-gradient(135deg, #2ECC71, #0077B6); "
-                    "-webkit-background-clip: text; -webkit-text-fill-color: transparent;"
-                )
-                ui.label("Biodiversity Analysis Tool").classes("text-gray-500")
-
-            ui.label("Create Account").classes(
-                "text-2xl font-semibold text-gray-800 mb-4"
+    with ui.column().classes("w-full min-h-screen items-center p-8 overflow-visible"):
+        # Brand header (NOT vertically centered)
+        with ui.column().classes("items-center gap-4 mt-10 mb-10 overflow-visible"):
+            ui.label("BM").classes(
+                "text-7xl font-bold leading-none text-green-600"
+            )
+            ui.label("Biodiversity Analysis Tool").classes(
+                "text-3xl font-semibold tracking-wide text-gray-700"
             )
 
-            name_input = ui.input("Full Name").props("outlined").classes("w-full mb-4")
-            email_input = ui.input("Email").props("outlined").classes("w-full mb-4")
-            password_input = (
-                ui.input("Password", password=True)
-                .props("outlined")
-                .classes("w-full mb-4")
-            )
-            confirm_input = (
-                ui.input("Confirm Password", password=True)
-                .props("outlined")
-                .classes("w-full mb-6")
-            )
-            confirm_input.on("keydown.enter", do_signup)
+        # Centered card
+        with ui.column().classes("w-full items-center"):
+            with ui.card().classes("bmd-card p-8 w-full max-w-md"):
+                ui.label("Create Account").classes("text-2xl font-semibold text-gray-800 mb-4")
 
-            ui.button("Create Account", on_click=do_signup).classes(
-                "w-full bmd-btn text-lg py-3"
-            )
+                with ui.column().classes("w-full gap-1"):
+                    required_label("Full Name")
+                    name_input = ui.input(placeholder="John Doe").props("outlined").classes("w-full")
+                
+                with ui.column().classes("w-full gap-1 mt-3"):
+                    required_label("Email")
+                    email_input = ui.input(placeholder="your@email.com").props("outlined").classes("w-full")
+                
+                with ui.column().classes("w-full gap-1 mt-3"):
+                    optional_label("ORCID")
+                    orcid_input = ui.input(placeholder="0000-0000-0000-0000").props("outlined").classes("w-full")
+                    ui.label("Your ORCID identifier for research attribution").classes("text-xs text-gray-400 mt-1")
+                
+                with ui.column().classes("w-full gap-1 mt-3"):
+                    required_label("Password")
+                    password_input = ui.input(placeholder="At least 6 characters", password=True).props("outlined").classes("w-full")
+                
+                with ui.column().classes("w-full gap-1 mt-3"):
+                    required_label("Confirm Password")
+                    confirm_input = ui.input(placeholder="Repeat password", password=True).props("outlined").classes("w-full")
+                confirm_input.on("keydown.enter", do_signup)
 
-            with ui.row().classes("w-full justify-center mt-4 gap-1"):
-                ui.label("Already have an account?").classes("text-gray-500")
-                ui.link("Sign in", "/login").classes("text-teal-600 font-semibold")
+                ui.button("Create Account", on_click=do_signup).classes("w-full bmd-btn text-lg py-3 mt-6")
+
+                with ui.row().classes("w-full justify-center mt-4 gap-1"):
+                    ui.label("Already have an account?").classes("text-gray-500")
+                    ui.link("Sign in", "/login").classes("text-teal-600 font-semibold")
 
 
-# Analysis Page
-@ui.page("/create")
-async def analysis_page(client: Client):
+# ============================================================================
+# Account Page
+# ============================================================================
+@ui.page("/account")
+async def account_page():
     user_id = check_auth()
     if not user_id:
         return RedirectResponse("/login")
 
     apply_bmd_theme()
+    ui.run_javascript("document.body.classList.remove('public-auth')")
+    create_header("account")
+
+    user = get_user_by_id(user_id)
+    if not user:
+        ui.label("User not found").classes("text-xl text-red-500")
+        return
+
+    with ui.column().classes("w-full max-w-2xl mx-auto p-6 gap-6"):
+        ui.label("Account Settings").classes("text-3xl font-bold").style(
+            "background: linear-gradient(135deg, #2ECC71, #0077B6); "
+            "-webkit-background-clip: text; -webkit-text-fill-color: transparent;"
+        )
+
+        # Profile Card
+        with ui.card().classes("bmd-card p-6 w-full"):
+            ui.label("Profile Information").classes("text-xl font-semibold text-gray-800 mb-4")
+
+            with ui.column().classes("w-full gap-1"):
+                required_label("Full Name")
+                name_input = ui.input(value=user.get("name", "")).props("outlined").classes("w-full")
+            
+            with ui.column().classes("w-full gap-1 mt-4"):
+                required_label("Email")
+                email_input = ui.input(value=user.get("email", "")).props("outlined").classes("w-full")
+            
+            with ui.column().classes("w-full gap-1 mt-4"):
+                optional_label("ORCID")
+                orcid_input = ui.input(value=user.get("orcid", "") or "").props("outlined").classes("w-full")
+                ui.label("Your ORCID identifier (format: 0000-0000-0000-0000)").classes("text-xs text-gray-400 mt-1")
+
+            async def save_profile():
+                name = name_input.value.strip()
+                email = email_input.value.strip()
+                orcid = orcid_input.value.strip() if orcid_input.value else None
+
+                if not name or not email:
+                    ui.notify("Name and email are required", type="negative")
+                    return
+
+                # Check if email is taken by another user
+                if check_email_exists(email, exclude_user_id=user_id):
+                    ui.notify("Email is already in use", type="negative")
+                    return
+
+                # Validate ORCID format if provided
+                if orcid:
+                    import re
+                    orcid_pattern = r'^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$'
+                    if not re.match(orcid_pattern, orcid):
+                        ui.notify("Invalid ORCID format", type="negative")
+                        return
+
+                update_user(user_id, name=name, email=email, orcid=orcid if orcid else "")
+                app.storage.user["user_name"] = name
+                ui.notify("Profile updated successfully", type="positive")
+
+            ui.button("Save Changes", on_click=save_profile).classes("bmd-btn mt-6")
+
+        # Password Card
+        with ui.card().classes("bmd-card p-6 w-full"):
+            ui.label("Change Password").classes("text-xl font-semibold text-gray-800 mb-4")
+
+            with ui.column().classes("w-full gap-1"):
+                required_label("Current Password")
+                current_pw_input = ui.input(placeholder="Enter current password", password=True).props("outlined").classes("w-full")
+            
+            with ui.column().classes("w-full gap-1 mt-4"):
+                required_label("New Password")
+                new_pw_input = ui.input(placeholder="At least 6 characters", password=True).props("outlined").classes("w-full")
+            
+            with ui.column().classes("w-full gap-1 mt-4"):
+                required_label("Confirm New Password")
+                confirm_pw_input = ui.input(placeholder="Repeat new password", password=True).props("outlined").classes("w-full")
+
+            async def change_password():
+                current_pw = current_pw_input.value
+                new_pw = new_pw_input.value
+                confirm_pw = confirm_pw_input.value
+
+                if not all([current_pw, new_pw, confirm_pw]):
+                    ui.notify("Please fill in all password fields", type="negative")
+                    return
+
+                # Verify current password
+                if not verify_password(current_pw, user["password_hash"]):
+                    ui.notify("Current password is incorrect", type="negative")
+                    return
+
+                if new_pw != confirm_pw:
+                    ui.notify("New passwords do not match", type="negative")
+                    return
+
+                if len(new_pw) < 6:
+                    ui.notify("Password must be at least 6 characters", type="negative")
+                    return
+
+                new_hash = hash_password(new_pw)
+                update_user(user_id, password_hash=new_hash)
+                
+                # Clear input fields
+                current_pw_input.value = ""
+                new_pw_input.value = ""
+                confirm_pw_input.value = ""
+                
+                ui.notify("Password changed successfully", type="positive")
+
+            ui.button("Change Password", on_click=change_password).classes("bmd-btn-secondary bmd-btn mt-6")
+
+        # Danger Zone Card
+        with ui.card().classes("bmd-card p-6 w-full border-2 border-red-200"):
+            ui.label("Danger Zone").classes("text-xl font-semibold text-red-600 mb-2")
+            ui.label("Once you delete your account, there is no going back. All your workflows will be permanently deleted.").classes("text-sm text-gray-600 mb-4")
+
+            async def confirm_delete():
+                with ui.dialog() as dialog, ui.card().classes("p-6"):
+                    ui.label("Delete Account").classes("text-xl font-bold text-red-600 mb-4")
+                    ui.label("Are you sure you want to delete your account? This action cannot be undone.").classes("text-gray-600 mb-4")
+                    
+                    with ui.column().classes("w-full gap-1 mb-4"):
+                        ui.label("Type your email to confirm:").classes("text-sm font-medium")
+                        confirm_email_input = ui.input(placeholder=user["email"]).props("outlined").classes("w-full")
+                    
+                    with ui.row().classes("gap-4 justify-end"):
+                        ui.button("Cancel", on_click=dialog.close).props("flat")
+                        
+                        async def do_delete():
+                            if confirm_email_input.value != user["email"]:
+                                ui.notify("Email doesn't match", type="negative")
+                                return
+                            
+                            delete_user(user_id)
+                            app.storage.user.clear()
+                            dialog.close()
+                            ui.notify("Account deleted", type="info")
+                            ui.navigate.to("/login")
+                        
+                        ui.button("Delete Account", on_click=do_delete).classes("bmd-btn-danger bmd-btn")
+                
+                dialog.open()
+
+            ui.button("Delete Account", on_click=confirm_delete).classes("bmd-btn-danger bmd-btn").props("icon=delete")
+
+
+# ============================================================================
+# Create Workflow Page
+# ============================================================================
+@ui.page("/create")
+async def create_page(client: Client):
+    user_id = check_auth()
+    if not user_id:
+        return RedirectResponse("/login")
+
+    apply_bmd_theme()
+    ui.run_javascript("document.body.classList.remove('public-auth')")
     create_header("create")
 
-    # Store geometry data
-    geometry_data = {"type": None, "coords": []}
-
     with ui.column().classes("w-full max-w-6xl mx-auto p-6 gap-6"):
-        ui.label("Submit Analysis Workflow").classes("text-3xl font-bold").style(
+        ui.label("Create New Workflow").classes("text-3xl font-bold").style(
             "background: linear-gradient(135deg, #2ECC71, #0077B6); "
             "-webkit-background-clip: text; -webkit-text-fill-color: transparent;"
         )
@@ -636,84 +846,56 @@ async def analysis_page(client: Client):
         with ui.row().classes("w-full gap-6 flex-wrap lg:flex-nowrap"):
             # Form Section
             with ui.card().classes("bmd-card p-6 flex-1 min-w-80"):
-                ui.label("Workflow Parameters").classes(
-                    "text-xl font-semibold mb-4 text-gray-800"
-                )
+                ui.label("Workflow Parameters").classes("text-xl font-semibold mb-4 text-gray-800")
 
-                name_input = (
-                    ui.input("Workflow Name", placeholder="e.g., Alpine Species Survey")
-                    .props("outlined")
-                    .classes("w-full mb-4")
-                )
+                with ui.column().classes("w-full gap-1"):
+                    required_label("Workflow Name")
+                    name_input = ui.input(placeholder="e.g., Alpine Species Survey").props("outlined").classes("w-full")
 
-                desc_input = (
-                    ui.textarea("Description", placeholder="Describe your analysis...")
-                    .props("outlined rows=3")
-                    .classes("w-full mb-4")
-                )
+                with ui.column().classes("w-full gap-1 mt-4"):
+                    optional_label("Description")
+                    desc_input = ui.textarea(placeholder="Describe your analysis...").props("outlined rows=3").classes("w-full")
 
-                species_select = (
-                    ui.select(
-                        options=[
-                            "Birds",
-                            "Mammals",
-                            "Reptiles",
-                            "Amphibians",
-                            "Fish",
-                            "Invertebrates",
-                            "Plants",
-                            "Fungi",
-                            "All",
-                        ],
+                with ui.column().classes("w-full gap-1 mt-4"):
+                    required_label("Species Group")
+                    species_select = ui.select(
+                        options=["Birds", "Mammals", "Reptiles", "Amphibians", "Fish", "Invertebrates", "Plants", "Fungi", "All"],
                         value="All",
-                        label="Species Group",
-                    )
-                    .props("outlined")
-                    .classes("w-full mb-4")
-                )
+                    ).props("outlined").classes("w-full")
+
+                with ui.row().classes("w-full gap-4 mt-4"):
+                    with ui.column().classes("flex-1 gap-1"):
+                        optional_label("Start Date")
+                        date_start = ui.input().props("outlined type=date").classes("w-full")
+                    with ui.column().classes("flex-1 gap-1"):
+                        optional_label("End Date")
+                        date_end = ui.input().props("outlined type=date").classes("w-full")
+
+                ui.label("Additional Parameters").classes("text-sm font-semibold text-gray-600 mt-4 mb-2")
 
                 with ui.row().classes("w-full gap-4 mb-4"):
-                    date_start = (
-                        ui.input("Start Date")
-                        .props("outlined type=date")
-                        .classes("flex-1")
-                    )
-                    date_end = (
-                        ui.input("End Date")
-                        .props("outlined type=date")
-                        .classes("flex-1")
-                    )
-
-                ui.label("Additional Parameters").classes(
-                    "text-sm font-semibold text-gray-600 mb-2"
-                )
-
-                with ui.row().classes("w-full gap-4 mb-4"):
-                    min_obs = (
-                        ui.number("Min Observations", value=10)
-                        .props("outlined")
-                        .classes("flex-1")
-                    )
+                    min_obs = ui.number("Min Observations", value=10).props("outlined").classes("flex-1")
                     confidence = ui.slider(min=0, max=100, value=80).classes("flex-1")
-                    ui.label().bind_text_from(
-                        confidence, "value", lambda v: f"Confidence: {v}%"
-                    )
+                    ui.label().bind_text_from(confidence, "value", lambda v: f"Confidence: {v}%")
 
                 include_historical = ui.checkbox("Include historical data", value=True)
                 generate_report = ui.checkbox("Generate PDF report", value=True)
 
-                geometry_label = ui.label("Selected Area: None").classes(
-                    "text-sm text-gray-600 mt-4 p-3 bg-gray-50 rounded-lg"
-                )
+                with ui.column().classes("w-full gap-1 mt-4"):
+                    required_label("Selected Area")
+                    geometry_label = ui.label("None - Draw on map →").classes(
+                        "text-sm text-gray-500 p-3 bg-gray-50 rounded-lg"
+                    )
 
                 async def submit_workflow():
                     if not name_input.value:
                         ui.notify("Please enter a workflow name", type="warning")
                         return
 
-                    # Get geometry data directly from JavaScript
+                    # Get geometry data directly from JavaScript, defensive and with longer timeout
                     geo_json = await ui.run_javascript(
-                        "return JSON.stringify(window.geometryData)"
+                        "return (window.geometryData ? JSON.stringify(window.geometryData) : null);",
+                        timeout=5.0,
                     )
 
                     if not geo_json or geo_json == "null":
@@ -721,7 +903,6 @@ async def analysis_page(client: Client):
                         return
 
                     import json
-
                     try:
                         geo_data = json.loads(geo_json)
                     except:
@@ -746,9 +927,7 @@ async def analysis_page(client: Client):
                         },
                     }
 
-                    # Submit via API
                     import httpx
-
                     async with httpx.AsyncClient() as http_client:
                         try:
                             response = await http_client.post(
@@ -759,22 +938,19 @@ async def analysis_page(client: Client):
                             if response.status_code == 200:
                                 result = response.json()
                                 ui.notify(
-                                    f'Workflow submitted successfully! ID: {result["workflow_id"][:8]}...',
+                                    f'Workflow submitted! ID: {result["workflow_id"][:8]}...',
                                     type="positive",
                                 )
-                                # Clear form
-                                name_input.value = ""
-                                desc_input.value = ""
-                                geometry_label.text = "Selected Area: None"
-                                await ui.run_javascript(
-                                    "if(window.drawnItems) window.drawnItems.clearLayers();"
+                                # Fire-and-forget JS cleanup; do NOT await during navigation
+                                ui.run_javascript(
+                                    "if(window.drawnItems) window.drawnItems.clearLayers();",
+                                    timeout=5.0,
                                 )
+                                ui.navigate.to("/workflows")
                             else:
                                 ui.notify(f"Error: {response.text}", type="negative")
                         except Exception as e:
-                            ui.notify(
-                                f"Error submitting workflow: {str(e)}", type="negative"
-                            )
+                            ui.notify(f"Error: {str(e)}", type="negative")
 
                 ui.button("Submit Workflow", on_click=submit_workflow).classes(
                     "w-full bmd-btn text-lg py-3 mt-6"
@@ -782,101 +958,60 @@ async def analysis_page(client: Client):
 
             # Map Section
             with ui.card().classes("bmd-card p-6 flex-1 min-w-80"):
-                ui.label("Select Analysis Area").classes(
-                    "text-xl font-semibold mb-2 text-gray-800"
+                with ui.row().classes("items-center gap-2 mb-2"):
+                    ui.label("Select Analysis Area").classes("text-xl font-semibold text-gray-800")
+                    ui.label("*").classes("required-asterisk text-xl")
+                ui.label("Draw a rectangle or polygon on the map (Europe only)").classes(
+                    "text-sm text-gray-500 mb-4"
                 )
-                ui.label(
-                    "Draw a rectangle or polygon on the map (Europe only)"
-                ).classes("text-sm text-gray-500 mb-4")
 
-                map_container = ui.html('<div id="map"></div>', sanitize=False).classes(
-                    "w-full"
-                )
+                ui.html('<div id="map"></div>', sanitize=False).classes("w-full")
 
                 ui.button(
                     "Clear Selection",
                     on_click=lambda: ui.run_javascript(
-                        "if(window.drawnItems) window.drawnItems.clearLayers(); "
-                        'document.getElementById("geometry-data").value = "";'
+                        "if(window.drawnItems) { window.drawnItems.clearLayers(); window.geometryData = null; }"
                     ),
                 ).classes("mt-4 bmd-btn-secondary bmd-btn").props("icon=delete outline")
 
-    # Hidden input to receive geometry data from JavaScript
-    geometry_input = ui.input("").classes("hidden").props("id=geometry-data")
-
-    def update_geometry(e):
-        import json
-
-        try:
-            if e.value:
-                data = json.loads(e.value)
-                geometry_data["type"] = data.get("type")
-                geometry_data["coords"] = data.get("coords", [])
-                geometry_label.text = f"Selected Area: {data.get('type', 'Unknown')} with {len(data.get('coords', [[]]))} points"
-        except:
-            pass
-
-    geometry_input.on("change", update_geometry)
-
-    # Initialize Leaflet map with draw controls
+    # Initialize Leaflet map
     await client.connected()
-    ui.run_javascript(
-        """
-        // Store geometry data globally
+    await ui.run_javascript("""
         window.geometryData = null;
         
-        // Initialize map centered on Europe
         var map = L.map('map').setView([50.0, 10.0], 4);
         
-        // Add OpenStreetMap tiles
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
         
-        // Restrict to Europe bounds
-        var europeBounds = L.latLngBounds(
-            L.latLng(34.0, -25.0),
-            L.latLng(72.0, 45.0)
-        );
+        var europeBounds = L.latLngBounds(L.latLng(34.0, -25.0), L.latLng(72.0, 45.0));
         map.setMaxBounds(europeBounds);
         map.setMinZoom(3);
         
-        // Initialize draw layer
         window.drawnItems = new L.FeatureGroup();
         map.addLayer(window.drawnItems);
         
-        // Add draw controls
         var drawControl = new L.Control.Draw({
             position: 'topright',
             draw: {
                 polygon: {
                     allowIntersection: false,
                     showArea: true,
-                    shapeOptions: {
-                        color: '#2ECC71',
-                        fillColor: '#2ECC71',
-                        fillOpacity: 0.3
-                    }
+                    shapeOptions: { color: '#2ECC71', fillColor: '#2ECC71', fillOpacity: 0.3 }
                 },
                 rectangle: {
-                    shapeOptions: {
-                        color: '#17A2B8',
-                        fillColor: '#17A2B8',
-                        fillOpacity: 0.3
-                    }
+                    shapeOptions: { color: '#17A2B8', fillColor: '#17A2B8', fillOpacity: 0.3 }
                 },
                 circle: false,
                 circlemarker: false,
                 marker: false,
                 polyline: false
             },
-            edit: {
-                featureGroup: window.drawnItems
-            }
+            edit: { featureGroup: window.drawnItems }
         });
         map.addControl(drawControl);
         
-        // Handle draw events
         map.on(L.Draw.Event.CREATED, function(event) {
             window.drawnItems.clearLayers();
             var layer = event.layer;
@@ -886,22 +1021,19 @@ async def analysis_page(client: Client):
                 return [ll.lat, ll.lng];
             });
             
-            window.geometryData = {
-                type: event.layerType,
-                coords: coords
-            };
-            
+            window.geometryData = { type: event.layerType, coords: coords };
             console.log('Geometry saved:', window.geometryData);
         });
         
         map.on(L.Draw.Event.DELETED, function() {
             window.geometryData = null;
         });
-    """
-    )
+    """, timeout=5.0)
 
 
-# Workflows Page# Workflows Page
+# ============================================================================
+# Workflows Page
+# ============================================================================
 @ui.page("/workflows")
 async def workflows_page():
     user_id = check_auth()
@@ -909,6 +1041,7 @@ async def workflows_page():
         return RedirectResponse("/login")
 
     apply_bmd_theme()
+    ui.run_javascript("document.body.classList.remove('public-auth')")
     create_header("workflows")
 
     with ui.column().classes("w-full max-w-6xl mx-auto p-6 gap-6"):
@@ -927,54 +1060,80 @@ async def workflows_page():
             with ui.card().classes("bmd-card p-8 w-full text-center"):
                 ui.icon("science", size="4rem").classes("text-gray-300 mb-4")
                 ui.label("No workflows submitted yet").classes("text-xl text-gray-500")
-                ui.label(
-                    "Go to the Analysis page to submit your first workflow"
-                ).classes("text-gray-400")
-                ui.button(
-                    "Start Analysis", on_click=lambda: ui.navigate.to("/create")
-                ).classes("bmd-btn mt-4")
+                ui.label("Create your first workflow to get started").classes("text-gray-400")
+                ui.button("+ New Workflow", on_click=lambda: ui.navigate.to("/create")).classes("bmd-btn mt-4")
         else:
             with ui.card().classes("bmd-card p-6 w-full"):
+                # Table header
+                with ui.row().classes("w-full items-center py-3 border-b-2 border-gray-200 gap-4 font-semibold text-gray-600"):
+                    ui.label("ID").classes("w-32")
+                    ui.label("Name").classes("flex-1")
+                    ui.label("Species").classes("w-24")
+                    ui.label("Status").classes("w-28")
+                    ui.label("Created").classes("w-36")
+                    ui.label("Actions").classes("w-32")
+
                 for wf in workflows:
-                    with ui.row().classes(
-                        "w-full items-center py-3 border-b border-gray-100 gap-4"
-                    ):
-                        ui.label(wf["workflow_id"][:12] + "...").classes(
-                            "font-mono text-sm w-32"
-                        )
+                    with ui.row().classes("w-full items-center py-3 border-b border-gray-100 gap-4"):
+                        ui.label(wf["workflow_id"][:12] + "...").classes("font-mono text-sm w-32")
                         ui.label(wf["name"]).classes("font-semibold flex-1")
                         ui.label(wf["species_group"]).classes("w-24")
 
                         status = wf["status"]
-                        color = (
-                            "green"
-                            if status == "completed"
-                            else (
-                                "blue"
-                                if status == "running"
-                                else "orange" if status == "submitted" else "red"
-                            )
-                        )
-                        ui.badge(status.upper()).props(f"color={color}")
+                        color = "green" if status == "completed" else "blue" if status == "running" else "orange" if status == "submitted" else "red"
+                        ui.badge(status.upper()).props(f"color={color}").classes("w-28")
 
-                        ui.label(
-                            wf["created_at"][:16] if wf["created_at"] else "N/A"
-                        ).classes("w-36 text-sm text-gray-500")
+                        ui.label(wf["created_at"][:16] if wf["created_at"] else "N/A").classes("w-36 text-sm text-gray-500")
 
-                        if status == "completed" and wf.get("results"):
+                        # --- Actions column with delete button and confirmation dialog ---
+                        with ui.row().classes("w-32 items-center gap-2"):
+                            if status == "completed" and wf.get("results"):
+                                ui.button(
+                                    "View",
+                                    on_click=lambda wid=wf["workflow_id"]: ui.navigate.to(f"/results/{wid}"),
+                                ).props("flat color=teal icon=visibility")
+
+                            async def confirm_delete(workflow_id=wf["workflow_id"], name=wf["name"]):
+                                with ui.dialog() as dialog, ui.card().classes("p-6 w-96"):
+                                    ui.label("Delete Workflow").classes("text-xl font-bold text-red-600 mb-2")
+                                    ui.label(
+                                        f"Are you sure you want to permanently delete '{name}'?"
+                                    ).classes("text-gray-700 mb-4")
+                                    ui.label(
+                                        "This action cannot be undone."
+                                    ).classes("text-sm text-gray-500 mb-4")
+
+                                    with ui.row().classes("justify-end gap-3"):
+                                        ui.button("Cancel", on_click=dialog.close).props("flat")
+
+                                        async def do_delete():
+                                            token = app.storage.user.get("token")
+                                            import httpx
+                                            async with httpx.AsyncClient() as client:
+                                                await client.delete(
+                                                    f"http://localhost:8080/api/workflows/{workflow_id}",
+                                                    headers={"Authorization": f"Bearer {token}"},
+                                                )
+                                            dialog.close()
+                                            ui.notify("Workflow deleted", type="positive")
+                                            ui.navigate.to("/workflows")
+
+                                        ui.button(
+                                            "Delete",
+                                            on_click=do_delete,
+                                        ).classes("bmd-btn-danger bmd-btn")
+
+                                dialog.open()
+
                             ui.button(
-                                "View Results",
-                                on_click=lambda wid=wf["workflow_id"]: ui.navigate.to(
-                                    f"/results/{wid}"
-                                ),
-                            ).props("flat color=teal icon=visibility")
-                        elif status == "running":
-                            ui.spinner(size="sm").classes("w-32")
-                        else:
-                            ui.label("").classes("w-32")
+                                icon="delete",
+                                on_click=confirm_delete,
+                            ).props("flat round color=red")
 
 
+# ============================================================================
 # Results Page
+# ============================================================================
 @ui.page("/results/{workflow_id}")
 async def results_page(workflow_id: str):
     user_id = check_auth()
@@ -982,15 +1141,17 @@ async def results_page(workflow_id: str):
         return RedirectResponse("/login")
 
     apply_bmd_theme()
+    ui.run_javascript("document.body.classList.remove('public-auth')")
 
     workflow = get_workflow_by_id(workflow_id)
     if not workflow or workflow["user_id"] != user_id:
-        ui.label("Workflow not found").classes("text-xl text-red-500")
+        with ui.column().classes("w-full min-h-screen items-center justify-center"):
+            ui.label("Workflow not found").classes("text-xl text-red-500")
+            ui.button("Back to Workflows", on_click=lambda: ui.navigate.to("/workflows")).classes("bmd-btn mt-4")
         return
 
     # Parse results
     import ast
-
     try:
         results = ast.literal_eval(workflow["results"]) if workflow["results"] else {}
     except:
@@ -999,9 +1160,7 @@ async def results_page(workflow_id: str):
     with ui.column().classes("w-full min-h-screen"):
         # Header with back button
         with ui.row().classes("w-full bg-white shadow-sm p-4 items-center gap-4"):
-            ui.button(
-                icon="arrow_back", on_click=lambda: ui.navigate.to("/workflows")
-            ).props("flat round")
+            ui.button(icon="arrow_back", on_click=lambda: ui.navigate.to("/workflows")).props("flat round")
             with ui.column().classes("gap-0"):
                 ui.label("Analysis Results").classes("text-xl font-bold").style(
                     "background: linear-gradient(135deg, #2ECC71, #0077B6); "
@@ -1012,9 +1171,7 @@ async def results_page(workflow_id: str):
         with ui.column().classes("w-full max-w-6xl mx-auto p-6 gap-6"):
             # Workflow Info Card
             with ui.card().classes("bmd-card p-6 w-full"):
-                ui.label("Workflow Details").classes(
-                    "text-lg font-semibold text-gray-800 mb-4"
-                )
+                ui.label("Workflow Details").classes("text-lg font-semibold text-gray-800 mb-4")
                 with ui.row().classes("gap-8 flex-wrap"):
                     with ui.column().classes("gap-1"):
                         ui.label("Workflow ID").classes("text-xs text-gray-500")
@@ -1024,11 +1181,7 @@ async def results_page(workflow_id: str):
                         ui.label(workflow["species_group"]).classes("font-medium")
                     with ui.column().classes("gap-1"):
                         ui.label("Created").classes("text-xs text-gray-500")
-                        ui.label(
-                            workflow["created_at"][:19]
-                            if workflow["created_at"]
-                            else "N/A"
-                        ).classes("font-medium")
+                        ui.label(workflow["created_at"][:19] if workflow["created_at"] else "N/A").classes("font-medium")
                     with ui.column().classes("gap-1"):
                         ui.label("Status").classes("text-xs text-gray-500")
                         ui.badge("COMPLETED").props("color=green")
@@ -1036,101 +1189,57 @@ async def results_page(workflow_id: str):
             if isinstance(results, dict) and "summary" in results:
                 # Summary Section
                 with ui.card().classes("bmd-card p-6 w-full"):
-                    ui.label("Summary").classes(
-                        "text-lg font-semibold text-gray-800 mb-4"
-                    )
+                    ui.label("Summary").classes("text-lg font-semibold text-gray-800 mb-4")
                     with ui.row().classes("gap-8 justify-around"):
                         with ui.column().classes("items-center p-4"):
-                            ui.label(str(results["summary"]["total_species"])).classes(
-                                "text-4xl font-bold text-green-600"
-                            )
-                            ui.label("Species Detected").classes(
-                                "text-sm text-gray-600"
-                            )
+                            ui.label(str(results["summary"]["total_species"])).classes("text-4xl font-bold text-green-600")
+                            ui.label("Species Detected").classes("text-sm text-gray-600")
                         with ui.column().classes("items-center p-4"):
-                            ui.label(
-                                f'{results["summary"]["total_occurrences"]:,}'
-                            ).classes("text-4xl font-bold text-teal-600")
-                            ui.label("Total Occurrences").classes(
-                                "text-sm text-gray-600"
-                            )
+                            ui.label(f'{results["summary"]["total_occurrences"]:,}').classes("text-4xl font-bold text-teal-600")
+                            ui.label("Total Occurrences").classes("text-sm text-gray-600")
                         with ui.column().classes("items-center p-4"):
-                            ui.label(f'{results["summary"]["area_km2"]:,.0f}').classes(
-                                "text-4xl font-bold text-blue-600"
-                            )
-                            ui.label("Analysis Area (km²)").classes(
-                                "text-sm text-gray-600"
-                            )
+                            ui.label(f'{results["summary"]["area_km2"]:,.0f}').classes("text-4xl font-bold text-blue-600")
+                            ui.label("Analysis Area (km²)").classes("text-sm text-gray-600")
 
                 # Model Performance
                 with ui.card().classes("bmd-card p-6 w-full"):
-                    ui.label("Model Performance Metrics").classes(
-                        "text-lg font-semibold text-gray-800 mb-4"
-                    )
+                    ui.label("Model Performance Metrics").classes("text-lg font-semibold text-gray-800 mb-4")
                     with ui.row().classes("gap-6 justify-around"):
                         perf = results["model_performance"]
                         with ui.column().classes("items-center p-4"):
-                            ui.label(f"{perf['auc_score']:.3f}").classes(
-                                "text-3xl font-bold text-green-600"
-                            )
+                            ui.label(f"{perf['auc_score']:.3f}").classes("text-3xl font-bold text-green-600")
                             ui.label("AUC Score").classes("text-sm text-gray-600")
-                            ui.linear_progress(
-                                value=perf["auc_score"], show_value=False
-                            ).classes("w-24").props("color=green")
+                            ui.linear_progress(value=perf["auc_score"], show_value=False).classes("w-24").props("color=green")
                         with ui.column().classes("items-center p-4"):
-                            ui.label(f"{perf['tss_score']:.3f}").classes(
-                                "text-3xl font-bold text-teal-600"
-                            )
+                            ui.label(f"{perf['tss_score']:.3f}").classes("text-3xl font-bold text-teal-600")
                             ui.label("TSS Score").classes("text-sm text-gray-600")
-                            ui.linear_progress(
-                                value=perf["tss_score"], show_value=False
-                            ).classes("w-24").props("color=teal")
+                            ui.linear_progress(value=perf["tss_score"], show_value=False).classes("w-24").props("color=teal")
                         with ui.column().classes("items-center p-4"):
-                            ui.label(f"{perf['kappa']:.3f}").classes(
-                                "text-3xl font-bold text-blue-600"
-                            )
+                            ui.label(f"{perf['kappa']:.3f}").classes("text-3xl font-bold text-blue-600")
                             ui.label("Kappa").classes("text-sm text-gray-600")
-                            ui.linear_progress(
-                                value=perf["kappa"], show_value=False
-                            ).classes("w-24").props("color=blue")
+                            ui.linear_progress(value=perf["kappa"], show_value=False).classes("w-24").props("color=blue")
 
                 with ui.row().classes("w-full gap-6 flex-wrap lg:flex-nowrap"):
                     # Top Species
                     with ui.card().classes("bmd-card p-6 flex-1 min-w-80"):
-                        ui.label("Top Species by Habitat Suitability").classes(
-                            "text-lg font-semibold text-gray-800 mb-4"
-                        )
+                        ui.label("Top Species by Habitat Suitability").classes("text-lg font-semibold text-gray-800 mb-4")
                         for i, species in enumerate(results.get("top_species", [])):
-                            with ui.row().classes(
-                                "w-full items-center justify-between py-3 border-b border-gray-100"
-                            ):
+                            with ui.row().classes("w-full items-center justify-between py-3 border-b border-gray-100"):
                                 with ui.row().classes("items-center gap-3"):
                                     ui.label(f"{i+1}").classes(
                                         "w-6 h-6 rounded-full bg-green-100 text-green-700 text-center text-sm font-bold"
                                     )
                                     with ui.column().classes("gap-0"):
-                                        ui.label(species["name"]).classes(
-                                            "font-medium italic"
-                                        )
-                                        ui.label(
-                                            f'{species["occurrences"]} occurrences'
-                                        ).classes("text-xs text-gray-500")
+                                        ui.label(species["name"]).classes("font-medium italic")
+                                        ui.label(f'{species["occurrences"]} occurrences').classes("text-xs text-gray-500")
                                 with ui.column().classes("items-end"):
-                                    ui.label(
-                                        f'{species["habitat_suitability"]:.0%}'
-                                    ).classes("text-lg font-bold text-green-600")
-                                    ui.label("suitability").classes(
-                                        "text-xs text-gray-500"
-                                    )
+                                    ui.label(f'{species["habitat_suitability"]:.0%}').classes("text-lg font-bold text-green-600")
+                                    ui.label("suitability").classes("text-xs text-gray-500")
 
                     # Environmental Variables
                     with ui.card().classes("bmd-card p-6 flex-1 min-w-80"):
-                        ui.label("Environmental Variable Importance").classes(
-                            "text-lg font-semibold text-gray-800 mb-4"
-                        )
-                        for var_name, var_data in results.get(
-                            "environmental_variables", {}
-                        ).items():
+                        ui.label("Environmental Variable Importance").classes("text-lg font-semibold text-gray-800 mb-4")
+                        for var_name, var_data in results.get("environmental_variables", {}).items():
                             with ui.column().classes("w-full py-2"):
                                 with ui.row().classes("w-full justify-between mb-1"):
                                     ui.label(
@@ -1139,47 +1248,34 @@ async def results_page(workflow_id: str):
                                         .replace("bio12 ", "Annual Precip ")
                                         .title()
                                     ).classes("text-sm font-medium")
-                                    ui.label(
-                                        f'{var_data["contribution_pct"]}%'
-                                    ).classes("text-sm font-bold text-teal-600")
+                                    ui.label(f'{var_data["contribution_pct"]}%').classes("text-sm font-bold text-teal-600")
                                 ui.linear_progress(
-                                    value=var_data["contribution_pct"] / 100,
-                                    show_value=False,
+                                    value=var_data["contribution_pct"] / 100, show_value=False
                                 ).classes("w-full").props("color=teal size=10px")
-
             else:
                 # Fallback for raw results
                 with ui.card().classes("bmd-card p-6 w-full"):
-                    ui.label("Raw Results").classes(
-                        "text-lg font-semibold text-gray-800 mb-4"
-                    )
+                    ui.label("Raw Results").classes("text-lg font-semibold text-gray-800 mb-4")
                     ui.code(str(results)).classes("w-full")
 
             # Back button at bottom
-            ui.button(
-                "← Back to Workflows", on_click=lambda: ui.navigate.to("/workflows")
-            ).classes("bmd-btn mt-4")
+            ui.button("← Back to Workflows", on_click=lambda: ui.navigate.to("/workflows")).classes("bmd-btn mt-4")
 
 
+# ============================================================================
 # Root redirect
+# ============================================================================
 @ui.page("/")
 def root_page():
     user_id = check_auth()
     if user_id:
-        return RedirectResponse("/craete")
+        return RedirectResponse("/workflows")
     return RedirectResponse("/login")
 
 
+# ============================================================================
 # Mount NiceGUI to FastAPI
-""" ui.run_with(
-    fastapi_app,
-    title='BMD - Biodiversity Meets Data',
-    favicon='🌿',
-    storage_secret=SECRET_KEY,
-    host='0.0.0.0',
-    port=8080
-) """
-# Mount NiceGUI to FastAPI
+# ============================================================================
 ui.run_with(
     fastapi_app,
     title="BMD - Biodiversity Meets Data",

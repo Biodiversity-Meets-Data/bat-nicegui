@@ -32,10 +32,17 @@ def init_db():
             email TEXT UNIQUE NOT NULL,
             password_hash TEXT NOT NULL,
             name TEXT NOT NULL,
+            orcid TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+    
+    # Add orcid column if it doesn't exist (for existing databases)
+    try:
+        cursor.execute('ALTER TABLE users ADD COLUMN orcid TEXT')
+    except sqlite3.OperationalError:
+        pass  # Column already exists
     
     # Create workflows table with workflow_id and user_id as foreign key
     cursor.execute('''
@@ -70,7 +77,7 @@ def init_db():
     print("Database initialized successfully")
 
 
-def create_user(email: str, password_hash: str, name: str) -> str:
+def create_user(email: str, password_hash: str, name: str, orcid: Optional[str] = None) -> str:
     """Create a new user and return the user_id"""
     conn = get_connection()
     cursor = conn.cursor()
@@ -78,9 +85,9 @@ def create_user(email: str, password_hash: str, name: str) -> str:
     user_id = str(uuid.uuid4())
     
     cursor.execute('''
-        INSERT INTO users (user_id, email, password_hash, name)
-        VALUES (?, ?, ?, ?)
-    ''', (user_id, email, password_hash, name))
+        INSERT INTO users (user_id, email, password_hash, name, orcid)
+        VALUES (?, ?, ?, ?, ?)
+    ''', (user_id, email, password_hash, name, orcid))
     
     conn.commit()
     conn.close()
@@ -114,6 +121,82 @@ def get_user_by_id(user_id: str) -> Optional[Dict]:
     if row:
         return dict(row)
     return None
+
+
+def update_user(
+    user_id: str,
+    name: Optional[str] = None,
+    email: Optional[str] = None,
+    orcid: Optional[str] = None,
+    password_hash: Optional[str] = None
+) -> bool:
+    """Update user details"""
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    update_fields = ['updated_at = ?']
+    params = [datetime.utcnow().isoformat()]
+    
+    if name is not None:
+        update_fields.append('name = ?')
+        params.append(name)
+    
+    if email is not None:
+        update_fields.append('email = ?')
+        params.append(email)
+    
+    if orcid is not None:
+        update_fields.append('orcid = ?')
+        params.append(orcid if orcid else None)
+    
+    if password_hash is not None:
+        update_fields.append('password_hash = ?')
+        params.append(password_hash)
+    
+    params.append(user_id)
+    
+    query = f"UPDATE users SET {', '.join(update_fields)} WHERE user_id = ?"
+    cursor.execute(query, params)
+    
+    updated = cursor.rowcount > 0
+    conn.commit()
+    conn.close()
+    
+    return updated
+
+
+def delete_user(user_id: str) -> bool:
+    """Delete a user and all their workflows"""
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    # Delete user's workflows first
+    cursor.execute('DELETE FROM workflows WHERE user_id = ?', (user_id,))
+    
+    # Delete the user
+    cursor.execute('DELETE FROM users WHERE user_id = ?', (user_id,))
+    deleted = cursor.rowcount > 0
+    
+    conn.commit()
+    conn.close()
+    
+    return deleted
+
+
+def check_email_exists(email: str, exclude_user_id: Optional[str] = None) -> bool:
+    """Check if email exists, optionally excluding a specific user"""
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    if exclude_user_id:
+        cursor.execute('SELECT 1 FROM users WHERE email = ? AND user_id != ?', (email, exclude_user_id))
+    else:
+        cursor.execute('SELECT 1 FROM users WHERE email = ?', (email,))
+    
+    exists = cursor.fetchone() is not None
+    conn.close()
+    
+    return exists
 
 
 def create_workflow(
