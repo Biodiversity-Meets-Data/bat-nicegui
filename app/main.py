@@ -629,7 +629,7 @@ def signup_page():
     with ui.column().classes("w-full min-h-screen items-center p-8 overflow-visible"):
         # Brand header (NOT vertically centered)
         with ui.column().classes("items-center gap-4 mt-10 mb-10 overflow-visible"):
-            ui.label("BM").classes(
+            ui.label("BMD").classes(
                 "text-7xl font-bold leading-none text-green-600"
             )
             ui.label("Biodiversity Analysis Tool").classes(
@@ -1046,7 +1046,7 @@ async def workflows_page():
 
     with ui.column().classes("w-full max-w-6xl mx-auto p-6 gap-6"):
         with ui.row().classes("w-full justify-between items-center"):
-            ui.label("Submitted Workflows").classes("text-3xl font-bold").style(
+            ui.label("Your Workflows").classes("text-3xl font-bold").style(
                 "background: linear-gradient(135deg, #2ECC71, #0077B6); "
                 "-webkit-background-clip: text; -webkit-text-fill-color: transparent;"
             )
