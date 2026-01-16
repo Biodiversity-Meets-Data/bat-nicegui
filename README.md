@@ -10,6 +10,7 @@ A modern web application for biodiversity analysis workflows, built with NiceGUI
 - **Interactive Map**: Draw bounding boxes and polygons on a Europe-restricted Leaflet map
 - **Workflow Submission**: Submit analysis workflows with configurable parameters
 - **Workflow Tracking**: View all submitted workflows and their status
+- **Ecosystem Types**: Tag workflows by ecosystem (terrestrial/freshwater)
 - **Webhook Integration**: Receive results from Argo Workflow via webhooks
 - **Themed UI**: Beautiful green-to-teal gradient theme matching the BMD brand
 
@@ -130,12 +131,11 @@ POST /api/workflows/webhook/{workflow_id}
 | `user_id` | TEXT (FK) | Reference to users table |
 | `name` | TEXT | Workflow name |
 | `description` | TEXT | Workflow description |
-| `species_group` | TEXT | Target species group |
-| `date_range_start` | TEXT | Analysis start date |
-| `date_range_end` | TEXT | Analysis end date |
+| `species_name` | TEXT | Selected species (scientific name) |
+| `ecosystem_type` | TEXT | Ecosystem type (terrestrial, freshwater) |
 | `geometry_type` | TEXT | rectangle or polygon |
-| `geometry_coords` | TEXT | JSON array of coordinates |
-| `parameters` | TEXT | JSON object of parameters |
+| `geometry_wkt` | TEXT | WKT polygon/rectangle |
+| `parameters` | TEXT | JSON object of parameters (time_period, directive_types, etc.) |
 | `status` | TEXT | submitted, running, completed, failed |
 | `results` | TEXT | JSON results (when completed) |
 | `error_message` | TEXT | Error message (when failed) |

@@ -1,0 +1,1670 @@
+[
+  {
+    "usageKey": 2768367,
+    "scientificName": "Asparagus asparagoides (L.) Druce"
+  },
+  {
+    "usageKey": 7340014,
+    "scientificName": "Atriplex semilunaris Aellen"
+  },
+  {
+    "usageKey": 3129663,
+    "scientificName": "Baccharis halimifolia L."
+  },
+  {
+    "usageKey": 3173338,
+    "scientificName": "Buddleja davidii Franch."
+  },
+  {
+    "usageKey": 2882443,
+    "scientificName": "Cabomba caroliniana A.Gray"
+  },
+  {
+    "usageKey": 5414566,
+    "scientificName": "Calotropis procera (Aiton) W.T.Aiton"
+  },
+  {
+    "usageKey": 3703606,
+    "scientificName": "Carpobrotus acinaciformis (L.) L.Bolus"
+  },
+  {
+    "usageKey": 3084842,
+    "scientificName": "Carpobrotus edulis (L.) N.E.Br."
+  },
+  {
+    "usageKey": 2888740,
+    "scientificName": "Centranthus ruber (L.) DC."
+  },
+  {
+    "usageKey": 3112110,
+    "scientificName": "Cotula coronopifolia L."
+  },
+  {
+    "usageKey": 5362054,
+    "scientificName": "Crassula helmsii (Kirk) Cockayne"
+  },
+  {
+    "usageKey": 2650829,
+    "scientificName": "Cyrtomium falcatum (L.fil.) C.Presl"
+  },
+  {
+    "usageKey": 5354656,
+    "scientificName": "Cytisus scoparius (L.) Link"
+  },
+  {
+    "usageKey": 5329260,
+    "scientificName": "Egeria densa Planch."
+  },
+  {
+    "usageKey": 2765940,
+    "scientificName": "Eichhornia crassipes (Mart.) Solms"
+  },
+  {
+    "usageKey": 5329212,
+    "scientificName": "Elodea nuttallii (Planch.) H.St.John"
+  },
+  {
+    "usageKey": 2888380,
+    "scientificName": "Eschscholzia californica Cham."
+  },
+  {
+    "usageKey": 5334351,
+    "scientificName": "Fallopia baldschuanica (Regel) Holub"
+  },
+  {
+    "usageKey": 5334357,
+    "scientificName": "Fallopia japonica (Houtt.) Ronse Decr."
+  },
+  {
+    "usageKey": 2769796,
+    "scientificName": "Furcraea foetida (L.) Haw."
+  },
+  {
+    "usageKey": 2758700,
+    "scientificName": "Hedychium gardnerianum Sheph. ex Ker Gawl."
+  },
+  {
+    "usageKey": 3119175,
+    "scientificName": "Helianthus tuberosus L."
+  },
+  {
+    "usageKey": 2650107,
+    "scientificName": "Azolla filiculoides Lam."
+  },
+  {
+    "usageKey": 2441176,
+    "scientificName": "Bison bison (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 5232437,
+    "scientificName": "Branta canadensis (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2439838,
+    "scientificName": "Castor canadensis Kuhl, 1820"
+  },
+  {
+    "usageKey": 2440954,
+    "scientificName": "Cervus nippon Temminck, 1838"
+  },
+  {
+    "usageKey": 5232437,
+    "scientificName": "Branta canadensis (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2439838,
+    "scientificName": "Castor canadensis Kuhl, 1820"
+  },
+  {
+    "usageKey": 2440954,
+    "scientificName": "Cervus nippon Temminck, 1838"
+  },
+  {
+    "usageKey": 2441905,
+    "scientificName": "Chelydra serpentina (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 5189032,
+    "scientificName": "Corbicula fluminalis (O.F.Müller, 1774)"
+  },
+  {
+    "usageKey": 8190231,
+    "scientificName": "Corbicula fluminea (O.F.Müller, 1774)"
+  },
+  {
+    "usageKey": 5362054,
+    "scientificName": "Crassula helmsii (Kirk) Cockayne"
+  },
+  {
+    "usageKey": 5331404,
+    "scientificName": "Echinocystis lobata (Michx.) Torr. & A.Gray"
+  },
+  {
+    "usageKey": 9228211,
+    "scientificName": "Graptemys pseudogeographica (Gray, 1831)"
+  },
+  {
+    "usageKey": 2891774,
+    "scientificName": "Impatiens capensis Meerb."
+  },
+  {
+    "usageKey": 2501248,
+    "scientificName": "Mnemiopsis leidyi A.Agassiz, 1865"
+  },
+  {
+    "usageKey": 2379105,
+    "scientificName": "Neogobius fluviatilis (Pallas, 1814)"
+  },
+  {
+    "usageKey": 5779455,
+    "scientificName": "Arion lusitanicus Mabille, 1868"
+  },
+  {
+    "usageKey": 4559541,
+    "scientificName": "Sinanodonta woodiana (I.Lea, 1834)"
+  },
+  {
+    "usageKey": 2340977,
+    "scientificName": "Ameiurus melas (Rafinesque, 1820)"
+  },
+  {
+    "usageKey": 2379111,
+    "scientificName": "Neogobius gymnotrachelus (Kessler, 1857)"
+  },
+  {
+    "usageKey": 2379089,
+    "scientificName": "Neogobius melanostomus (Pallas, 1814)"
+  },
+  {
+    "usageKey": 2440965,
+    "scientificName": "Odocoileus virginianus (Zimmermann, 1780)"
+  },
+  {
+    "usageKey": 2362925,
+    "scientificName": "Alburnus alburnus (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2353225,
+    "scientificName": "Piaractus brachypomus (Cuvier, 1818)"
+  },
+  {
+    "usageKey": 2379235,
+    "scientificName": "Proterorhinus marmoratus (Pallas, 1814)"
+  },
+  {
+    "usageKey": 4559541,
+    "scientificName": "Sinanodonta woodiana (I.Lea, 1834)"
+  },
+  {
+    "usageKey": 2951984,
+    "scientificName": "Ulex europaeus L."
+  },
+  {
+    "usageKey": 3642949,
+    "scientificName": "Heracleum sosnowskyi Manden."
+  },
+  {
+    "usageKey": 2340977,
+    "scientificName": "Ameiurus melas (Rafinesque, 1820)"
+  },
+  {
+    "usageKey": 4286975,
+    "scientificName": "Cyprinus carpio Linnaeus, 1758"
+  },
+  {
+    "usageKey": 2346633,
+    "scientificName": "Esox lucius Linnaeus, 1758"
+  },
+  {
+    "usageKey": 4286327,
+    "scientificName": "Gasterosteus aculeatus Linnaeus, 1758"
+  },
+  {
+    "usageKey": 2394486,
+    "scientificName": "Lepomis gibbosus (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2379111,
+    "scientificName": "Neogobius gymnotrachelus (Kessler, 1857)"
+  },
+  {
+    "usageKey": 2379105,
+    "scientificName": "Neogobius fluviatilis (Pallas, 1814)"
+  },
+  {
+    "usageKey": 2379062,
+    "scientificName": "Neogobius kessleri (Günther, 1861)"
+  },
+  {
+    "usageKey": 2379089,
+    "scientificName": "Neogobius melanostomus (Pallas, 1814)"
+  },
+  {
+    "usageKey": 2443133,
+    "scientificName": "Chrysemys picta (Schneider, 1783)"
+  },
+  {
+    "usageKey": 2433652,
+    "scientificName": "Neovison vison (Schreber, 1777)"
+  },
+  {
+    "usageKey": 8002952,
+    "scientificName": "Ambrosia artemisiifolia L."
+  },
+  {
+    "usageKey": 5389029,
+    "scientificName": "Solidago canadensis L."
+  },
+  {
+    "usageKey": 5389017,
+    "scientificName": "Solidago gigantea Aiton"
+  },
+  {
+    "usageKey": 3190653,
+    "scientificName": "Ailanthus altissima (Mill.) Swingle"
+  },
+  {
+    "usageKey": 5357407,
+    "scientificName": "Amorpha fruticosa L."
+  },
+  {
+    "usageKey": 2928835,
+    "scientificName": "Lycium barbarum L."
+  },
+  {
+    "usageKey": 3189866,
+    "scientificName": "Acer negundo L."
+  },
+  {
+    "usageKey": 2658484,
+    "scientificName": "Acrothamnion preissii (Sonder) E.M.Wollaston"
+  },
+  {
+    "usageKey": 5279840,
+    "scientificName": "Asparagopsis armata Harv."
+  },
+  {
+    "usageKey": 5279834,
+    "scientificName": "Asparagopsis taxiformis (Delile) Trevis."
+  },
+  {
+    "usageKey": 2643093,
+    "scientificName": "Caulerpa racemosa (Forssk.) J.Agardh"
+  },
+  {
+    "usageKey": 2643172,
+    "scientificName": "Caulerpa taxifolia (M.Vahl) C.Agardh"
+  },
+  {
+    "usageKey": 5272096,
+    "scientificName": "Codium fragile (Suringar) Har."
+  },
+  {
+    "usageKey": 5278964,
+    "scientificName": "Gracilaria vermiculophylla (Ohmi) Papenfuss"
+  },
+  {
+    "usageKey": 2658889,
+    "scientificName": "Grateloupia turuturu Yamada"
+  },
+  {
+    "usageKey": 2659723,
+    "scientificName": "Lophocladia lallemandii (Mont.) F.Schmitz, 1893"
+  },
+  {
+    "usageKey": 3197314,
+    "scientificName": "Sargassum muticum (Yendo) Fensholt"
+  },
+  {
+    "usageKey": 3200580,
+    "scientificName": "Stypopodium schimperi (Kützing) Verlaque & Boudouresque"
+  },
+  {
+    "usageKey": 5422556,
+    "scientificName": "Undaria pinnatifida (Harv.) Suringar"
+  },
+  {
+    "usageKey": 5277463,
+    "scientificName": "Womersleyella setacea (Hollenberg) R.E.Norris"
+  },
+  {
+    "usageKey": 2979474,
+    "scientificName": "Acacia dealbata Link"
+  },
+  {
+    "usageKey": 2979257,
+    "scientificName": "Acacia farnesiana (L.) Willd."
+  },
+  {
+    "usageKey": 2978548,
+    "scientificName": "Acacia salicina Lindl."
+  },
+  {
+    "usageKey": 2870583,
+    "scientificName": "Pistia stratiotes L."
+  },
+  {
+    "usageKey": 6132234,
+    "scientificName": "Rhynchophorus ferrugineus (A.G.Olivier, 1791)"
+  },
+  {
+    "usageKey": 1316805,
+    "scientificName": "Tapinoma melanocephalum (Fabricius, 1793)"
+  },
+  {
+    "usageKey": 2767031,
+    "scientificName": "Agave americana L."
+  },
+  {
+    "usageKey": 5400613,
+    "scientificName": "Ageratina adenophora (Spreng.) R.M.King & H.Rob."
+  },
+  {
+    "usageKey": 5400790,
+    "scientificName": "Ageratina riparia (Regel) R.M.King & H.Rob."
+  },
+  {
+    "usageKey": 3190653,
+    "scientificName": "Ailanthus altissima (Mill.) Swingle"
+  },
+  {
+    "usageKey": 3084923,
+    "scientificName": "Alternanthera philoxeroides (Mart.) Griseb."
+  },
+  {
+    "usageKey": 8002952,
+    "scientificName": "Ambrosia artemisiifolia L."
+  },
+  {
+    "usageKey": 3170442,
+    "scientificName": "Araujia sericifera Brot."
+  },
+  {
+    "usageKey": 2882803,
+    "scientificName": "Arbutus unedo L."
+  },
+  {
+    "usageKey": 2703041,
+    "scientificName": "Arundo donax L."
+  },
+  {
+    "usageKey": 3034825,
+    "scientificName": "Heracleum mantegazzianum Sommier & Levier"
+  },
+  {
+    "usageKey": 7978544,
+    "scientificName": "Hydrocotyle ranunculoides L.fil."
+  },
+  {
+    "usageKey": 2928598,
+    "scientificName": "Ipomoea indica (Burm.) Merr."
+  },
+  {
+    "usageKey": 2970418,
+    "scientificName": "Leucaena leucocephala (Lam.) de Wit"
+  },
+  {
+    "usageKey": 3756029,
+    "scientificName": "Maireana brevifolia (R.Br.) Paul G.Wilson"
+  },
+  {
+    "usageKey": 5361785,
+    "scientificName": "Myriophyllum aquaticum (Vell.) Verdc."
+  },
+  {
+    "usageKey": 5289831,
+    "scientificName": "Nassella neesiana (Trin. & Rupr.) Barkworth"
+  },
+  {
+    "usageKey": 2882420,
+    "scientificName": "Nymphaea mexicana Zucc."
+  },
+  {
+    "usageKey": 6378623,
+    "scientificName": "Opuntia dillenii (Ker Gawl.) Haw."
+  },
+  {
+    "usageKey": 5626003,
+    "scientificName": "Opuntia maxima Mill."
+  },
+  {
+    "usageKey": 5384075,
+    "scientificName": "Opuntia stricta (Haw.) Haw."
+  },
+  {
+    "usageKey": 2891661,
+    "scientificName": "Oxalis pes-caprae L."
+  },
+  {
+    "usageKey": 2706150,
+    "scientificName": "Pennisetum clandestinum Hochst. ex Chiov."
+  },
+  {
+    "usageKey": 2706158,
+    "scientificName": "Pennisetum purpureum Schumach."
+  },
+  {
+    "usageKey": 2706134,
+    "scientificName": "Pennisetum setaceum (Forssk.) Chiov."
+  },
+  {
+    "usageKey": 2706154,
+    "scientificName": "Pennisetum villosum Fresen."
+  },
+  {
+    "usageKey": 6109699,
+    "scientificName": "Phoenix dactylifera L."
+  },
+  {
+    "usageKey": 5380041,
+    "scientificName": "Ricinus communis L."
+  },
+  {
+    "usageKey": 3109086,
+    "scientificName": "Senecio inaequidens DC."
+  },
+  {
+    "usageKey": 5290035,
+    "scientificName": "Spartina alterniflora Loisel."
+  },
+  {
+    "usageKey": 5290041,
+    "scientificName": "Spartina densiflora Brongn."
+  },
+  {
+    "usageKey": 5290026,
+    "scientificName": "Spartina patens (Aiton) Muhl."
+  },
+  {
+    "usageKey": 5355395,
+    "scientificName": "Spartium junceum L."
+  },
+  {
+    "usageKey": 2765156,
+    "scientificName": "Tradescantia fluminensis Vell."
+  },
+  {
+    "usageKey": 2951984,
+    "scientificName": "Ulex europaeus L."
+  },
+  {
+    "usageKey": 10928934,
+    "scientificName": "Achatina fulica Bowdich, 1822"
+  },
+  {
+    "usageKey": 4559541,
+    "scientificName": "Sinanodonta woodiana (I.Lea, 1834)"
+  },
+  {
+    "usageKey": 8848401,
+    "scientificName": "Bursaphelenchus xylophilus Steiner & Buhrer, 1934"
+  },
+  {
+    "usageKey": 8190231,
+    "scientificName": "Corbicula fluminea (O.F.Müller, 1774)"
+  },
+  {
+    "usageKey": 2266009,
+    "scientificName": "Cordylophora caspia (Pallas, 1771)"
+  },
+  {
+    "usageKey": 5192789,
+    "scientificName": "Crepidula fornicata (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2287073,
+    "scientificName": "Dreissena bugensis (Andrusov, 1897)"
+  },
+  {
+    "usageKey": 2287072,
+    "scientificName": "Dreissena polymorpha (Pallas, 1771)"
+  },
+  {
+    "usageKey": 2327735,
+    "scientificName": "Ficopomatus enigmaticus (Fauvel, 1923)"
+  },
+  {
+    "usageKey": 2501248,
+    "scientificName": "Mnemiopsis leidyi A.Agassiz, 1865"
+  },
+  {
+    "usageKey": 2287076,
+    "scientificName": "Mytilopsis leucophaeata (Conrad, 1831)"
+  },
+  {
+    "usageKey": 2288926,
+    "scientificName": "Potamocorbula amurensis (Schrenck, 1862)"
+  },
+  {
+    "usageKey": 5192470,
+    "scientificName": "Potamopyrgus antipodarum (J.E.Gray, 1843)"
+  },
+  {
+    "usageKey": 2264597,
+    "scientificName": "Rhopilema nomadica Galil, Spanier & Ferguson, 1990"
+  },
+  {
+    "usageKey": 6531560,
+    "scientificName": "Limnoperna securis (Lamarck, 1819)"
+  },
+  {
+    "usageKey": 1651430,
+    "scientificName": "Aedes albopictus (Skuse, 1894)"
+  },
+  {
+    "usageKey": 2139331,
+    "scientificName": "Dysdera crocata C.L.Koch, 1838"
+  },
+  {
+    "usageKey": 4989904,
+    "scientificName": "Harmonia axyridis (Pallas, 1773)"
+  },
+  {
+    "usageKey": 7358948,
+    "scientificName": "Lasius neglectus Van Loon, Boomsma & Andrasfalvy, 1990"
+  },
+  {
+    "usageKey": 5156102,
+    "scientificName": "Leptoglossus occidentalis Heidemann, 1910"
+  },
+  {
+    "usageKey": 1316908,
+    "scientificName": "Linepithema humile (Mayr, 1868)"
+  },
+  {
+    "usageKey": 1314508,
+    "scientificName": "Monomorium destructor (Jerdon, 1851)"
+  },
+  {
+    "usageKey": 1325561,
+    "scientificName": "Paratrechina longicornis (Latreille, 1802)"
+  },
+  {
+    "usageKey": 1941864,
+    "scientificName": "Paysandisia archon (Burmeister, 1880)"
+  },
+  {
+    "usageKey": 2203611,
+    "scientificName": "Armadillidium vulgare (Latreille, 1804)"
+  },
+  {
+    "usageKey": 5178595,
+    "scientificName": "Carcinus maenas (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 4417558,
+    "scientificName": "Cherax destructor Clark, 1936"
+  },
+  {
+    "usageKey": 2227670,
+    "scientificName": "Dyspanopeus sayi (Smith, 1869)"
+  },
+  {
+    "usageKey": 4315705,
+    "scientificName": "Dikerogammarus villosus (Sowinsky, 1894)"
+  },
+  {
+    "usageKey": 2225776,
+    "scientificName": "Eriocheir sinensis H.Milne Edwards, 1853"
+  },
+  {
+    "usageKey": 2227000,
+    "scientificName": "Orconectes limosus (Rafinesque, 1817)"
+  },
+  {
+    "usageKey": 2226990,
+    "scientificName": "Pacifastacus leniusculus (Dana, 1852)"
+  },
+  {
+    "usageKey": 2225783,
+    "scientificName": "Percnon gibbesi (H.Milne Edwards, 1853)"
+  },
+  {
+    "usageKey": 2227300,
+    "scientificName": "Procambarus clarkii (Girard, 1852)"
+  },
+  {
+    "usageKey": 2227663,
+    "scientificName": "Rhithropanopeus harrisii (Gould, 1841)"
+  },
+  {
+    "usageKey": 2235060,
+    "scientificName": "Triops longicaudatus (LeConte, 1846)"
+  },
+  {
+    "usageKey": 5712056,
+    "scientificName": "Fundulus heteroclitus (Linnaeus, 1766)"
+  },
+  {
+    "usageKey": 2350570,
+    "scientificName": "Gambusia holbrooki Girard, 1859"
+  },
+  {
+    "usageKey": 5202520,
+    "scientificName": "Ictalurus punctatus (Rafinesque, 1818)"
+  },
+  {
+    "usageKey": 2394486,
+    "scientificName": "Lepomis gibbosus (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2394563,
+    "scientificName": "Micropterus salmoides (Lacepède, 1802)"
+  },
+  {
+    "usageKey": 2367919,
+    "scientificName": "Misgurnus anguillicaudatus (Cantor, 1842)"
+  },
+  {
+    "usageKey": 5204019,
+    "scientificName": "Oncorhynchus mykiss (Walbaum, 1792)"
+  },
+  {
+    "usageKey": 8140485,
+    "scientificName": "Perca fluviatilis Linnaeus, 1758"
+  },
+  {
+    "usageKey": 2362868,
+    "scientificName": "Pseudorasbora parva (Temminck & Schlegel, 1846)"
+  },
+  {
+    "usageKey": 2334438,
+    "scientificName": "Pterois volitans (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2359706,
+    "scientificName": "Rutilus rutilus (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2351271,
+    "scientificName": "Salvelinus fontinalis (Mitchill, 1814)"
+  },
+  {
+    "usageKey": 2382155,
+    "scientificName": "Sander lucioperca (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2362635,
+    "scientificName": "Scardinius erythrophthalmus (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2337607,
+    "scientificName": "Silurus glanis Linnaeus, 1758"
+  },
+  {
+    "usageKey": 5216933,
+    "scientificName": "Rhinella marina (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2422538,
+    "scientificName": "Duttaphrynus melanostictus (Schneider, 1799)"
+  },
+  {
+    "usageKey": 2427091,
+    "scientificName": "Lithobates catesbeianus (Shaw, 1802)"
+  },
+  {
+    "usageKey": 5217334,
+    "scientificName": "Xenopus laevis (Daudin, 1802)"
+  },
+  {
+    "usageKey": 2443133,
+    "scientificName": "Chrysemys picta (Schneider, 1783)"
+  },
+  {
+    "usageKey": 7707269,
+    "scientificName": "Elaphe guttata Linnaeus, 1766"
+  },
+  {
+    "usageKey": 2443002,
+    "scientificName": "Trachemys scripta (Thunberg In Schoepff, 1792)"
+  },
+  {
+    "usageKey": 2493698,
+    "scientificName": "Amandava amandava (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 5232437,
+    "scientificName": "Branta canadensis (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2474162,
+    "scientificName": "Coturnix japonica Temminck & Schlegel, 1848"
+  },
+  {
+    "usageKey": 5231398,
+    "scientificName": "Leiothrix lutea (Scopoli, 1786)"
+  },
+  {
+    "usageKey": 2479407,
+    "scientificName": "Myiopsitta monachus (Boddaert, 1783)"
+  },
+  {
+    "usageKey": 2498305,
+    "scientificName": "Oxyura jamaicensis (J.F.Gmelin, 1789)"
+  },
+  {
+    "usageKey": 2479226,
+    "scientificName": "Psittacula krameri (Scopoli, 1769)"
+  },
+  {
+    "usageKey": 2486131,
+    "scientificName": "Pycnonotus cafer (Linnaeus, 1766)"
+  },
+  {
+    "usageKey": 2486151,
+    "scientificName": "Pycnonotus jocosus (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2493987,
+    "scientificName": "Quelea quelea (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2495688,
+    "scientificName": "Streptopelia roseogrisea (Sundevall, 1857)"
+  },
+  {
+    "usageKey": 2480764,
+    "scientificName": "Threskiornis aethiopicus (Latham, 1790)"
+  },
+  {
+    "usageKey": 2441005,
+    "scientificName": "Ammotragus lervia (Pallas, 1777)"
+  },
+  {
+    "usageKey": 2437140,
+    "scientificName": "Atelerix albiventris (Wagner, 1841)"
+  },
+  {
+    "usageKey": 2437125,
+    "scientificName": "Hemiechinus auritus (Gmelin, 1770)"
+  },
+  {
+    "usageKey": 2434271,
+    "scientificName": "Herpestes javanicus (É.Geoffroy Saint-Hilaire, 1818)"
+  },
+  {
+    "usageKey": 2433652,
+    "scientificName": "Neovison vison (Schreber, 1777)"
+  },
+  {
+    "usageKey": 4264680,
+    "scientificName": "Myocastor coypus (Molina, 1782)"
+  },
+  {
+    "usageKey": 2434552,
+    "scientificName": "Nyctereutes procyonoides (Gray, 1834)"
+  },
+  {
+    "usageKey": 5219858,
+    "scientificName": "Ondatra zibethicus (Linnaeus, 1766)"
+  },
+  {
+    "usageKey": 2441116,
+    "scientificName": "Ovis musimon (Pallas, 1811)"
+  },
+  {
+    "usageKey": 5218786,
+    "scientificName": "Procyon lotor (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2432953,
+    "scientificName": "Rousettus aegyptiacus (E.Geoffroy, 1810)"
+  },
+  {
+    "usageKey": 2439261,
+    "scientificName": "Rattus norvegicus (Berkenhout, 1769)"
+  },
+  {
+    "usageKey": 2439270,
+    "scientificName": "Rattus rattus (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 3034825,
+    "scientificName": "Heracleum mantegazzianum Sommier & Levier"
+  },
+  {
+    "usageKey": 3642949,
+    "scientificName": "Heracleum sosnowskyi Manden."
+  },
+  {
+    "usageKey": 5392174,
+    "scientificName": "Bidens frondosa L."
+  },
+  {
+    "usageKey": 2891770,
+    "scientificName": "Impatiens glandulifera Royle"
+  },
+  {
+    "usageKey": 5389029,
+    "scientificName": "Solidago canadensis L."
+  },
+  {
+    "usageKey": 5389017,
+    "scientificName": "Solidago gigantea Aiton"
+  },
+  {
+    "usageKey": 2889173,
+    "scientificName": "Reynoutria japonica Houtt."
+  },
+  {
+    "usageKey": 2889088,
+    "scientificName": "Reynoutria sachalinensis (F.Schmidt) Nakai"
+  },
+  {
+    "usageKey": 5329260,
+    "scientificName": "Egeria densa Planch."
+  },
+  {
+    "usageKey": 5329212,
+    "scientificName": "Elodea nuttallii (Planch.) H.St.John"
+  },
+  {
+    "usageKey": 2439838,
+    "scientificName": "Castor canadensis Kuhl, 1820"
+  },
+  {
+    "usageKey": 2440954,
+    "scientificName": "Cervus nippon Temminck, 1838"
+  },
+  {
+    "usageKey": 5220136,
+    "scientificName": "Dama dama (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 5218823,
+    "scientificName": "Mustela vison Schreber, 1777"
+  },
+  {
+    "usageKey": 2434552,
+    "scientificName": "Nyctereutes procyonoides (Gray, 1834)"
+  },
+  {
+    "usageKey": 2440965,
+    "scientificName": "Odocoileus virginianus (Zimmermann, 1780)"
+  },
+  {
+    "usageKey": 5219858,
+    "scientificName": "Ondatra zibethicus (Linnaeus, 1766)"
+  },
+  {
+    "usageKey": 2436940,
+    "scientificName": "Oryctolagus cuniculus (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 5219681,
+    "scientificName": "Sciurus carolinensis Gmelin, 1788"
+  },
+  {
+    "usageKey": 2498305,
+    "scientificName": "Oxyura jamaicensis (J.F.Gmelin, 1789)"
+  },
+  {
+    "usageKey": 5203111,
+    "scientificName": "Umbra pygmaea (DeKay, 1842)"
+  },
+  {
+    "usageKey": 2362868,
+    "scientificName": "Pseudorasbora parva (Temminck & Schlegel, 1846)"
+  },
+  {
+    "usageKey": 2340977,
+    "scientificName": "Ameiurus melas (Rafinesque, 1820)"
+  },
+  {
+    "usageKey": 2340989,
+    "scientificName": "Ameiurus nebulosus (Lesueur, 1819)"
+  },
+  {
+    "usageKey": 2394491,
+    "scientificName": "Lepomis auritus (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2394486,
+    "scientificName": "Lepomis gibbosus (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2394503,
+    "scientificName": "Lepomis macrochirus Rafinesque, 1819"
+  },
+  {
+    "usageKey": 2390064,
+    "scientificName": "Perccottus glenii Dybowski, 1877"
+  },
+  {
+    "usageKey": 2379105,
+    "scientificName": "Neogobius fluviatilis (Pallas, 1814)"
+  },
+  {
+    "usageKey": 2379111,
+    "scientificName": "Neogobius gymnotrachelus (Kessler, 1857)"
+  },
+  {
+    "usageKey": 2227000,
+    "scientificName": "Orconectes limosus (Rafinesque, 1817)"
+  },
+  {
+    "usageKey": 2433732,
+    "scientificName": "Lutra canadensis (Schreber, 1777)"
+  },
+  {
+    "usageKey": 2441122,
+    "scientificName": "Ovis ammon (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2365489,
+    "scientificName": "Opsariichthys uncirostris (Temminck & Schlegel, 1846)"
+  },
+  {
+    "usageKey": 5389029,
+    "scientificName": "Solidago canadensis L."
+  },
+  {
+    "usageKey": 5389017,
+    "scientificName": "Solidago gigantea Aiton"
+  },
+  {
+    "usageKey": 3021850,
+    "scientificName": "Prunus serotina Ehrh."
+  },
+  {
+    "usageKey": 5334357,
+    "scientificName": "Fallopia japonica (Houtt.) Ronse Decr."
+  },
+  {
+    "usageKey": 5334293,
+    "scientificName": "Fallopia sachalinensis (F.Schmidt) Ronse Decr."
+  },
+  {
+    "usageKey": 5652296,
+    "scientificName": "Fallopia × bohemica (Chrtek & Chrtková) J.P.Bailey"
+  },
+  {
+    "usageKey": 2891774,
+    "scientificName": "Impatiens capensis Meerb."
+  },
+  {
+    "usageKey": 2891782,
+    "scientificName": "Impatiens parviflora DC."
+  },
+  {
+    "usageKey": 5362054,
+    "scientificName": "Crassula helmsii (Kirk) Cockayne"
+  },
+  {
+    "usageKey": 2650107,
+    "scientificName": "Azolla filiculoides Lam."
+  },
+  {
+    "usageKey": 3003979,
+    "scientificName": "Rosa rugosa Thunb."
+  },
+  {
+    "usageKey": 2856457,
+    "scientificName": "Allium triquetrum L."
+  },
+  {
+    "usageKey": 5328593,
+    "scientificName": "Aponogeton distachyos L.f."
+  },
+  {
+    "usageKey": 2650107,
+    "scientificName": "Azolla filiculoides Lam."
+  },
+  {
+    "usageKey": 2115717,
+    "scientificName": "Balanus improvisus Darwin, 1854"
+  },
+  {
+    "usageKey": 5232437,
+    "scientificName": "Branta canadensis (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 5217160,
+    "scientificName": "Bufo bufo (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2882443,
+    "scientificName": "Cabomba caroliniana A.Gray"
+  },
+  {
+    "usageKey": 5178057,
+    "scientificName": "Caprella mutica Schurin, 1935"
+  },
+  {
+    "usageKey": 5220126,
+    "scientificName": "Capreolus capreolus (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 3084842,
+    "scientificName": "Carpobrotus edulis (L.) N.E.Br."
+  },
+  {
+    "usageKey": 2440954,
+    "scientificName": "Cervus nippon Temminck, 1838"
+  },
+  {
+    "usageKey": 8190231,
+    "scientificName": "Corbicula fluminea (O.F.Müller, 1774)"
+  },
+  {
+    "usageKey": 5362054,
+    "scientificName": "Crassula helmsii (Kirk) Cockayne"
+  },
+  {
+    "usageKey": 5192789,
+    "scientificName": "Crepidula fornicata (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 8810827,
+    "scientificName": "Nymphoides peltata (S.G.Gmel.) Kuntze"
+  },
+  {
+    "usageKey": 5200487,
+    "scientificName": "Perophora japonica Oka, 1927"
+  },
+  {
+    "usageKey": 4286975,
+    "scientificName": "Cyprinus carpio Linnaeus, 1758"
+  },
+  {
+    "usageKey": 5220136,
+    "scientificName": "Dama dama (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 4315705,
+    "scientificName": "Dikerogammarus villosus (Sowinsky, 1894)"
+  },
+  {
+    "usageKey": 2287072,
+    "scientificName": "Dreissena polymorpha (Pallas, 1771)"
+  },
+  {
+    "usageKey": 4371623,
+    "scientificName": "Dreissena rostriformis (Deshayes, 1838)"
+  },
+  {
+    "usageKey": 5329260,
+    "scientificName": "Egeria densa Planch."
+  },
+  {
+    "usageKey": 5219616,
+    "scientificName": "Erinaceus europaeus Linnaeus, 1758"
+  },
+  {
+    "usageKey": 5334357,
+    "scientificName": "Fallopia japonica (Houtt.) Ronse Decr."
+  },
+  {
+    "usageKey": 5334293,
+    "scientificName": "Fallopia sachalinensis (F.Schmidt) Ronse Decr."
+  },
+  {
+    "usageKey": 5729909,
+    "scientificName": "Grateloupia doryphora (Mont.) M.A.Howe"
+  },
+  {
+    "usageKey": 8078925,
+    "scientificName": "Gunnera manicata Linden"
+  },
+  {
+    "usageKey": 4989904,
+    "scientificName": "Harmonia axyridis (Pallas, 1773)"
+  },
+  {
+    "usageKey": 3039285,
+    "scientificName": "Hippophae rhamnoides L."
+  },
+  {
+    "usageKey": 2440931,
+    "scientificName": "Hydropotes inermis Swinhoe, 1870"
+  },
+  {
+    "usageKey": 2701447,
+    "scientificName": "Juncus planifolius R.Br."
+  },
+  {
+    "usageKey": 7952072,
+    "scientificName": "Lepus europaeus Pallas, 1778"
+  },
+  {
+    "usageKey": 5207464,
+    "scientificName": "Leuciscus cephalus (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 4409641,
+    "scientificName": "Leuciscus leuciscus (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2433652,
+    "scientificName": "Neovison vison (Schreber, 1777)"
+  },
+  {
+    "usageKey": 4033648,
+    "scientificName": "Persicaria perfoliata (L.) H.Gross"
+  },
+  {
+    "usageKey": 6391908,
+    "scientificName": "Persicaria wallichii Greuter & Burdet"
+  },
+  {
+    "usageKey": 2870583,
+    "scientificName": "Pistia stratiotes L."
+  },
+  {
+    "usageKey": 4363583,
+    "scientificName": "Rapana venosa (Valenciennes, 1846)"
+  },
+  {
+    "usageKey": 2439261,
+    "scientificName": "Rattus norvegicus (Berkenhout, 1769)"
+  },
+  {
+    "usageKey": 2439270,
+    "scientificName": "Rattus rattus (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 7327990,
+    "scientificName": "Rhododendron ponticum L."
+  },
+  {
+    "usageKey": 2993761,
+    "scientificName": "Rubus spectabilis Pursh"
+  },
+  {
+    "usageKey": 2359706,
+    "scientificName": "Rutilus rutilus (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 5274863,
+    "scientificName": "Salvinia × molesta D.S.Mitch."
+  },
+  {
+    "usageKey": 3197314,
+    "scientificName": "Sargassum muticum (Yendo) Fensholt"
+  },
+  {
+    "usageKey": 9282206,
+    "scientificName": "Strix aluco Linnaeus, 1758"
+  },
+  {
+    "usageKey": 2331942,
+    "scientificName": "Styela clava Herdman, 1881"
+  },
+  {
+    "usageKey": 7705930,
+    "scientificName": "Sus scrofa Linnaeus, 1758"
+  },
+  {
+    "usageKey": 3188757,
+    "scientificName": "Trapa natans L."
+  },
+  {
+    "usageKey": 5422556,
+    "scientificName": "Undaria pinnatifida (Harv.) Suringar"
+  },
+  {
+    "usageKey": 2304415,
+    "scientificName": "Urosalpinx cinerea (Say, 1822)"
+  },
+  {
+    "usageKey": 5219243,
+    "scientificName": "Vulpes vulpes (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2863943,
+    "scientificName": "Zostera japonica Asch. & Graebn."
+  },
+  {
+    "usageKey": 2498036,
+    "scientificName": "Anser anser (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 8600904,
+    "scientificName": "Cervus canadensis Erxleben, 1777"
+  },
+  {
+    "usageKey": 2440196,
+    "scientificName": "Macropus rufogriseus (Desmarest, 1817)"
+  },
+  {
+    "usageKey": 2433652,
+    "scientificName": "Neovison vison (Schreber, 1777)"
+  },
+  {
+    "usageKey": 2426640,
+    "scientificName": "Pelophylax bedriagae (Camerano, 1882)"
+  },
+  {
+    "usageKey": 2286069,
+    "scientificName": "Crassostrea gigas (Thunberg, 1793)"
+  },
+  {
+    "usageKey": 2889173,
+    "scientificName": "Reynoutria japonica Houtt."
+  },
+  {
+    "usageKey": 5290029,
+    "scientificName": "Spartina anglica C.E.Hubb."
+  },
+  {
+    "usageKey": 2479226,
+    "scientificName": "Psittacula krameri (Scopoli, 1769)"
+  },
+  {
+    "usageKey": 2426652,
+    "scientificName": "Rana kurtmuelleri Gayda, 1940"
+  },
+  {
+    "usageKey": 2439261,
+    "scientificName": "Rattus norvegicus (Berkenhout, 1769)"
+  },
+  {
+    "usageKey": 2436886,
+    "scientificName": "Sylvilagus floridanus (J.A.Allen, 1890)"
+  },
+  {
+    "usageKey": 5329570,
+    "scientificName": "Hydrilla verticillata (L.f.) Royle"
+  },
+  {
+    "usageKey": 2362473,
+    "scientificName": "Hypophthalmichthys molitrix (Valenciennes, 1844)"
+  },
+  {
+    "usageKey": 2928598,
+    "scientificName": "Ipomoea indica (Burm.) Merr."
+  },
+  {
+    "usageKey": 2393184,
+    "scientificName": "Lates niloticus (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2394486,
+    "scientificName": "Lepomis gibbosus (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2394494,
+    "scientificName": "Lepomis cyanellus Rafinesque, 1819"
+  },
+  {
+    "usageKey": 5220318,
+    "scientificName": "Macrochelys temminckii Troost, 1835"
+  },
+  {
+    "usageKey": 2367919,
+    "scientificName": "Misgurnus anguillicaudatus (Cantor, 1842)"
+  },
+  {
+    "usageKey": 4264680,
+    "scientificName": "Myocastor coypus (Molina, 1782)"
+  },
+  {
+    "usageKey": 2433652,
+    "scientificName": "Neovison vison (Schreber, 1777)"
+  },
+  {
+    "usageKey": 2434552,
+    "scientificName": "Nyctereutes procyonoides (Gray, 1834)"
+  },
+  {
+    "usageKey": 2372381,
+    "scientificName": "Oreochromis leucostictus (Trewavas, 1933)"
+  },
+  {
+    "usageKey": 4285694,
+    "scientificName": "Oreochromis niloticus (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2410854,
+    "scientificName": "Osmerus eperlanus (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2891661,
+    "scientificName": "Oxalis pes-caprae L."
+  },
+  {
+    "usageKey": 8140485,
+    "scientificName": "Perca fluviatilis Linnaeus, 1758"
+  },
+  {
+    "usageKey": 2870583,
+    "scientificName": "Pistia stratiotes L."
+  },
+  {
+    "usageKey": 2986239,
+    "scientificName": "Pittosporum undulatum Vent."
+  },
+  {
+    "usageKey": 5334357,
+    "scientificName": "Fallopia japonica (Houtt.) Ronse Decr."
+  },
+  {
+    "usageKey": 5352251,
+    "scientificName": "Robinia pseudoacacia L."
+  },
+  {
+    "usageKey": 5328909,
+    "scientificName": "Sagittaria latifolia Willd."
+  },
+  {
+    "usageKey": 5388595,
+    "scientificName": "Jacobaea maritima (L.) Pelser & Meijden"
+  },
+  {
+    "usageKey": 3109086,
+    "scientificName": "Senecio inaequidens DC."
+  },
+  {
+    "usageKey": 2337607,
+    "scientificName": "Silurus glanis Linnaeus, 1758"
+  },
+  {
+    "usageKey": 5290041,
+    "scientificName": "Spartina densiflora Brongn."
+  },
+  {
+    "usageKey": 2382155,
+    "scientificName": "Sander lucioperca (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2382172,
+    "scientificName": "Sander vitreus (Mitchill, 1818)"
+  },
+  {
+    "usageKey": 2370703,
+    "scientificName": "Coptodon zillii (Gervais, 1848)"
+  },
+  {
+    "usageKey": 2765156,
+    "scientificName": "Tradescantia fluminensis Vell."
+  },
+  {
+    "usageKey": 5217334,
+    "scientificName": "Xenopus laevis (Daudin, 1802)"
+  },
+  {
+    "usageKey": 2889088,
+    "scientificName": "Reynoutria sachalinensis (F.Schmidt) Nakai"
+  },
+  {
+    "usageKey": 4038485,
+    "scientificName": "Reynoutria × bohemica Chrtek & Chrtková"
+  },
+  {
+    "usageKey": 3190653,
+    "scientificName": "Ailanthus altissima (Mill.) Swingle"
+  },
+  {
+    "usageKey": 2340989,
+    "scientificName": "Ameiurus nebulosus (Lesueur, 1819)"
+  },
+  {
+    "usageKey": 2440934,
+    "scientificName": "Axis axis (Erxleben, 1777)"
+  },
+  {
+    "usageKey": 2443133,
+    "scientificName": "Chrysemys picta (Schneider, 1783)"
+  },
+  {
+    "usageKey": 4989904,
+    "scientificName": "Harmonia axyridis (Pallas, 1773)"
+  },
+  {
+    "usageKey": 2978552,
+    "scientificName": "Acacia saligna (Labill.) H.L.Wendl."
+  },
+  {
+    "usageKey": 2979474,
+    "scientificName": "Acacia dealbata Link"
+  },
+  {
+    "usageKey": 2979257,
+    "scientificName": "Acacia farnesiana (L.) Willd."
+  },
+  {
+    "usageKey": 2979128,
+    "scientificName": "Acacia karroo Hayne"
+  },
+  {
+    "usageKey": 2978730,
+    "scientificName": "Acacia longifolia (Andrews) Willd."
+  },
+  {
+    "usageKey": 2979775,
+    "scientificName": "Acacia mearnsii De Wild."
+  },
+  {
+    "usageKey": 2979000,
+    "scientificName": "Acacia melanoxylon R.Br."
+  },
+  {
+    "usageKey": 2978604,
+    "scientificName": "Acacia pycnantha Benth."
+  },
+  {
+    "usageKey": 2979408,
+    "scientificName": "Acacia retinodes Schltdl."
+  },
+  {
+    "usageKey": 3190653,
+    "scientificName": "Ailanthus altissima (Mill.) Swingle"
+  },
+  {
+    "usageKey": 3084958,
+    "scientificName": "Alternanthera caracasana Kunth"
+  },
+  {
+    "usageKey": 3084949,
+    "scientificName": "Alternanthera pungens Kunth"
+  },
+  {
+    "usageKey": 3084939,
+    "scientificName": "Alternanthera sessilis (L.) R.Br. ex DC."
+  },
+  {
+    "usageKey": 3084923,
+    "scientificName": "Alternanthera philoxeroides (Mart.) Griseb."
+  },
+  {
+    "usageKey": 3114986,
+    "scientificName": "Arctotheca calendula (L.) Levyns"
+  },
+  {
+    "usageKey": 2650107,
+    "scientificName": "Azolla filiculoides Lam."
+  },
+  {
+    "usageKey": 3084842,
+    "scientificName": "Carpobrotus edulis (L.) N.E.Br."
+  },
+  {
+    "usageKey": 2439838,
+    "scientificName": "Castor canadensis Kuhl, 1820"
+  },
+  {
+    "usageKey": 2441905,
+    "scientificName": "Chelydra serpentina (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 3189866,
+    "scientificName": "Acer negundo L."
+  },
+  {
+    "usageKey": 5392174,
+    "scientificName": "Bidens frondosa L."
+  },
+  {
+    "usageKey": 5354656,
+    "scientificName": "Cytisus scoparius (L.) Link"
+  },
+  {
+    "usageKey": 5331404,
+    "scientificName": "Echinocystis lobata (Michx.) Torr. & A.Gray"
+  },
+  {
+    "usageKey": 3117449,
+    "scientificName": "Erigeron annuus (L.) Pers."
+  },
+  {
+    "usageKey": 5384458,
+    "scientificName": "Gypsophila paniculata L."
+  },
+  {
+    "usageKey": 3642949,
+    "scientificName": "Heracleum sosnowskyi Manden."
+  },
+  {
+    "usageKey": 2891770,
+    "scientificName": "Impatiens glandulifera Royle"
+  },
+  {
+    "usageKey": 2891782,
+    "scientificName": "Impatiens parviflora DC."
+  },
+  {
+    "usageKey": 2964355,
+    "scientificName": "Lupinus polyphyllus Lindl."
+  },
+  {
+    "usageKey": 3021850,
+    "scientificName": "Prunus serotina Ehrh."
+  },
+  {
+    "usageKey": 5352251,
+    "scientificName": "Robinia pseudoacacia L."
+  },
+  {
+    "usageKey": 3003979,
+    "scientificName": "Rosa rugosa Thunb."
+  },
+  {
+    "usageKey": 2888943,
+    "scientificName": "Rumex confertus Willd."
+  },
+  {
+    "usageKey": 5779455,
+    "scientificName": "Arion lusitanicus Mabille, 1868"
+  },
+  {
+    "usageKey": 5192470,
+    "scientificName": "Potamopyrgus antipodarum (J.E.Gray, 1843)"
+  },
+  {
+    "usageKey": 5232437,
+    "scientificName": "Branta canadensis (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 2443133,
+    "scientificName": "Chrysemys picta (Schneider, 1783)"
+  },
+  {
+    "usageKey": 2443002,
+    "scientificName": "Trachemys scripta (Thunberg In Schoepff, 1792)"
+  },
+  {
+    "usageKey": 2220142,
+    "scientificName": "Paramysis lacustris (Czerniavsky, 1882)"
+  },
+  {
+    "usageKey": 4315705,
+    "scientificName": "Dikerogammarus villosus (Sowinsky, 1894)"
+  },
+  {
+    "usageKey": 4315140,
+    "scientificName": "Pontogammarus robustoides (Sars, 1894)"
+  },
+  {
+    "usageKey": 2227000,
+    "scientificName": "Orconectes limosus (Rafinesque, 1817)"
+  },
+  {
+    "usageKey": 2226990,
+    "scientificName": "Pacifastacus leniusculus (Dana, 1852)"
+  },
+  {
+    "usageKey": 2433652,
+    "scientificName": "Neovison vison (Schreber, 1777)"
+  },
+  {
+    "usageKey": 2434552,
+    "scientificName": "Nyctereutes procyonoides (Gray, 1834)"
+  },
+  {
+    "usageKey": 5218786,
+    "scientificName": "Procyon lotor (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 5219858,
+    "scientificName": "Ondatra zibethicus (Linnaeus, 1766)"
+  },
+  {
+    "usageKey": 2439261,
+    "scientificName": "Rattus norvegicus (Berkenhout, 1769)"
+  },
+  {
+    "usageKey": 2379089,
+    "scientificName": "Neogobius melanostomus (Pallas, 1814)"
+  },
+  {
+    "usageKey": 2390064,
+    "scientificName": "Perccottus glenii Dybowski, 1877"
+  },
+  {
+    "usageKey": 5389029,
+    "scientificName": "Solidago canadensis L."
+  },
+  {
+    "usageKey": 5389017,
+    "scientificName": "Solidago gigantea Aiton"
+  },
+  {
+    "usageKey": 2443133,
+    "scientificName": "Chrysemys picta (Schneider, 1783)"
+  },
+  {
+    "usageKey": 3146717,
+    "scientificName": "Erigeron bonariensis L."
+  },
+  {
+    "usageKey": 2928751,
+    "scientificName": "Datura stramonium L."
+  },
+  {
+    "usageKey": 4371623,
+    "scientificName": "Dreissena rostriformis (Deshayes, 1838)"
+  },
+  {
+    "usageKey": 2287072,
+    "scientificName": "Dreissena polymorpha (Pallas, 1771)"
+  },
+  {
+    "usageKey": 3147168,
+    "scientificName": "Erigeron karvinskianus DC."
+  },
+  {
+    "usageKey": 6026300,
+    "scientificName": "Eryngium pandanifolium Cham. & Schltdl."
+  },
+  {
+    "usageKey": 3132570,
+    "scientificName": "Galinsoga parviflora Cav."
+  },
+  {
+    "usageKey": 2350570,
+    "scientificName": "Gambusia holbrooki Girard, 1859"
+  },
+  {
+    "usageKey": 5209574,
+    "scientificName": "Gymnocephalus cernua (Linnaeus, 1758)"
+  },
+  {
+    "usageKey": 7287627,
+    "scientificName": "Hakea salicifolia (Vent.) B.L.Burtt"
+  },
+  {
+    "usageKey": 7287606,
+    "scientificName": "Hakea sericea Schrad. & J.C.Wendl."
+  }
+]

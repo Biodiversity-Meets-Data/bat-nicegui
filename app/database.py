@@ -51,11 +51,10 @@ def init_db():
             user_id TEXT NOT NULL,
             name TEXT NOT NULL,
             description TEXT,
-            species_group TEXT,
-            date_range_start TEXT,
-            date_range_end TEXT,
+            species_name TEXT,
+            ecosystem_type TEXT,
             geometry_type TEXT,
-            geometry_coords TEXT,
+            geometry_wkt TEXT,
             parameters TEXT,
             status TEXT DEFAULT 'submitted',
             results TEXT,
@@ -66,6 +65,24 @@ def init_db():
             FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
         )
     ''')
+
+    # Add ecosystem_type column if it doesn't exist (for existing databases)
+    try:
+        cursor.execute('ALTER TABLE workflows ADD COLUMN ecosystem_type TEXT DEFAULT "terrestrial"')
+    except sqlite3.OperationalError:
+        pass  # Column already exists
+
+    # Add species_name column if it doesn't exist (for existing databases)
+    try:
+        cursor.execute('ALTER TABLE workflows ADD COLUMN species_name TEXT')
+    except sqlite3.OperationalError:
+        pass  # Column already exists
+    
+    # Add geometry_wkt column if it doesn't exist (for existing databases)
+    try:
+        cursor.execute('ALTER TABLE workflows ADD COLUMN geometry_wkt TEXT')
+    except sqlite3.OperationalError:
+        pass  # Column already exists
     
     # Create indexes for better query performance
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_workflows_user_id ON workflows(user_id)')
@@ -204,11 +221,10 @@ def create_workflow(
     user_id: str,
     name: str,
     description: str,
-    species_group: str,
-    date_range_start: str,
-    date_range_end: str,
+    species_name: str,
+    ecosystem_type: str,
     geometry_type: str,
-    geometry_coords: str,
+    geometry_wkt: str,
     parameters: str,
     status: str = 'submitted'
 ) -> str:
@@ -218,14 +234,13 @@ def create_workflow(
     
     cursor.execute('''
         INSERT INTO workflows (
-            workflow_id, user_id, name, description, species_group,
-            date_range_start, date_range_end, geometry_type, geometry_coords,
-            parameters, status
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            workflow_id, user_id, name, description, species_name,
+            ecosystem_type, geometry_type,
+            geometry_wkt, parameters, status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ''', (
-        workflow_id, user_id, name, description, species_group,
-        date_range_start, date_range_end, geometry_type, geometry_coords,
-        parameters, status
+        workflow_id, user_id, name, description, species_name,
+        ecosystem_type, geometry_type, geometry_wkt, parameters, status
     ))
     
     conn.commit()
