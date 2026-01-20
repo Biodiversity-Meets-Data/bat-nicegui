@@ -10,7 +10,7 @@ services:
       - SECRET_KEY=${SECRET_KEY:-bmd-secret-key-change-in-production-12345}
       - DATABASE_PATH=/app/data/bmd.db
       - WORKFLOW_API_URL=${WORKFLOW_API_URL:-http://host.docker.internal:1245/api/v1/workflows}
-      - WORKFLOW_API_KEY=${WORKFLOW_API_KEY:-NnLoXLkV.Vbcad85CUCM1HfLmhHWOvoH4dDIV7kXn}
+      - WORKFLOW_API_KEY=${WORKFLOW_API_KEY:-}
       - WORKFLOW_WEBHOOK_URL_TEMPLATE=${WORKFLOW_WEBHOOK_URL_TEMPLATE:-http://localhost:8080/api/workflows/webhook/{workflow_id}}
       - WORKFLOW_DRY_RUN=${WORKFLOW_DRY_RUN:-false}
       - WORKFLOW_FORCE=${WORKFLOW_FORCE:-false}
