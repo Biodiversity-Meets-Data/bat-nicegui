@@ -40,7 +40,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "bmd-secret-key-change-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_HOURS = 24
 WORKFLOW_API_URL = os.getenv("WORKFLOW_API_URL", "")
-WORKFLOW_API_KEY = os.getenv("WORKFLOW_API_KEY", "")
+WORKFLOW_API_KEY = os.getenv("WORKFLOW_API_KEY", "NnLoXLkV.Vbcad85CUCM1HfLmhHWOvoH4dDIV7kXn")
 WORKFLOW_WEBHOOK_URL_TEMPLATE = os.getenv(
     "WORKFLOW_WEBHOOK_URL_TEMPLATE",
     "http://localhost:8080/api/workflows/webhook/{workflow_id}",
