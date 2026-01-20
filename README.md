@@ -11,6 +11,7 @@ A modern web application for biodiversity analysis workflows, built with NiceGUI
 - **Workflow Submission**: Submit analysis workflows with configurable parameters
 - **Workflow Tracking**: View all submitted workflows and their status
 - **Ecosystem Types**: Tag workflows by ecosystem (terrestrial/freshwater)
+- **RO-Crate Submission**: Generate `workflow.yaml` and `rocrate.json` from templates and upload as a ZIP
 - **Webhook Integration**: Receive results from Argo Workflow via webhooks
 - **Themed UI**: Beautiful green-to-teal gradient theme matching the BMD brand
 
@@ -74,6 +75,11 @@ python main.py
 | `WORKFLOW_WAIT_TIME` | Simulated workflow processing time (seconds) | `20` |
 | `ARGO_WORKFLOW_URL` | Argo Workflow server URL | `http://argo-workflow-server:2746` |
 | `ARGO_WORKFLOW_NAMESPACE` | Argo namespace | `argo` |
+| `WORKFLOW_API_URL` | External workflow submission endpoint | `http://localhost:1245/api/v1/workflows` |
+| `WORKFLOW_API_KEY` | API key for workflow API (sent as Bearer token) | (empty) |
+| `WORKFLOW_WEBHOOK_URL_TEMPLATE` | Webhook URL template (supports `{workflow_id}`) | `http://localhost:8080/api/workflows/webhook/{workflow_id}` |
+| `WORKFLOW_DRY_RUN` | Validate only (true/false) | `false` |
+| `WORKFLOW_FORCE` | Force re-execution (true/false) | `false` |
 
 ## API Endpoints
 
@@ -143,33 +149,12 @@ POST /api/workflows/webhook/{workflow_id}
 | `updated_at` | TIMESTAMP | Last update time |
 | `completed_at` | TIMESTAMP | Completion time |
 
-## Argo Workflow Integration
+## External Workflow Submission
 
-To integrate with your Argo Workflow server:
-
-1. Update the `ARGO_WORKFLOW_URL` environment variable
-2. Modify the `api_submit_workflow` function in `main.py` to make actual POST requests:
-
-```python
-# Replace simulate_workflow_processing with actual Argo API call
-async def submit_to_argo(workflow_id: str, workflow_data: dict):
-    async with httpx.AsyncClient() as client:
-        response = await client.post(
-            f"{ARGO_WORKFLOW_URL}/api/v1/workflows/{ARGO_NAMESPACE}",
-            json={
-                "workflow": {
-                    "metadata": {"name": workflow_id},
-                    "spec": {
-                        # Your Argo workflow spec here
-                        "arguments": workflow_data
-                    }
-                }
-            }
-        )
-        return response.json()
-```
-
-3. Configure your Argo Workflow template to call the webhook on completion
+On submission, the backend renders `app/templates/workflow.yaml` and `app/templates/rocrate.json`,
+zips them into an RO-Crate, and POSTs the archive to `WORKFLOW_API_URL`. The external API returns
+the `workflow_id`, which is stored in the local database. Webhook delivery uses
+`WORKFLOW_WEBHOOK_URL_TEMPLATE` (supports `{workflow_id}`).
 
 ## Project Structure
 

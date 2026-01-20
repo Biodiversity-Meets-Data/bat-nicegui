@@ -4,10 +4,10 @@ A NiceGUI + FastAPI application for biodiversity analysis workflows
 """
 
 import os
-import uuid
-import asyncio
-import random
+import tempfile
+import zipfile
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Optional
 from contextlib import asynccontextmanager
 
@@ -15,7 +15,9 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
+import httpx
 import jwt
+from jinja2 import Environment, FileSystemLoader
 from passlib.context import CryptContext
 from nicegui import ui, app, Client
 
@@ -37,7 +39,14 @@ from database import (
 SECRET_KEY = os.getenv("SECRET_KEY", "bmd-secret-key-change-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_HOURS = 24
-WORKFLOW_WAIT_TIME = int(os.getenv("WORKFLOW_WAIT_TIME", "20"))
+WORKFLOW_API_URL = os.getenv("WORKFLOW_API_URL", "")
+WORKFLOW_API_KEY = os.getenv("WORKFLOW_API_KEY", "")
+WORKFLOW_WEBHOOK_URL_TEMPLATE = os.getenv(
+    "WORKFLOW_WEBHOOK_URL_TEMPLATE",
+    "http://localhost:8080/api/workflows/webhook/{workflow_id}",
+)
+WORKFLOW_DRY_RUN = os.getenv("WORKFLOW_DRY_RUN", "false").lower() == "true"
+WORKFLOW_FORCE = os.getenv("WORKFLOW_FORCE", "false").lower() == "true"
 
 # Static files
 app.add_static_files("/static", "static")
@@ -45,6 +54,40 @@ app.add_static_files("/static", "static")
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
+
+
+TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
+TEMPLATE_ENV = Environment(loader=FileSystemLoader(TEMPLATES_DIR), autoescape=False)
+
+
+def build_rocrate_zip(context: dict) -> bytes:
+    #For dynamic templating in future with context variables
+    #workflow_template = TEMPLATE_ENV.get_template("workflow.yaml")
+    #rocrate_template = TEMPLATE_ENV.get_template("rocrate.json")
+    #workflow_rendered = workflow_template.render(**context)
+    #rocrate_rendered = rocrate_template.render(**context)
+
+    template_dir = TEMPLATES_DIR / "terrestrial-sdm"
+    workflow_rendered = (template_dir / "workflow.yaml").read_text(encoding="utf-8")
+    rocrate_rendered = (template_dir / "ro-crate-metadata.json").read_text(encoding="utf-8")
+    
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_path = Path(temp_dir)
+        workflow_path = temp_path / "workflow.yaml"
+        rocrate_path = temp_path / "ro-crate-metadata.json"
+        workflow_path.write_text(workflow_rendered, encoding="utf-8")
+        rocrate_path.write_text(rocrate_rendered, encoding="utf-8")
+
+        zip_path = temp_path / "rocrate.zip"
+        with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zip_file:
+            zip_file.write(workflow_path, arcname="workflow.yaml")
+            zip_file.write(rocrate_path, arcname="ro-crate-metadata.json")
+
+        with zipfile.ZipFile(zip_path, "r") as zip_file:
+            contents = [f"{info.filename} ({info.file_size} bytes)" for info in zip_file.infolist()]
+            print(f"RO-Crate contents: {contents}")
+
+        return zip_path.read_bytes()
 
 
 # Pydantic Models
@@ -141,7 +184,88 @@ async def api_submit_workflow(
     if not user_id:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 
-    workflow_id = str(uuid.uuid4())
+    parameters = workflow.parameters or {}
+    time_period = parameters.get("time_period", "")
+    directive_types = parameters.get("directive_types", [])
+    if isinstance(directive_types, list):
+        directive_types = ";".join([str(value) for value in directive_types])
+    else:
+        directive_types = str(directive_types)
+
+    rocrate_context = {
+        "workflow_name": workflow.name,
+        "description": workflow.description or "",
+        "species_name": workflow.species_name,
+        "ecosystem_type": workflow.ecosystem_type,
+        "geometry_type": workflow.geometry_type,
+        "geometry_wkt": workflow.geometry_wkt,
+        "time_period": time_period,
+        "directive_types": directive_types,
+    }
+
+    rocrate_zip = build_rocrate_zip(rocrate_context)
+
+    data = {}
+    if WORKFLOW_WEBHOOK_URL_TEMPLATE:
+        data["webhook_url"] = WORKFLOW_WEBHOOK_URL_TEMPLATE
+    data["dry_run"] = str(WORKFLOW_DRY_RUN).lower()
+    data["force"] = str(WORKFLOW_FORCE).lower()
+    params = {
+        "param-target_species": workflow.species_name,
+        "param-climate_periods": time_period,
+        "param-aoi_wkt": workflow.geometry_wkt,
+    }
+
+    headers = {}
+    if WORKFLOW_API_KEY:
+        headers["Authorization"] = f"Bearer {WORKFLOW_API_KEY}"
+
+    safe_headers = dict(headers)
+    if "Authorization" in safe_headers:
+        safe_headers["Authorization"] = "Bearer ***"
+    print("Submitting workflow to API")
+    print(f"URL: {WORKFLOW_API_URL}")
+    print(f"Params: {params}")
+    print(f"Data: {data}")
+    print(f"Headers: {safe_headers}")
+    print(f"RO-Crate bytes: {len(rocrate_zip)}")
+
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as http_client:
+            response = await http_client.post(
+                WORKFLOW_API_URL,
+                params=params,
+                data=data,
+                files={
+                    "rocratefile": (
+                        "rocrate.zip",
+                        rocrate_zip,
+                        "application/zip",
+                    )
+                },
+                headers=headers,
+            )
+            print(f"Workflow API response: {response.status_code}")
+            response_preview = response.text[:2000]
+            print(f"Workflow API body: {response_preview}")
+    except httpx.HTTPError as exc:
+        print(f"Workflow API exception: {type(exc).__name__}: {exc}")
+        raise HTTPException(status_code=502, detail=f"Workflow API error: {exc}") from exc
+
+    if response.status_code >= 300:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Workflow API error: {response.status_code} {response.text}",
+        )
+
+    try:
+        response_payload = response.json()
+    except ValueError as exc:
+        raise HTTPException(status_code=502, detail="Workflow API returned invalid JSON") from exc
+
+    workflow_id = response_payload.get("workflow_id") or response_payload.get("id")
+    if not workflow_id:
+        raise HTTPException(status_code=502, detail="Workflow API did not return workflow_id")
 
     # Print the workflow object
     print("=" * 60)
@@ -167,80 +291,13 @@ async def api_submit_workflow(
         geometry_type=workflow.geometry_type,
         geometry_wkt=workflow.geometry_wkt,
         parameters=str(workflow.parameters),
-        status="submitted",
+        status=response_payload.get("status", "submitted"),
     )
 
-    # Simulate workflow processing
-    asyncio.create_task(simulate_workflow_processing(workflow_id))
-
-    return {"workflow_id": workflow_id, "status": "submitted"}
-
-
-async def simulate_workflow_processing(workflow_id: str):
-    """Simulate workflow processing with configurable wait time"""
-    update_workflow_status(workflow_id, "running")
-    await asyncio.sleep(WORKFLOW_WAIT_TIME)
-
-    # Simulate SDM results
-    results = {
-        "summary": {
-            "total_species": random.randint(15, 45),
-            "total_occurrences": random.randint(500, 5000),
-            "area_km2": round(random.uniform(1000, 50000), 2),
-        },
-        "model_performance": {
-            "auc_score": round(random.uniform(0.75, 0.95), 3),
-            "tss_score": round(random.uniform(0.5, 0.8), 3),
-            "kappa": round(random.uniform(0.4, 0.7), 3),
-        },
-        "top_species": [
-            {
-                "name": "Quercus robur",
-                "occurrences": random.randint(100, 500),
-                "habitat_suitability": round(random.uniform(0.6, 0.95), 2),
-            },
-            {
-                "name": "Fagus sylvatica",
-                "occurrences": random.randint(80, 400),
-                "habitat_suitability": round(random.uniform(0.5, 0.9), 2),
-            },
-            {
-                "name": "Pinus sylvestris",
-                "occurrences": random.randint(60, 300),
-                "habitat_suitability": round(random.uniform(0.4, 0.85), 2),
-            },
-            {
-                "name": "Betula pendula",
-                "occurrences": random.randint(40, 200),
-                "habitat_suitability": round(random.uniform(0.3, 0.8), 2),
-            },
-            {
-                "name": "Picea abies",
-                "occurrences": random.randint(20, 150),
-                "habitat_suitability": round(random.uniform(0.25, 0.75), 2),
-            },
-        ],
-        "environmental_variables": {
-            "bio1_mean_temp": {
-                "importance": round(random.uniform(0.15, 0.35), 3),
-                "contribution_pct": round(random.uniform(20, 40), 1),
-            },
-            "bio12_annual_precip": {
-                "importance": round(random.uniform(0.1, 0.25), 3),
-                "contribution_pct": round(random.uniform(15, 30), 1),
-            },
-            "elevation": {
-                "importance": round(random.uniform(0.08, 0.2), 3),
-                "contribution_pct": round(random.uniform(10, 25), 1),
-            },
-            "soil_type": {
-                "importance": round(random.uniform(0.05, 0.15), 3),
-                "contribution_pct": round(random.uniform(5, 15), 1),
-            },
-        },
-        "analysis_timestamp": datetime.utcnow().isoformat(),
+    return {
+        "workflow_id": workflow_id,
+        "status": response_payload.get("status", "submitted"),
     }
-    update_workflow_status(workflow_id, "completed", results=str(results))
 
 
 # TODO: Secure the webhook endpoint with a prefix token

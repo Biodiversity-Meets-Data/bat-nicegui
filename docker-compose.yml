@@ -9,24 +9,26 @@ services:
     environment:
       - SECRET_KEY=${SECRET_KEY:-bmd-secret-key-change-in-production-12345}
       - DATABASE_PATH=/app/data/bmd.db
-      - WORKFLOW_WAIT_TIME=${WORKFLOW_WAIT_TIME:-20}
-      # Argo Workflow configuration (for production)
-      - ARGO_WORKFLOW_URL=${ARGO_WORKFLOW_URL:-http://argo-workflow-server:2746}
-      - ARGO_WORKFLOW_NAMESPACE=${ARGO_WORKFLOW_NAMESPACE:-argo}
+      - WORKFLOW_API_URL=${WORKFLOW_API_URL:-http://host.docker.internal:1245/api/v1/workflows}
+      - WORKFLOW_API_KEY=${WORKFLOW_API_KEY:-}
+      - WORKFLOW_WEBHOOK_URL_TEMPLATE=${WORKFLOW_WEBHOOK_URL_TEMPLATE:-http://localhost:8080/api/workflows/webhook/{workflow_id}}
+      - WORKFLOW_DRY_RUN=${WORKFLOW_DRY_RUN:-false}
+      - WORKFLOW_FORCE=${WORKFLOW_FORCE:-false}
     volumes:
       # Persist SQLite database
       - bmd-data:/app/data
       # Mount static files for development
       - ./static:/app/static:ro
     restart: unless-stopped
+    networks:
+      - bmd-network
+
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
-    networks:
-      - bmd-network
 
   # Optional: Nginx reverse proxy for production
   # nginx:

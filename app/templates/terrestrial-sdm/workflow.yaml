@@ -1,0 +1,67 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Dataset
+metadata:
+  generateName: bmd-workflow-
+spec:
+  arguments:
+    parameters:
+    - name: target_species
+      description: Species scientific name
+    - name: climate_periods
+      description: Time period selection
+    - name: aoi_wkt
+      description: Geometry in WKT
+
+  artifactGC:
+    forceFinalizerRemoval: true
+  podGC:
+    strategy: OnWorkflowSuccess
+
+  entrypoint: main-workflow
+
+  templates:
+  - name: main-workflow
+    steps:
+    - - name: download-occurrences
+        template: download-occurrences
+    - - name: run-sdm
+        template: run-sdm
+        arguments:
+          artifacts:
+            - name: gbif-occurrences
+              from: "{{steps.download-occurrences.outputs.artifacts.gbif-occurrences}}"
+
+  - name: download-occurrences
+    container:
+      image: "taimurhk/gbif-maxent"
+      command: ["Rscript", "/app/scripts/01_download.R"]
+      args:
+        - "--target_species={{ '{{workflow.parameters.target_species}}' }}"
+      workingDir: /app/scripts
+      outputs:
+      artifacts:
+        - name: gbif-occurrences
+          path: "/app/scripts/outputs/"
+          archive:
+            none: {}
+
+
+  - name: run-sdm
+    inputs:
+      artifacts:
+        - name: gbif-occurrences
+          path: "/app/scripts/outputs/"
+    container:
+      image: "taimurhk/gbif-maxent"
+      command: ["Rscript", "/app/scripts/02_sdm.R"]
+      args:
+        - "--target_species={{ '{{workflow.parameters.target_species}}' }}"
+        - "--climate_periods={{ '{{workflow.parameters.climate_periods}}' }}"
+        - "--aoi_wkt={{ '{{workflow.parameters.aoi_wkt}}' }}"
+      workingDir: /app/scripts
+      outputs:
+      artifacts:
+        - name: sdm-results
+          path: "/app/scripts/outputs/"
+          archive:
+            none: {}

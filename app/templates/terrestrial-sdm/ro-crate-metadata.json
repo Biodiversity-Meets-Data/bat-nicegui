@@ -1,0 +1,80 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.1/context"
+  ],
+  "@graph": [
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "about": {
+        "@id": "./"
+      },
+      "conformsTo": [
+        {
+          "@id": "https://w3id.org/ro/crate/1.1"
+        },
+        {
+          "@id": "https://w3id.org/workflowhub/workflow-ro-crate/1.0"
+        }
+      ]
+    },
+    {
+      "@id": "./",
+      "@type": "Dataset",
+      "name": "Species distribution modeling for bats example workflow",
+      "description": "This is an R-script demonstrating a SDM modeling workflow. The purpose of the script is to demonstrate (in a simplified way) what a workflow could look like based on bats species.",
+      "author": {
+        "@id": "https://orcid.org/0000-0001-7833-5474"
+      },
+      "conformsTo": [
+        {
+          "@id": "https://w3id.org/workflowhub/workflow-ro-crate/1.0"
+        }
+      ],
+      "dateCreated": "2026-01-20T08:41:38.126Z",
+      "hasPart": [
+        {
+          "@id": "workflow.yaml"
+        }
+      ],
+      "keywords": [
+        "SDM",
+        "Workflow",
+        "BMD",
+        "Biodiversity Meets Data"
+      ],
+      "license": {
+        "@id": "https://spdx.org/licenses/CC-BY-SA-4.0"
+      },
+      "mainEntity": {
+        "@id": "workflow.yaml"
+      }
+    },
+    {
+      "@id": "https://orcid.org/0000-0001-7833-5474",
+      "@type": "Person",
+      "name": "Taimur Khan",
+      "url": "https://orcid.org/0000-0001-7833-5474"
+    },
+    {
+      "@id": "workflow.yaml",
+      "@type": [
+        "File",
+        "ComputationalWorkflow",
+        "SoftwareSourceCode"
+      ],
+      "name": "workflow.yaml",
+      "description": "Argo workflow definition for the sdm workflow",
+      "encodingFormat": "text/yaml",
+      "programmingLanguage": {
+        "@id": "https://argoproj.github.io/workflows"
+      }
+    },
+    {
+      "@id": "https://argoproj.github.io/workflows",
+      "@type": "ComputerLanguage",
+      "name": "Argo",
+      "url": "https://argoproj.github.io/workflows"
+    }
+  ]
+}
