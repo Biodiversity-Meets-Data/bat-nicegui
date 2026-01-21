@@ -43,7 +43,7 @@ WORKFLOW_API_URL = os.getenv(
     "WORKFLOW_API_URL", "http://workflow-api:8002/api/v1/workflows"
 )
 LOCAL_API_BASE_URL = os.getenv("LOCAL_API_BASE_URL", "http://localhost:8080")
-WORKFLOW_API_KEY = os.getenv("WORKFLOW_API_KEY", "EpQaNpHS.EDed81RKaUno5Idj1AJgK2rLR7ieCb0h")
+WORKFLOW_API_KEY = os.getenv("WORKFLOW_API_KEY", "")
 WORKFLOW_API_AUTH_HEADER = os.getenv("WORKFLOW_API_AUTH_HEADER", "Authorization")
 WORKFLOW_API_AUTH_SCHEME = os.getenv("WORKFLOW_API_AUTH_SCHEME", "Bearer")
 WORKFLOW_WEBHOOK_URL_TEMPLATE = os.getenv(
