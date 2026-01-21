@@ -3,15 +3,17 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: bmd-biodiversity-app
+    container_name: bmd-bat-app
     ports:
-      - "8080:8080"
+      - "80:8080"
     environment:
       - SECRET_KEY=${SECRET_KEY:-bmd-secret-key-change-in-production-12345}
       - DATABASE_PATH=/app/data/bmd.db
-      - WORKFLOW_API_URL=${WORKFLOW_API_URL:-http://host.docker.internal:1245/api/v1/workflows}
-      - WORKFLOW_API_KEY=${WORKFLOW_API_KEY:-}
-      - WORKFLOW_WEBHOOK_URL_TEMPLATE=${WORKFLOW_WEBHOOK_URL_TEMPLATE:-http://localhost:8080/api/workflows/webhook/{workflow_id}}
+      - WORKFLOW_API_URL=${WORKFLOW_API_URL:-http://workflow-api:8002/api/v1/workflows}
+      - WORKFLOW_API_KEY=${WORKFLOW_API_KEY:-EpQaNpHS.EDed81RKaUno5Idj1AJgK2rLR7ieCb0h}
+      - WORKFLOW_API_AUTH_HEADER=${WORKFLOW_API_AUTH_HEADER:-Api-Key}
+      - WORKFLOW_API_AUTH_SCHEME=${WORKFLOW_API_AUTH_SCHEME:-}
+      - WORKFLOW_WEBHOOK_URL_TEMPLATE=${WORKFLOW_WEBHOOK_URL_TEMPLATE:-http://bmd-bat-app:8080/api/workflows/webhook/{workflow_id}}
       - WORKFLOW_DRY_RUN=${WORKFLOW_DRY_RUN:-false}
       - WORKFLOW_FORCE=${WORKFLOW_FORCE:-false}
     volumes:

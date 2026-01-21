@@ -24,6 +24,23 @@ A modern web application for biodiversity analysis workflows, built with NiceGUI
 - **Map**: Leaflet.js with Leaflet.Draw plugin
 - **Container**: Docker
 
+## Request Flow Diagram
+
+```
+Browser (NiceGUI UI)
+  | 1) POST /api/auth/login
+  v
+bmd-bat-app (FastAPI + NiceGUI)
+  | 2) POST /api/workflows/submit
+  |    - builds RO-Crate ZIP
+  |    - forwards to workflow API
+  v
+workflow-api (external service)
+  | 3) POST /api/workflows/webhook/{workflow_id} (webhook callback)
+  v
+bmd-bat-app (updates SQLite, UI refresh)
+```
+
 ## Quick Start
 
 ### Using Docker Compose (Recommended)
@@ -159,16 +176,20 @@ the `workflow_id`, which is stored in the local database. Webhook delivery uses
 ## Project Structure
 
 ```
-bmd-app/
+bat-nicegui/
 ├── app/
 │   ├── main.py          # Main application (NiceGUI + FastAPI)
-│   └── database.py      # SQLite database operations
+│   ├── database.py      # SQLite database operations
+│   └── templates/
+│       └── terrestrial-sdm/
+│           ├── workflow.yaml           # Argo workflow template
+│           └── ro-crate-metadata.json  # RO-Crate metadata template
 ├── static/
-│   └── logo.png         # BMD logo
+│   ├── logo.png         # BMD logo
+│   └── eu-ias-directive.json  # EU IAS directive data
 ├── Dockerfile           # Docker build instructions
 ├── docker-compose.yml   # Docker Compose configuration
 ├── requirements.txt     # Python dependencies
-├── .env.example         # Environment variables template
 └── README.md            # This file
 ```
 

@@ -39,11 +39,16 @@ from database import (
 SECRET_KEY = os.getenv("SECRET_KEY", "bmd-secret-key-change-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_HOURS = 24
-WORKFLOW_API_URL = os.getenv("WORKFLOW_API_URL", "")
-WORKFLOW_API_KEY = os.getenv("WORKFLOW_API_KEY", "")
+WORKFLOW_API_URL = os.getenv(
+    "WORKFLOW_API_URL", "http://workflow-api:8002/api/v1/workflows"
+)
+LOCAL_API_BASE_URL = os.getenv("LOCAL_API_BASE_URL", "http://localhost:8080")
+WORKFLOW_API_KEY = os.getenv("WORKFLOW_API_KEY", "EpQaNpHS.EDed81RKaUno5Idj1AJgK2rLR7ieCb0h")
+WORKFLOW_API_AUTH_HEADER = os.getenv("WORKFLOW_API_AUTH_HEADER", "Authorization")
+WORKFLOW_API_AUTH_SCHEME = os.getenv("WORKFLOW_API_AUTH_SCHEME", "Bearer")
 WORKFLOW_WEBHOOK_URL_TEMPLATE = os.getenv(
     "WORKFLOW_WEBHOOK_URL_TEMPLATE",
-    "http://localhost:8080/api/workflows/webhook/{workflow_id}",
+    "http://bmd-bat-app:8080/api/workflows/webhook/{workflow_id}",
 )
 WORKFLOW_DRY_RUN = os.getenv("WORKFLOW_DRY_RUN", "false").lower() == "true"
 WORKFLOW_FORCE = os.getenv("WORKFLOW_FORCE", "false").lower() == "true"
@@ -210,6 +215,10 @@ async def api_submit_workflow(
         data["webhook_url"] = WORKFLOW_WEBHOOK_URL_TEMPLATE
     data["dry_run"] = str(WORKFLOW_DRY_RUN).lower()
     data["force"] = str(WORKFLOW_FORCE).lower()
+    data["param-target_species"] = workflow.species_name
+    data["param-climate_periods"] = time_period
+    data["param-aoi_wkt"] = workflow.geometry_wkt
+    
     params = {
         "param-target_species": workflow.species_name,
         "param-climate_periods": time_period,
@@ -218,11 +227,16 @@ async def api_submit_workflow(
 
     headers = {}
     if WORKFLOW_API_KEY:
-        headers["Authorization"] = f"Bearer {WORKFLOW_API_KEY}"
+        if WORKFLOW_API_AUTH_SCHEME:
+            headers[WORKFLOW_API_AUTH_HEADER] = (
+                f"{WORKFLOW_API_AUTH_SCHEME} {WORKFLOW_API_KEY}"
+            )
+        else:
+            headers[WORKFLOW_API_AUTH_HEADER] = WORKFLOW_API_KEY
 
     safe_headers = dict(headers)
-    if "Authorization" in safe_headers:
-        safe_headers["Authorization"] = "Bearer ***"
+    if WORKFLOW_API_AUTH_HEADER in safe_headers:
+        safe_headers[WORKFLOW_API_AUTH_HEADER] = "***"
     print("Submitting workflow to API")
     print(f"URL: {WORKFLOW_API_URL}")
     print(f"Params: {params}")
@@ -234,7 +248,7 @@ async def api_submit_workflow(
         async with httpx.AsyncClient(timeout=15.0) as http_client:
             response = await http_client.post(
                 WORKFLOW_API_URL,
-                params=params,
+                #params=params,
                 data=data,
                 files={
                     "rocratefile": (
@@ -1553,7 +1567,7 @@ async def create_page(client: Client):
                     async with httpx.AsyncClient() as http_client:
                         try:
                             response = await http_client.post(
-                                "http://localhost:8080/api/workflows/submit",
+                                f"{LOCAL_API_BASE_URL}/api/workflows/submit",
                                 json=workflow_payload,
                                 headers={"Authorization": f"Bearer {token}"},
                             )
@@ -1709,6 +1723,38 @@ async def workflows_page():
             ).props("icon=refresh")
 
         workflows = get_user_workflows(user_id)
+        import json
+
+        ui.run_javascript(
+            """
+            window.copyWorkflowId = async (text) => {
+                try {
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        await navigator.clipboard.writeText(text);
+                        return;
+                    }
+                } catch (err) {}
+                const el = document.createElement('textarea');
+                el.value = text;
+                el.setAttribute('readonly', '');
+                el.style.position = 'fixed';
+                el.style.left = '-9999px';
+                document.body.appendChild(el);
+                el.select();
+                try { document.execCommand('copy'); } catch (err) {}
+                document.body.removeChild(el);
+            };
+            window.bindWorkflowIdCopyButtons = () => {
+                document.querySelectorAll('[data-copy-id]').forEach((el) => {
+                    if (el.dataset.copyBound) return;
+                    el.dataset.copyBound = '1';
+                    el.addEventListener('click', () => {
+                        window.copyWorkflowId(el.dataset.copyId);
+                    });
+                });
+            };
+            """
+        )
 
         if not workflows:
             with ui.card().classes("bmd-card p-8 w-full text-center"):
@@ -1718,7 +1764,7 @@ async def workflows_page():
                     "text-gray-400"
                 )
                 ui.button(
-                    "+ New Workflow", on_click=lambda: ui.navigate.to("/create")
+                    "+ New Workflow", on_click=lambda: ui.navigate.to("/select-workflow")
                 ).classes("bmd-btn mt-4")
         else:
             with ui.card().classes("bmd-card p-6 w-full"):
@@ -1738,9 +1784,18 @@ async def workflows_page():
                     with ui.row().classes(
                         "w-full items-center py-3 border-b border-gray-100 gap-4"
                     ):
-                        ui.label(wf["workflow_id"][:12] + "...").classes(
-                            "font-mono text-sm w-32"
-                        )
+                        with ui.row().classes("w-32 items-center gap-2"):
+                            ui.label(wf["workflow_id"][:12] + "...").classes(
+                                "font-mono text-sm"
+                            ).props(f'title="{wf["workflow_id"]}"')
+                            ui.button(
+                                icon="content_copy",
+                                on_click=lambda: ui.notify(
+                                    "Workflow ID copied", type="positive"
+                                ),
+                            ).props('flat round title="Copy ID"').classes(
+                                "text-gray-500"
+                            ).props(f"data-copy-id={json.dumps(wf['workflow_id'])}")
                         ui.label(wf["name"]).classes("font-semibold flex-1")
                         ui.label(wf.get("species_name") or "—").classes("w-24")
 
@@ -1807,7 +1862,7 @@ async def workflows_page():
 
                                             async with httpx.AsyncClient() as client:
                                                 await client.delete(
-                                                    f"http://localhost:8080/api/workflows/{workflow_id}",
+                                                    f"{LOCAL_API_BASE_URL}/api/workflows/{workflow_id}",
                                                     headers={
                                                         "Authorization": f"Bearer {token}"
                                                     },
@@ -1829,6 +1884,9 @@ async def workflows_page():
                                 icon="delete",
                                 on_click=confirm_delete,
                             ).props("flat round color=red")
+        ui.run_javascript(
+            "window.bindWorkflowIdCopyButtons && window.bindWorkflowIdCopyButtons();"
+        )
     create_footer()
 
 
@@ -2046,5 +2104,5 @@ ui.run_with(
     fastapi_app,
     title="BMD - Biodiversity Meets Data",
     favicon="🌿",
-    storage_secret=SECRET_KEY,
+    storage_secret=SECRET_KEY
 )
