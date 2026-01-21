@@ -68,13 +68,48 @@
       "encodingFormat": "text/yaml",
       "programmingLanguage": {
         "@id": "https://argoproj.github.io/workflows"
-      }
+      },
+      "input": [
+        {
+          "@id": "#target_species"
+        },
+        {
+          "@id": "#climate_periods"
+        },
+        {
+          "@id": "#aoi_wkt"
+        }
+      ]
     },
     {
       "@id": "https://argoproj.github.io/workflows",
       "@type": "ComputerLanguage",
       "name": "Argo",
       "url": "https://argoproj.github.io/workflows"
+    },
+    {
+      "@id": "#target_species",
+      "@type": "FormalParameter",
+      "additionalType": "Text",
+      "name": "target_species",
+      "description":"Species scientific name",
+      "valueRequired": "true"
+    },
+    {
+      "@id": "#climate_periods",
+      "@type": "FormalParameter",
+      "additionalType": "Text",
+      "name": "climate_periods",
+      "description":"Time period selection",
+      "valueRequired": "true"
+    },
+    {
+      "@id": "#aoi_wkt",
+      "@type": "FormalParameter",
+      "additionalType": "Text",
+      "name": "aoi_wkt",
+      "description":"Geometry in WKT",
+      "valueRequired": "true"
     }
   ]
 }

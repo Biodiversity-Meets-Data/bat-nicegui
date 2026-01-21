@@ -1,16 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
-kind: Dataset
+kind: Workflow
 metadata:
   generateName: bmd-workflow-
 spec:
   arguments:
     parameters:
-    - name: target_species
-      description: Species scientific name
-    - name: climate_periods
-      description: Time period selection
-    - name: aoi_wkt
-      description: Geometry in WKT
+      - name: target_species
+        description: Species scientific name
+        value: "Myotis myotis"
+      - name: climate_periods
+        description: Time period selection
+        value: "1981-2010;2071-2100"
+      - name: aoi_wkt
+        description: Geometry in WKT
+        value: "POLYGON ((8.745117 49.21042, 12.788086 49.21042, 12.788086 50.847573, 8.745117 50.847573, 8.745117 49.21042))"
 
   artifactGC:
     forceFinalizerRemoval: true
@@ -20,48 +23,65 @@ spec:
   entrypoint: main-workflow
 
   templates:
-  - name: main-workflow
-    steps:
-    - - name: download-occurrences
-        template: download-occurrences
-    - - name: run-sdm
-        template: run-sdm
-        arguments:
-          artifacts:
-            - name: gbif-occurrences
-              from: "{{steps.download-occurrences.outputs.artifacts.gbif-occurrences}}"
+    - name: main-workflow
+      steps:
+        - - name: download-occurrences
+            template: download-occurrences
+            arguments:
+              parameters:
+                - name: target_species
+                  value: "{{workflow.parameters.target_species}}"
+        - - name: run-sdm
+            template: run-sdm
+            arguments:
+              artifacts:
+                - name: gbif-occurrences
+                  from: "{{steps.download-occurrences.outputs.artifacts.gbif-occurrences}}"
+              parameters:
+                - name: target_species
+                  value: "{{workflow.parameters.target_species}}"
+                - name: climate_periods
+                  value: "{{workflow.parameters.climate_periods}}"
+                - name: aoi_wkt
+                  value: "{{workflow.parameters.aoi_wkt}}"
 
-  - name: download-occurrences
-    container:
-      image: "taimurhk/gbif-maxent"
-      command: ["Rscript", "/app/scripts/01_download.R"]
-      args:
-        - "--target_species={{ '{{workflow.parameters.target_species}}' }}"
-      workingDir: /app/scripts
+    - name: download-occurrences
+      inputs:
+        parameters:
+          - name: target_species
+      container:
+        image: "taimurhk/gbif-maxent:v1"
+        command: ["Rscript", "/app/scripts/01_download.R"]
+        args:
+          - "--target_species={{inputs.parameters.target_species}}"
+        workingDir: /app/scripts
       outputs:
-      artifacts:
-        - name: gbif-occurrences
-          path: "/app/scripts/outputs/"
-          archive:
-            none: {}
+        artifacts:
+          - name: gbif-occurrences
+            path: "/app/scripts/outputs/"
+            archive:
+              none: {}
 
-
-  - name: run-sdm
-    inputs:
-      artifacts:
-        - name: gbif-occurrences
-          path: "/app/scripts/outputs/"
-    container:
-      image: "taimurhk/gbif-maxent"
-      command: ["Rscript", "/app/scripts/02_sdm.R"]
-      args:
-        - "--target_species={{ '{{workflow.parameters.target_species}}' }}"
-        - "--climate_periods={{ '{{workflow.parameters.climate_periods}}' }}"
-        - "--aoi_wkt={{ '{{workflow.parameters.aoi_wkt}}' }}"
-      workingDir: /app/scripts
+    - name: run-sdm
+      inputs:
+        artifacts:
+          - name: gbif-occurrences
+            path: /app/scripts/outputs/
+        parameters:
+          - name: target_species
+          - name: climate_periods
+          - name: aoi_wkt
+      container:
+        image: "taimurhk/gbif-maxent:v1"
+        command: ["Rscript", "/app/scripts/02_sdm.R"]
+        args:
+          - "--target_species={{inputs.parameters.target_species}}"
+          - "--climate_periods={{inputs.parameters.climate_periods}}"
+          - "--aoi_wkt={{inputs.parameters.aoi_wkt}}"
+        workingDir: /app/scripts
       outputs:
-      artifacts:
-        - name: sdm-results
-          path: "/app/scripts/outputs/"
-          archive:
-            none: {}
+        artifacts:
+          - name: sdm-results
+            path: /app/scripts/outputs/
+            archive:
+              none: {}
