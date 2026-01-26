@@ -43,7 +43,7 @@ WORKFLOW_API_URL = os.getenv(
     "WORKFLOW_API_URL", "http://workflow-api:8002/api/v1/workflows"
 )
 LOCAL_API_BASE_URL = os.getenv("LOCAL_API_BASE_URL", "http://localhost:8080")
-WORKFLOW_API_KEY = os.getenv("WORKFLOW_API_KEY", "")
+WORKFLOW_API_KEY = os.getenv("WORKFLOW_API_KEY", "EpQaNpHS.EDed81RKaUno5Idj1AJgK2rLR7ieCb0h")
 WORKFLOW_API_AUTH_HEADER = os.getenv("WORKFLOW_API_AUTH_HEADER", "Authorization")
 WORKFLOW_API_AUTH_SCHEME = os.getenv("WORKFLOW_API_AUTH_SCHEME", "Bearer")
 WORKFLOW_WEBHOOK_URL_TEMPLATE = os.getenv(
@@ -219,11 +219,11 @@ async def api_submit_workflow(
     data["param-climate_periods"] = time_period
     data["param-aoi_wkt"] = workflow.geometry_wkt
     
-    params = {
+    """ params = {
         "param-target_species": workflow.species_name,
         "param-climate_periods": time_period,
         "param-aoi_wkt": workflow.geometry_wkt,
-    }
+    } """
 
     headers = {}
     if WORKFLOW_API_KEY:
@@ -320,6 +320,8 @@ async def workflow_webhook(workflow_id: str, webhook_data: WorkflowWebhook):
     """Webhook endpoint called by Argo Workflow when job completes"""
     print(f"WEBHOOK RECEIVED for workflow {workflow_id}")
     print(f"Status: {webhook_data.status}")
+    
+    # Remove results 
     print(f"Results: {webhook_data.results}")
 
     if webhook_data.status == "completed":
@@ -1725,7 +1727,7 @@ async def workflows_page():
         workflows = get_user_workflows(user_id)
         import json
 
-        ui.run_javascript(
+        await ui.run_javascript(
             """
             window.copyWorkflowId = async (text) => {
                 try {
@@ -1884,7 +1886,7 @@ async def workflows_page():
                                 icon="delete",
                                 on_click=confirm_delete,
                             ).props("flat round color=red")
-        ui.run_javascript(
+        await ui.run_javascript(
             "window.bindWorkflowIdCopyButtons && window.bindWorkflowIdCopyButtons();"
         )
     create_footer()
