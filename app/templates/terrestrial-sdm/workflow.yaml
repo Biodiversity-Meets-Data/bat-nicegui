@@ -58,7 +58,7 @@ spec:
       outputs:
         artifacts:
           - name: gbif-occurrences
-            path: "/app/scripts/outputs/"
+            path: "/app/outputs/"
             archive:
               none: {}
 
