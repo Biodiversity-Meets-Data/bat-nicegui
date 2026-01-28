@@ -50,7 +50,7 @@ spec:
         parameters:
           - name: target_species
       container:
-        image: "taimurhk/gbif-maxent:v1"
+        image: "taimurhk/gbif-maxent:v2"
         command: ["Rscript", "/app/scripts/01_download.R"]
         args:
           - "--target_species={{inputs.parameters.target_species}}"
@@ -72,7 +72,7 @@ spec:
           - name: climate_periods
           - name: aoi_wkt
       container:
-        image: "taimurhk/gbif-maxent:v1"
+        image: "taimurhk/gbif-maxent:v2"
         command: ["Rscript", "/app/scripts/02_sdm.R"]
         args:
           - "--target_species={{inputs.parameters.target_species}}"

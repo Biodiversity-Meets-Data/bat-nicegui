@@ -239,7 +239,7 @@ async def api_submit_workflow(
         safe_headers[WORKFLOW_API_AUTH_HEADER] = "***"
     print("Submitting workflow to API")
     print(f"URL: {WORKFLOW_API_URL}")
-    print(f"Params: {params}")
+    #print(f"Params: {params}")
     print(f"Data: {data}")
     print(f"Headers: {safe_headers}")
     print(f"RO-Crate bytes: {len(rocrate_zip)}")
@@ -322,13 +322,13 @@ async def workflow_webhook(workflow_id: str, webhook_data: WorkflowWebhook):
     print(f"Status: {webhook_data.status}")
     
     # Remove results 
-    print(f"Results: {webhook_data.results}")
+    #print(f"Results: {webhook_data.results}")
 
-    if webhook_data.status == "completed":
+    if webhook_data.status == "Succeeded":
         update_workflow_status(
-            workflow_id, "completed", results=str(webhook_data.results)
+            workflow_id, "completed", 
         )
-    elif webhook_data.status == "failed":
+    elif webhook_data.status == "Failed":
         update_workflow_status(workflow_id, "failed", error=webhook_data.error_message)
 
     return {"status": "webhook processed"}
@@ -1673,7 +1673,10 @@ async def create_page(client: Client):
                     });
 
                     window.geometryType = event.layerType;
-                    const wktCoords = coords.map(function(c) { return c[1] + " " + c[0]; });
+                    const wktCoords = coords.map(function(c) {
+                        // Format as "lon lat" with 6 decimal places to match expected WKT style.
+                        return c[1].toFixed(6) + " " + c[0].toFixed(6);
+                    });
                     if (wktCoords.length && wktCoords[0] !== wktCoords[wktCoords.length - 1]) {
                         wktCoords.push(wktCoords[0]);
                     }
