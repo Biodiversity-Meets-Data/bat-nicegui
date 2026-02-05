@@ -13,7 +13,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, StreamingResponse
+from starlette.background import BackgroundTask
 from pydantic import BaseModel
 import httpx
 import jwt
@@ -59,6 +60,7 @@ app.add_static_files("/static", "static")
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
+optional_security = HTTPBearer(auto_error=False)
 
 
 TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
@@ -344,6 +346,72 @@ async def api_get_workflows(
 
     workflows = get_user_workflows(user_id)
     return {"workflows": workflows}
+
+
+@fastapi_app.get("/api/workflows/{workflow_id}/download")
+async def api_download_workflow_results(
+    workflow_id: str,
+    token: Optional[str] = None,
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(optional_security),
+):
+    async def _close_stream(response: httpx.Response, client: httpx.AsyncClient) -> None:
+        await response.aclose()
+        await client.aclose()
+
+    auth_token = None
+    if credentials:
+        auth_token = credentials.credentials
+    elif token:
+        auth_token = token
+
+    if not auth_token:
+        raise HTTPException(status_code=401, detail="Missing authentication")
+
+    user_id = verify_token(auth_token)
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+    workflow = get_workflow_by_id(workflow_id)
+    if not workflow or workflow["user_id"] != user_id:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+
+    headers = {}
+    if WORKFLOW_API_KEY:
+        if WORKFLOW_API_AUTH_SCHEME:
+            headers[WORKFLOW_API_AUTH_HEADER] = (
+                f"{WORKFLOW_API_AUTH_SCHEME} {WORKFLOW_API_KEY}"
+            )
+        else:
+            headers[WORKFLOW_API_AUTH_HEADER] = WORKFLOW_API_KEY
+
+    url = f"{WORKFLOW_API_URL}/{workflow_id}/download"
+    try:
+        http_client = httpx.AsyncClient(timeout=60.0)
+        request = http_client.build_request("GET", url, headers=headers)
+        response = await http_client.send(request, stream=True)
+
+        if response.status_code >= 300:
+            detail = (await response.aread()).decode(errors="replace")[:2000]
+            await _close_stream(response, http_client)
+            raise HTTPException(
+                status_code=502,
+                detail=f"Workflow API error: {response.status_code} {detail}",
+            )
+
+        content_type = response.headers.get(
+            "content-type", "application/octet-stream"
+        )
+        filename = response.headers.get(
+            "content-disposition", "attachment; filename=results.zip"
+        )
+        return StreamingResponse(
+            response.aiter_bytes(),
+            media_type=content_type,
+            headers={"Content-Disposition": filename},
+            background=BackgroundTask(_close_stream, response, http_client),
+        )
+    except httpx.HTTPError as exc:
+        raise HTTPException(status_code=502, detail=f"Workflow API error: {exc}") from exc
 
 
 # --------------------------------------------------------------------------
@@ -1832,7 +1900,7 @@ async def workflows_page():
 
                         # --- Actions column with delete button and confirmation dialog ---
                         with ui.row().classes("w-32 items-center gap-2"):
-                            if status == "completed" and wf.get("results"):
+                            if status == "completed":
                                 ui.button(
                                     "View",
                                     on_click=lambda wid=wf[
@@ -1925,6 +1993,11 @@ async def results_page(workflow_id: str):
     except:
         results = {"raw": workflow["results"]}
 
+    download_url = f"/api/workflows/{workflow_id}/download"
+    token = app.storage.user.get("token")
+    if token:
+        download_url = f"{download_url}?token={token}"
+
     with ui.column().classes("w-full min-h-screen"):
         # Header with back button
         with ui.row().classes("w-full bg-white shadow-sm p-4 items-center gap-4"):
@@ -1937,6 +2010,13 @@ async def results_page(workflow_id: str):
                     "-webkit-background-clip: text; -webkit-text-fill-color: transparent;"
                 )
                 ui.label(f"{workflow['name']}").classes("text-sm text-gray-500")
+            ui.button(
+                "Download Results",
+                icon="download",
+                on_click=lambda url=download_url: ui.navigate.to(url),
+            ).props("flat").classes(
+                "ml-auto bg-white border border-gray-200 text-orange-500 font-medium"
+            )
 
         with ui.column().classes("w-full max-w-6xl mx-auto p-6 gap-6"):
             # Workflow Info Card
