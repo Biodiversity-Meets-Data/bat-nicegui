@@ -1,0 +1,1 @@
+"""Bats workflow pages."""
