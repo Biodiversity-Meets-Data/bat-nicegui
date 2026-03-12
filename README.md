@@ -234,6 +234,23 @@ pytest tests/
 3. Add non-create UI pages as top-level `app/page_*.py` modules
 4. Add/create workflow UI pages under `app/bats/` (for terrestrial SDM use `app/bats/terrestrial_sdm.py`)
 
+## Versioning
+
+This repository uses [`bitshifted/git-auto-semver@v2`](https://github.com/marketplace/actions/git-automatic-semantic-versioning) in [`.github/workflows/ci-pipeline.yml`](.github/workflows/ci-pipeline.yml) to calculate semantic versions.
+
+- Pushes to `main` calculate the next semantic version and can create tags/releases.
+- Pull request runs calculate a short commit-hash version for CI validation.
+
+### Allowed Commit Prefixes
+
+| Commit prefix / marker | Version bump | Example |
+|------------------------|--------------|---------|
+| `build:`, `chore:`, `ci:`, `docs:`, `fix:`, `perf:`, `refactor:`, `revert:`, `style:`, `test:` | Patch (`x.y.Z`) | `fix: handle empty geometry payload` |
+| `feat:` | Minor (`x.Y.0`) | `feat: add account ORCID validation` |
+| `BREAKING CHANGE` (in commit message body/footer) | Major (`X.0.0`) | `BREAKING CHANGE: remove legacy workflow endpoint` |
+
+Tags are expected in `v<major>.<minor>.<patch>` format (for example, `v1.4.2`), and this repository starts from `0.1.0` when no previous tags exist.
+
 ## Security Notes
 
 ⚠️ **For Production Deployment:**
