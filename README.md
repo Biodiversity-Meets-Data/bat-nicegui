@@ -1,10 +1,10 @@
-# 🌿 BMD - Biodiversity Meets Data
+# 🌿 BMD - BATs User Platform
 
 ![Version](https://img.shields.io/static/v1?label=version&message=0.1.0&color=blue)
 
-A modern web application for biodiversity analysis workflows, built with NiceGUI and FastAPI.
+A modern web application for Biodiversity Analysis Tools, built with NiceGUI and FastAPI.
 
-![BMD Logo](static/logo.png)
+![BMD Logo](static/bats.png)
 
 ## Features
 
@@ -233,6 +233,8 @@ pytest tests/
 2. Update database schema or queries in `app/database.py`
 3. Add non-create UI pages as top-level `app/page_*.py` modules
 4. Add/create workflow UI pages under `app/bats/` (for terrestrial SDM use `app/bats/terrestrial_sdm.py`)
+
+> ⚠️ Please read the [BATs Onboarding Guide](https://github.com/Biodiversity-Meets-Data/infrastructure-docs/blob/c83249cdf1fd0605b046558fb8ca9b7b69fafcdb/docs/BAT_onboarding_guide.md) before contributing new BATs to this codebase. 
 
 ## Versioning
 
