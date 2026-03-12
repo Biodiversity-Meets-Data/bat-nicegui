@@ -1,5 +1,7 @@
 # 🌿 BMD - Biodiversity Meets Data
 
+![Version](https://img.shields.io/static/v1?label=version&message=0.1.0&color=blue)
+
 A modern web application for biodiversity analysis workflows, built with NiceGUI and FastAPI.
 
 ![BMD Logo](static/logo.png)
