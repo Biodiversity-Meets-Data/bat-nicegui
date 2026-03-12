@@ -4,6 +4,9 @@
 
 A modern web application for Biodiversity Analysis Tools, built with NiceGUI and FastAPI.
 
+⛓️‍💥 Live version: [http://134.94.199.13/](http://134.94.199.13/docs)
+📓 API Documentation: [http://134.94.199.13/docs](http://134.94.199.13/docs)
+
 ![BMD Logo](static/bats.png)
 
 ## Features
@@ -217,15 +220,6 @@ bat-nicegui/
 
 ## Development
 
-### Running Tests
-
-```bash
-# Install test dependencies
-pip install pytest pytest-asyncio httpx
-
-# Run tests
-pytest tests/
-```
 
 ### Adding New Features
 
@@ -266,7 +260,7 @@ Tags are expected in `v<major>.<minor>.<patch>` format (for example, `v1.4.2`), 
 
 ## License
 
-MIT License - See LICENSE file for details
+EUPL v1.2 (`EUPL-1.2`) - See [LICENSE](LICENSE) file for details.
 
 ## Contributing
 
