@@ -1,0 +1,146 @@
+# NOTE: If this workflow file was added or modified in the same push/merge that updated main,
+# GitHub will NOT run the workflow for that push. To trigger it:
+#  - push a trivial follow-up commit to main, OR
+#  - use the "Run workflow" button (workflow_dispatch), OR
+#  - ensure Actions are enabled in repository or organization settings.
+# Also check the Actions tab for parsing errors if the workflow is not listed.
+
+name: CI / Release Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write # required so tags and releases can be pushed
+
+jobs:
+  versioning:
+    name: Automatic Semantic Versioning
+    runs-on: ubuntu-latest
+    outputs:
+      # git-auto-semver v2 exposes `version-string`
+      version: ${{ steps.semver.outputs.version-string }}
+      tag: ${{ steps.semver.outputs.tag }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # fetch all history and tags
+          fetch-tags: true
+
+      - name: Run Git Automatic Semantic Versioning
+        id: semver
+        # Run on both push and pull_request; only create a tag for pushes to main
+        uses: bitshifted/git-auto-semver@v2
+        with:
+          create_tag: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          main_branch: main
+          initial_version: 0.1.0 # sets first version if no tags exist
+
+      - name: Display computed version
+        run: |
+          echo "Computed version: ${{ steps.semver.outputs['version-string'] }}"
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    needs: versioning
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Set up environment / dependencies
+        run: |
+          # install dependencies, etc.
+          echo "Doing build setup..."
+
+      - name: Run tests
+        run: |
+          # run your test suite
+          echo "Running tests..."
+
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: versioning
+    # only create a release on pushes and when a version was produced
+    if: ${{ github.event_name == 'push' && needs.versioning.outputs.version != '' }}
+    permissions:
+      contents: write  # needed to push the README badge update
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Update README version badge
+        run: |
+          set -euo pipefail
+          VERSION="${{ needs.versioning.outputs.version }}"
+          ENCODED_VERSION="$(VERSION="$VERSION" python3 -c 'import os, urllib.parse; print(urllib.parse.quote(os.environ["VERSION"], safe=""))')"
+          BADGE_URL="https://img.shields.io/static/v1?label=version&message=${ENCODED_VERSION}&color=blue"
+          BADGE_URL_ESCAPED="${BADGE_URL//&/\\&}"
+          echo "Target version: ${VERSION}"
+
+          if ! grep -q '^!\[Version\](https://img.shields.io/static/v1?label=version&message=' README.md; then
+            echo "README version badge line not found."
+            exit 1
+          fi
+
+          sed -i -E "s|^!\[Version\]\(https://img\.shields\.io/static/v1\?label=version&message=[^)]+&color=blue\)$|![Version](${BADGE_URL_ESCAPED})|" README.md
+
+          echo "Updated README header:"
+          sed -n '1,6p' README.md
+
+          # Commit only if it actually changed
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          if ! git diff --cached --quiet; then
+            git commit -m "[skip ci] chore: bump README version badge to ${VERSION}"
+            git push
+          else
+            echo "README badge already at ${VERSION}; nothing to commit."
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          tag_name: v${{ needs.versioning.outputs.version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  # Example placeholder for future custom actions or deploy jobs
+  deploy:
+    name: Deploy Server (future)
+    runs-on: ubuntu-latest
+    needs: release
+    if: ${{ needs.versioning.outputs.tag != '' }}
+    steps:
+      - name: Placeholder deploy
+        run: echo "Deploying version ${{ needs.versioning.outputs.version }}..."
+
+  # Placeholder for future custom actions
+  custom-step:
+    name: Custom Action Job
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Run custom action
+        run: |
+          echo "No custom action configured. Skipping."

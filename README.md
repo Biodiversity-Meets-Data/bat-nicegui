@@ -1,5 +1,7 @@
 # 🌿 BMD - Biodiversity Meets Data
 
+![Version](https://img.shields.io/static/v1?label=version&message=0.1.0&color=blue)
+
 A modern web application for biodiversity analysis workflows, built with NiceGUI and FastAPI.
 
 ![BMD Logo](static/logo.png)
@@ -168,8 +170,11 @@ POST /api/workflows/webhook/{workflow_id}
 
 ## External Workflow Submission
 
-On submission, the backend renders `app/templates/workflow.yaml` and `app/templates/rocrate.json`,
-zips them into an RO-Crate, and POSTs the archive to `WORKFLOW_API_URL`. The external API returns
+On submission, the backend reads:
+- `app/templates/terrestrial-sdm/workflow.yaml`
+- `app/templates/terrestrial-sdm/ro-crate-metadata.json`
+
+These files are zipped into an RO-Crate and POSTed to `WORKFLOW_API_URL`. The external API returns
 the `workflow_id`, which is stored in the local database. Webhook delivery uses
 `WORKFLOW_WEBHOOK_URL_TEMPLATE` (supports `{workflow_id}`).
 
@@ -178,8 +183,25 @@ the `workflow_id`, which is stored in the local database. Webhook delivery uses
 ```
 bat-nicegui/
 ├── app/
-│   ├── main.py          # Main application (NiceGUI + FastAPI)
-│   ├── database.py      # SQLite database operations
+│   ├── main.py                # Composition root (FastAPI app + NiceGUI mount)
+│   ├── api/
+│   │   ├── auth.py            # /api/auth/* endpoints
+│   │   └── workflows.py       # /api/workflows/* endpoints
+│   ├── bats/
+│   │   └── terrestrial_sdm.py # /create/terrestrial page
+│   ├── page_login.py
+│   ├── page_signup.py
+│   ├── page_select_workflow.py
+│   ├── page_account.py
+│   ├── page_workflows.py
+│   ├── page_results.py
+│   ├── page_root.py
+│   ├── ui_common.py           # Shared UI helpers/styles/header/footer/auth check
+│   ├── auth_utils.py          # JWT + password helpers
+│   ├── workflow_utils.py      # RO-Crate + workflow API helper functions
+│   ├── schemas.py             # Pydantic request models
+│   ├── config.py              # Environment-backed settings
+│   ├── database.py            # SQLite database operations
 │   └── templates/
 │       └── terrestrial-sdm/
 │           ├── workflow.yaml           # Argo workflow template
@@ -207,9 +229,27 @@ pytest tests/
 
 ### Adding New Features
 
-1. Add new API endpoints in `main.py`
-2. Update database schema in `database.py`
-3. Add NiceGUI pages for new UI features
+1. Add/extend API endpoints in `app/api/auth.py` or `app/api/workflows.py`
+2. Update database schema or queries in `app/database.py`
+3. Add non-create UI pages as top-level `app/page_*.py` modules
+4. Add/create workflow UI pages under `app/bats/` (for terrestrial SDM use `app/bats/terrestrial_sdm.py`)
+
+## Versioning
+
+This repository uses [`bitshifted/git-auto-semver@v2`](https://github.com/marketplace/actions/git-automatic-semantic-versioning) in [`.github/workflows/ci-pipeline.yml`](.github/workflows/ci-pipeline.yml) to calculate semantic versions.
+
+- Pushes to `main` calculate the next semantic version and can create tags/releases.
+- Pull request runs calculate a short commit-hash version for CI validation.
+
+### Allowed Commit Prefixes
+
+| Commit prefix / marker | Version bump | Example |
+|------------------------|--------------|---------|
+| `build:`, `chore:`, `ci:`, `docs:`, `fix:`, `perf:`, `refactor:`, `revert:`, `style:`, `test:` | Patch (`x.y.Z`) | `fix: handle empty geometry payload` |
+| `feat:` | Minor (`x.Y.0`) | `feat: add account ORCID validation` |
+| `BREAKING CHANGE` (in commit message body/footer) | Major (`X.0.0`) | `BREAKING CHANGE: remove legacy workflow endpoint` |
+
+Tags are expected in `v<major>.<minor>.<patch>` format (for example, `v1.4.2`), and this repository starts from `0.1.0` when no previous tags exist.
 
 ## Security Notes
 
