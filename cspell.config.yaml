@@ -1,0 +1,28 @@
+version: "0.2"
+ignorePaths: []
+dictionaryDefinitions: []
+dictionaries: []
+words:
+  - bitshifted
+  - circlemarker
+  - dotenv
+  - fastapi
+  - healthcheck
+  - httpx
+  - Lngs
+  - nicegui
+  - orcid
+  - passlib
+  - pipefail
+  - pycache
+  - Pydantic
+  - pyjwt
+  - PYTHONDONTWRITEBYTECODE
+  - PYTHONUNBUFFERED
+  - rocrate
+  - softprops
+  - stdlib
+  - urllib
+  - uvicorn
+ignoreWords: []
+import: []
