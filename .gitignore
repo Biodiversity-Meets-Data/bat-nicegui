@@ -1,1 +1,14 @@
+# Python bytecode and caches.
+__pycache__/
+*.py[cod]
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments (uv creates .venv)
+.venv/
+
+# Local database files.
+data/
+
+# OS files.
 .DS_Store
