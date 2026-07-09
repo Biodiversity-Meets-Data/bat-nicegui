@@ -27,14 +27,12 @@ jobs:
       # git-auto-semver v2 exposes `version-string`
       version: ${{ steps.semver.outputs.version-string }}
       tag: ${{ steps.semver.outputs.tag }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0 # fetch all history and tags
           fetch-tags: true
-
       - name: Run Git Automatic Semantic Versioning
         id: semver
         # Run on both push and pull_request; only create a tag for pushes to main
@@ -43,10 +41,10 @@ jobs:
           create_tag: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           main_branch: main
           initial_version: 0.1.0 # sets first version if no tags exist
-
       - name: Display computed version
         run: |
           echo "Computed version: ${{ steps.semver.outputs['version-string'] }}"
+
   build:
     name: Build & Test
     runs-on: ubuntu-latest
@@ -57,12 +55,15 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-
-      - name: Set up environment / dependencies
-        run: |
-          # install dependencies, etc.
-          echo "Doing build setup..."
-
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+          enable-cache: true
+      - name: Verify lockfile is up to date
+        run: uv lock --check
+      - name: Install dependencies
+        run: uv sync --frozen
       - name: Run tests
         run: |
           # run your test suite
@@ -76,14 +77,12 @@ jobs:
     if: ${{ github.event_name == 'push' && needs.versioning.outputs.version != '' }}
     permissions:
       contents: write  # needed to push the README badge update
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
           fetch-tags: true
-
       - name: Update README version badge
         run: |
           set -euo pipefail
@@ -113,7 +112,6 @@ jobs:
           else
             echo "README badge already at ${VERSION}; nothing to commit."
           fi
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
