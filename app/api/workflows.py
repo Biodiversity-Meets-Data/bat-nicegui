@@ -1,5 +1,7 @@
 """Workflow API routes."""
 
+from typing import Any
+
 import httpx
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
@@ -31,7 +33,7 @@ router = APIRouter()
 async def api_submit_workflow(
     workflow: WorkflowSubmit,
     credentials: HTTPAuthorizationCredentials = Depends(security),
-):
+) -> dict[str, Any]:
     user_id = verify_token(credentials.credentials)
     if not user_id:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
@@ -150,7 +152,9 @@ async def api_submit_workflow(
 
 
 @router.post("/api/workflows/webhook/{workflow_id}")
-async def workflow_webhook(workflow_id: str, webhook_data: WorkflowWebhook):
+async def workflow_webhook(
+    workflow_id: str, webhook_data: WorkflowWebhook
+) -> dict[str, str]:
     """Webhook endpoint called by Argo Workflow when job completes."""
     print(f"WEBHOOK RECEIVED for workflow {workflow_id}")
     print(f"Status: {webhook_data.status}")
@@ -169,7 +173,7 @@ async def workflow_webhook(workflow_id: str, webhook_data: WorkflowWebhook):
 @router.get("/api/workflows")
 async def api_get_workflows(
     credentials: HTTPAuthorizationCredentials = Depends(security),
-):
+) -> dict[str, list[dict[str, Any]]]:
     user_id = verify_token(credentials.credentials)
     if not user_id:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
@@ -183,7 +187,7 @@ async def api_download_workflow_results(
     workflow_id: str,
     token: str | None = None,
     credentials: HTTPAuthorizationCredentials | None = Depends(optional_security),
-):
+) -> StreamingResponse:
     async def _close_stream(
         response: httpx.Response, client: httpx.AsyncClient
     ) -> None:
@@ -242,7 +246,7 @@ async def api_download_workflow_results(
 async def api_delete_workflow(
     workflow_id: str,
     credentials: HTTPAuthorizationCredentials = Depends(security),
-):
+) -> dict[str, str]:
     user_id = verify_token(credentials.credentials)
     if not user_id:
         raise HTTPException(status_code=401, detail="Invalid or expired token")

@@ -11,7 +11,7 @@ from ui_common import apply_bmd_theme, check_auth, create_footer, create_header
 
 
 @ui.page("/workflows")
-async def workflows_page():
+async def workflows_page() -> RedirectResponse | None:
     user_id = check_auth()
     if not user_id:
         return RedirectResponse("/login")
@@ -144,8 +144,9 @@ async def workflows_page():
                                 ).props("flat color=teal icon=visibility")
 
                             async def confirm_delete(
-                                workflow_id=wf["workflow_id"], name=wf["name"]
-                            ):
+                                workflow_id: str = wf["workflow_id"],
+                                name: str = wf["name"],
+                            ) -> None:
                                 with (
                                     ui.dialog() as dialog,
                                     ui.card().classes("p-6 w-96"),
@@ -165,7 +166,7 @@ async def workflows_page():
                                             "Cancel", on_click=dialog.close
                                         ).props("flat")
 
-                                        async def do_delete():
+                                        async def do_delete() -> None:
                                             token = app.storage.user.get("token")
                                             import httpx
 
@@ -197,3 +198,4 @@ async def workflows_page():
             "window.bindWorkflowIdCopyButtons && window.bindWorkflowIdCopyButtons();"
         )
     create_footer()
+    return None

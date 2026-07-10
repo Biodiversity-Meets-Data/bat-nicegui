@@ -7,7 +7,7 @@ from ui_common import apply_bmd_theme, check_auth, create_footer, create_header
 
 
 @ui.page("/select-workflow")
-async def select_workflow_page():
+async def select_workflow_page() -> RedirectResponse | None:
     user_id = check_auth()
     if not user_id:
         return RedirectResponse("/login")
@@ -69,7 +69,7 @@ Analyze biodiversity in rivers, lakes, wetlands, and other freshwater habitats.
 
                     with ui.row().classes("w-full gap-3 mt-6"):
 
-                        async def show_terrestrial_about():
+                        async def show_terrestrial_about() -> None:
                             with (
                                 ui.dialog() as dialog,
                                 ui.card().classes("p-6 max-w-2xl"),
@@ -107,7 +107,7 @@ Analyze biodiversity in rivers, lakes, wetlands, and other freshwater habitats.
 
                     with ui.row().classes("w-full gap-3 mt-6"):
 
-                        async def show_freshwater_about():
+                        async def show_freshwater_about() -> None:
                             with (
                                 ui.dialog() as dialog,
                                 ui.card().classes("p-6 max-w-2xl"),
@@ -134,3 +134,4 @@ Analyze biodiversity in rivers, lakes, wetlands, and other freshwater habitats.
                         )
 
     create_footer()
+    return None

@@ -25,7 +25,7 @@ from ui_common import (
 
 
 @ui.page("/account")
-async def account_page():
+async def account_page() -> RedirectResponse | None:
     user_id = check_auth()
     if not user_id:
         return RedirectResponse("/login")
@@ -38,7 +38,7 @@ async def account_page():
     if not user:
         ui.label("User not found").classes("text-xl text-red-500")
         create_footer()
-        return
+        return None
 
     with ui.column().classes("w-full max-w-2xl mx-auto p-6 gap-6"):
         ui.label("Account Settings").classes("text-3xl font-bold").style(
@@ -78,7 +78,7 @@ async def account_page():
                     "text-xs text-gray-400 mt-1"
                 )
 
-            async def update_profile():
+            async def update_profile() -> None:
                 """Update a user's profile in the database."""
                 name = name_input.value.strip()
                 email = email_input.value.strip()
@@ -138,7 +138,7 @@ async def account_page():
                     .classes("w-full")
                 )
 
-            async def update_password():
+            async def update_password() -> None:
                 current_pw = current_pw_input.value
                 new_pw = new_pw_input.value
                 confirm_pw = confirm_pw_input.value
@@ -182,7 +182,7 @@ async def account_page():
                 "Once you delete your account, there is no going back. All your workflows will be permanently deleted."
             ).classes("text-sm text-gray-600 mb-4")
 
-            async def confirm_delete():
+            async def confirm_delete() -> None:
                 with ui.dialog() as dialog, ui.card().classes("p-6"):
                     ui.label("Delete Account").classes(
                         "text-xl font-bold text-red-600 mb-4"
@@ -204,7 +204,7 @@ async def account_page():
                     with ui.row().classes("gap-4 justify-end"):
                         ui.button("Cancel", on_click=dialog.close).props("flat")
 
-                        async def do_delete():
+                        async def do_delete() -> None:
                             if confirm_email_input.value != user["email"]:
                                 ui.notify("Email doesn't match", type="negative")
                                 return
@@ -225,3 +225,4 @@ async def account_page():
                 "bmd-btn-danger bmd-btn"
             ).props("icon=delete")
     create_footer()
+    return None

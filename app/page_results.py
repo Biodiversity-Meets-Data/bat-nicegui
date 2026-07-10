@@ -10,7 +10,7 @@ from ui_common import apply_bmd_theme, check_auth, create_footer
 
 
 @ui.page("/results/{workflow_id}")
-async def results_page(workflow_id: str):
+async def results_page(workflow_id: str) -> RedirectResponse | None:
     user_id = check_auth()
     if not user_id:
         return RedirectResponse("/login")
@@ -26,7 +26,7 @@ async def results_page(workflow_id: str):
                 "Back to Workflows", on_click=lambda: ui.navigate.to("/workflows")
             ).classes("bmd-btn mt-4")
         create_footer()
-        return
+        return None
 
     try:
         results = ast.literal_eval(workflow["results"]) if workflow["results"] else {}
@@ -202,3 +202,4 @@ async def results_page(workflow_id: str):
                 "<- Back to Workflows", on_click=lambda: ui.navigate.to("/workflows")
             ).classes("bmd-btn mt-4")
     create_footer()
+    return None

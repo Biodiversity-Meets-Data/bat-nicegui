@@ -5,7 +5,7 @@ from nicegui import app, ui
 from auth_utils import verify_token
 
 
-def create_footer():
+def create_footer() -> None:
     """Global BMD footer."""
     with ui.footer().classes(
         "w-full justify-center items-center py-3 bg-transparent text-xs text-gray-500",
@@ -23,7 +23,7 @@ def create_footer():
         )
 
 
-def apply_bmd_theme():
+def apply_bmd_theme() -> None:
     """Apply BMD theme styling."""
     ui.add_head_html(
         """
@@ -261,7 +261,7 @@ def optional_label(text: str) -> None:
         ui.label("(optional)").classes("optional-hint")
 
 
-def create_header(current_page: str = ""):
+def create_header(current_page: str = "") -> None:
     """Create the BMD header with navigation."""
     user_name = app.storage.user.get("user_name", "User")
 
@@ -300,7 +300,7 @@ def create_header(current_page: str = ""):
                     )
 
 
-async def do_logout():
+async def do_logout() -> None:
     app.storage.user.clear()
     ui.navigate.to("/login")
 
