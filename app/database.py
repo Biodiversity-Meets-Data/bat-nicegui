@@ -3,13 +3,26 @@ Database module for BMD application
 SQLite database with users and workflows tables
 """
 
+import os
 import sqlite3
 import uuid
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from typing import Optional, List, Dict
-import os
 
 DATABASE_PATH = os.getenv("DATABASE_PATH", "/app/data/bmd.db")
+
+
+class DatabaseError(Exception):
+    """Base class for errors raised by a database operation."""
+
+
+class UserNotFoundError(DatabaseError):
+    """Raised when a database operation targets a user_id that does not exist."""
+
+    def __init__(self, user_id: str) -> None:
+        super().__init__(f"No user found with user_id={user_id!r}")
+        self.user_id = user_id
 
 
 def get_connection():
@@ -151,46 +164,65 @@ def get_user_by_id(user_id: str) -> Optional[Dict]:
     return None
 
 
-def update_user(
-    user_id: str,
-    name: Optional[str] = None,
-    email: Optional[str] = None,
-    orcid: Optional[str] = None,
-    password_hash: Optional[str] = None,
-) -> bool:
-    """Update user details"""
+@contextmanager
+def get_cursor():
+    """Yield a new cursor to a database.
+
+    * On context manager entry: yield a new database cursor.
+    * On context manager exit: try to commit the changes to the database,
+      roll back the changes on error. Always close the connection.
+    """
     conn = get_connection()
-    cursor = conn.cursor()
+    try:
+        yield conn.cursor()
+        conn.commit()
+    except sqlite3.Error as e:
+        conn.rollback()
+        raise DatabaseError(str(e)) from e
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
 
-    update_fields = ["updated_at = ?"]
-    params = [datetime.now(timezone.utc).isoformat()]
 
-    if name is not None:
-        update_fields.append("name = ?")
-        params.append(name)
+def update_user_profile(user_id: str, name: str, email: str, orcid: str) -> None:
+    """Update a user's profile data in the application's database.
 
-    if email is not None:
-        update_fields.append("email = ?")
-        params.append(email)
+    Raises:
+        UserNotFoundError: if no user exists with the given user_id.
+    """
 
-    if orcid is not None:
-        update_fields.append("orcid = ?")
-        params.append(orcid if orcid else None)
+    with get_cursor() as cursor:
+        cursor.execute(
+            "UPDATE users SET name = ?, email = ?, orcid = ?, updated_at = ? "
+            "WHERE user_id = ?",
+            (
+                name,
+                email,
+                orcid or None,
+                datetime.now(timezone.utc).isoformat(),
+                user_id,
+            ),
+        )
+        if cursor.rowcount == 0:
+            raise UserNotFoundError(user_id)
 
-    if password_hash is not None:
-        update_fields.append("password_hash = ?")
-        params.append(password_hash)
 
-    params.append(user_id)
+def update_user_password(user_id: str, password_hash: str) -> None:
+    """Update a user's password hash.
 
-    query = f"UPDATE users SET {', '.join(update_fields)} WHERE user_id = ?"
-    cursor.execute(query, params)
+    Raises:
+        UserNotFoundError: if no user exists with the given user_id.
+    """
 
-    updated = cursor.rowcount > 0
-    conn.commit()
-    conn.close()
-
-    return updated
+    with get_cursor() as cursor:
+        cursor.execute(
+            "UPDATE users SET password_hash = ?, updated_at = ? WHERE user_id = ?",
+            (password_hash, datetime.now(timezone.utc).isoformat(), user_id),
+        )
+        if cursor.rowcount == 0:
+            raise UserNotFoundError(user_id)
 
 
 def delete_user(user_id: str) -> bool:

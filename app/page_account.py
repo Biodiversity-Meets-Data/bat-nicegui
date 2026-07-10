@@ -1,14 +1,18 @@
 """Account settings page."""
 
+import re
+
 from fastapi.responses import RedirectResponse
 from nicegui import app, ui
 
 from auth_utils import hash_password, verify_password
 from database import (
     check_email_exists,
+    DatabaseError,
     delete_user,
     get_user_by_id,
-    update_user,
+    update_user_password,
+    update_user_profile,
 )
 from ui_common import (
     apply_bmd_theme,
@@ -74,34 +78,36 @@ async def account_page():
                     "text-xs text-gray-400 mt-1"
                 )
 
-            async def save_profile():
+            async def update_profile():
+                """Update a user's profile in the database."""
                 name = name_input.value.strip()
                 email = email_input.value.strip()
-                orcid = orcid_input.value.strip() if orcid_input.value else None
+                orcid = orcid_input.value.strip()
 
+                # Verify user input.
+                # ORCID is optional (can be an empty string), but when passed
+                # it must match the ORCID format.
                 if not name or not email:
                     ui.notify("Name and email are required", type="negative")
                     return
-
                 if check_email_exists(email, exclude_user_id=user_id):
                     ui.notify("Email is already in use", type="negative")
                     return
-
                 if orcid:
-                    import re
-
                     orcid_pattern = r"^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$"
                     if not re.match(orcid_pattern, orcid):
                         ui.notify("Invalid ORCID format", type="negative")
                         return
 
-                update_user(
-                    user_id, name=name, email=email, orcid=orcid if orcid else ""
-                )
-                app.storage.user["user_name"] = name
-                ui.notify("Profile updated successfully", type="positive")
+                # Update user profile in database.
+                try:
+                    update_user_profile(user_id, name, email, orcid)
+                    app.storage.user["user_name"] = name
+                    ui.notify("Profile updated successfully", type="positive")
+                except DatabaseError as e:
+                    ui.notify(f"Profile update failed: {e}", type="negative")
 
-            ui.button("Save Changes", on_click=save_profile).classes("bmd-btn mt-6")
+            ui.button("Save Changes", on_click=update_profile).classes("bmd-btn mt-6")
 
         with ui.card().classes("bmd-card p-6 w-full"):
             ui.label("Change Password").classes(
@@ -132,37 +138,41 @@ async def account_page():
                     .classes("w-full")
                 )
 
-            async def change_password():
+            async def update_password():
                 current_pw = current_pw_input.value
                 new_pw = new_pw_input.value
                 confirm_pw = confirm_pw_input.value
 
-                if not all([current_pw, new_pw, confirm_pw]):
+                # Verify user inputs.
+                if not all((current_pw, new_pw, confirm_pw)):
                     ui.notify("Please fill in all password fields", type="negative")
                     return
-
                 if not verify_password(current_pw, user["password_hash"]):
                     ui.notify("Current password is incorrect", type="negative")
                     return
-
                 if new_pw != confirm_pw:
                     ui.notify("New passwords do not match", type="negative")
                     return
-
                 if len(new_pw) < 6:
                     ui.notify("Password must be at least 6 characters", type="negative")
                     return
+                if new_pw == current_pw:
+                    ui.notify(
+                        "New password is the same as current password", type="negative"
+                    )
+                    return
 
-                new_hash = hash_password(new_pw)
-                update_user(user_id, password_hash=new_hash)
+                # Update password in database.
+                try:
+                    update_user_password(user_id, password_hash=hash_password(new_pw))
+                    current_pw_input.value = ""
+                    new_pw_input.value = ""
+                    confirm_pw_input.value = ""
+                    ui.notify("Password changed successfully", type="positive")
+                except DatabaseError as e:
+                    ui.notify(f"Password update failed: {e}", type="negative")
 
-                current_pw_input.value = ""
-                new_pw_input.value = ""
-                confirm_pw_input.value = ""
-
-                ui.notify("Password changed successfully", type="positive")
-
-            ui.button("Change Password", on_click=change_password).classes(
+            ui.button("Change Password", on_click=update_password).classes(
                 "bmd-btn-secondary bmd-btn mt-6"
             )
 
