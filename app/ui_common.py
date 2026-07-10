@@ -269,15 +269,17 @@ def create_header(current_page: str = ""):
 
     with ui.header().classes("bmd-header items-center justify-between"):
         with ui.row().classes("items-center gap-3"):
-            with ui.column().classes("gap-0 cursor-pointer").on(
-                "click", lambda: ui.navigate.to("/workflows")
+            with (
+                ui.column()
+                .classes("gap-0 cursor-pointer")
+                .on("click", lambda: ui.navigate.to("/workflows"))
             ):
                 ui.label("BMD").classes("bmd-logo-text")
                 ui.label("Biodiversity Meets Data").classes("bmd-subtitle")
 
         with ui.row().classes("gap-3 items-center"):
             ui.link("Workflows", "/workflows").classes(
-                f'nav-link {"active" if current_page == "workflows" else ""}'
+                f"nav-link {'active' if current_page == 'workflows' else ''}"
             )
             ui.button(
                 "+ New Workflow", on_click=lambda: ui.navigate.to("/select-workflow")

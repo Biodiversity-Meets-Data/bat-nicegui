@@ -34,7 +34,9 @@ async def terrestrial_sdm_page(client: Client):
         Path(__file__).resolve().parent.parent / "static",
         Path(__file__).resolve().parent.parent.parent / "static",
     ]
-    static_dir = next((p for p in static_candidates if p.exists()), static_candidates[0])
+    static_dir = next(
+        (p for p in static_candidates if p.exists()), static_candidates[0]
+    )
     ias_path = static_dir / "eu-ias-directive.json"
     try:
         with ias_path.open("r", encoding="utf-8") as handle:
@@ -94,9 +96,11 @@ async def terrestrial_sdm_page(client: Client):
                 with ui.column().classes("w-full gap-1 mt-4"):
                     required_label("Choose EU Directive")
                     with ui.row().classes("w-full gap-4"):
-                        invasive_cb = ui.checkbox(
-                            "Invasive Species", value=False
-                        ).props("checked-icon=check_box").classes("flex-1")
+                        invasive_cb = (
+                            ui.checkbox("Invasive Species", value=False)
+                            .props("checked-icon=check_box")
+                            .classes("flex-1")
+                        )
                         habitat_cb = (
                             ui.checkbox("Habitat", value=False)
                             .props("checked-icon=check_box disable")
@@ -242,7 +246,7 @@ async def terrestrial_sdm_page(client: Client):
                             if response.status_code == 200:
                                 result = response.json()
                                 ui.notify(
-                                    f'Workflow submitted! ID: {result["workflow_id"][:8]}...',
+                                    f"Workflow submitted! ID: {result['workflow_id'][:8]}...",
                                     type="positive",
                                 )
                                 ui.run_javascript(

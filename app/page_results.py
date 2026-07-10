@@ -97,13 +97,13 @@ async def results_page(workflow_id: str):
                             )
                         with ui.column().classes("items-center p-4"):
                             ui.label(
-                                f'{results["summary"]["total_occurrences"]:,}'
+                                f"{results['summary']['total_occurrences']:,}"
                             ).classes("text-4xl font-bold text-teal-600")
                             ui.label("Total Occurrences").classes(
                                 "text-sm text-gray-600"
                             )
                         with ui.column().classes("items-center p-4"):
-                            ui.label(f'{results["summary"]["area_km2"]:,.0f}').classes(
+                            ui.label(f"{results['summary']['area_km2']:,.0f}").classes(
                                 "text-4xl font-bold text-blue-600"
                             )
                             ui.label("Analysis Area (km²)").classes(
@@ -151,7 +151,7 @@ async def results_page(workflow_id: str):
                                 "w-full items-center justify-between py-3 border-b border-gray-100"
                             ):
                                 with ui.row().classes("items-center gap-3"):
-                                    ui.label(f"{i+1}").classes(
+                                    ui.label(f"{i + 1}").classes(
                                         "w-6 h-6 rounded-full bg-green-100 text-green-700 text-center text-sm font-bold"
                                     )
                                     with ui.column().classes("gap-0"):
@@ -159,11 +159,11 @@ async def results_page(workflow_id: str):
                                             "font-medium italic"
                                         )
                                         ui.label(
-                                            f'{species["occurrences"]} occurrences'
+                                            f"{species['occurrences']} occurrences"
                                         ).classes("text-xs text-gray-500")
                                 with ui.column().classes("items-end"):
                                     ui.label(
-                                        f'{species["habitat_suitability"]:.0%}'
+                                        f"{species['habitat_suitability']:.0%}"
                                     ).classes("text-lg font-bold text-green-600")
                                     ui.label("suitability").classes(
                                         "text-xs text-gray-500"
@@ -185,7 +185,7 @@ async def results_page(workflow_id: str):
                                         .title()
                                     ).classes("text-sm font-medium")
                                     ui.label(
-                                        f'{var_data["contribution_pct"]}%'
+                                        f"{var_data['contribution_pct']}%"
                                     ).classes("text-sm font-bold text-teal-600")
                                 ui.linear_progress(
                                     value=var_data["contribution_pct"] / 100,

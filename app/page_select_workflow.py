@@ -70,8 +70,9 @@ Analyze biodiversity in rivers, lakes, wetlands, and other freshwater habitats.
                     with ui.row().classes("w-full gap-3 mt-6"):
 
                         async def show_terrestrial_about():
-                            with ui.dialog() as dialog, ui.card().classes(
-                                "p-6 max-w-2xl"
+                            with (
+                                ui.dialog() as dialog,
+                                ui.card().classes("p-6 max-w-2xl"),
                             ):
                                 ui.markdown(terrestrial_about_md)
                                 ui.button("Close", on_click=dialog.close).classes(
@@ -82,9 +83,7 @@ Analyze biodiversity in rivers, lakes, wetlands, and other freshwater habitats.
                         ui.button(
                             "About",
                             on_click=show_terrestrial_about,
-                        ).props(
-                            "outline"
-                        ).classes("ecosystem-action-btn flex-1").style(
+                        ).props("outline").classes("ecosystem-action-btn flex-1").style(
                             "background: rgba(46, 204, 113, 0.05); "
                             "border: 2px solid rgba(46, 204, 113, 0.3); "
                             "color: #1A9F53;"
@@ -109,8 +108,9 @@ Analyze biodiversity in rivers, lakes, wetlands, and other freshwater habitats.
                     with ui.row().classes("w-full gap-3 mt-6"):
 
                         async def show_freshwater_about():
-                            with ui.dialog() as dialog, ui.card().classes(
-                                "p-6 max-w-2xl"
+                            with (
+                                ui.dialog() as dialog,
+                                ui.card().classes("p-6 max-w-2xl"),
                             ):
                                 ui.markdown(freshwater_about_md)
                                 ui.button("Close", on_click=dialog.close).classes(
@@ -121,9 +121,7 @@ Analyze biodiversity in rivers, lakes, wetlands, and other freshwater habitats.
                         ui.button(
                             "About",
                             on_click=show_freshwater_about,
-                        ).props(
-                            "outline"
-                        ).classes("ecosystem-action-btn flex-1").style(
+                        ).props("outline").classes("ecosystem-action-btn flex-1").style(
                             "background: rgba(156, 163, 175, 0.05); "
                             "border: 2px solid rgba(156, 163, 175, 0.3); "
                             "color: #6B7280;"
@@ -131,8 +129,8 @@ Analyze biodiversity in rivers, lakes, wetlands, and other freshwater habitats.
 
                         ui.button(
                             "Select",
-                        ).classes("ecosystem-action-btn flex-1").props(
-                            "disable"
-                        ).style("background: #E5E7EB; color: #9CA3AF;")
+                        ).classes("ecosystem-action-btn flex-1").props("disable").style(
+                            "background: #E5E7EB; color: #9CA3AF;"
+                        )
 
     create_footer()

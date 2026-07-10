@@ -21,7 +21,9 @@ async def lifespan(fastapi: FastAPI):
     yield
 
 
-fastapi_app = FastAPI(title="BMD Biodiversity Analysis Tools (BATs) API", lifespan=lifespan)
+fastapi_app = FastAPI(
+    title="BMD Biodiversity Analysis Tools (BATs) API", lifespan=lifespan
+)
 
 # Static files
 app.add_static_files("/static", "static")

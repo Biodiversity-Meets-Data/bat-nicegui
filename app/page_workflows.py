@@ -71,7 +71,8 @@ async def workflows_page():
                     "text-gray-400"
                 )
                 ui.button(
-                    "+ New Workflow", on_click=lambda: ui.navigate.to("/select-workflow")
+                    "+ New Workflow",
+                    on_click=lambda: ui.navigate.to("/select-workflow"),
                 ).classes("bmd-btn mt-4")
         else:
             with ui.card().classes("bmd-card p-6 w-full"):
@@ -111,9 +112,9 @@ async def workflows_page():
                             if ecosystem == "terrestrial"
                             else ("blue" if ecosystem == "freshwater" else "grey")
                         )
-                        ui.badge(ecosystem.upper()).props(f"color={ecosystem_color}").classes(
-                            "w-28"
-                        )
+                        ui.badge(ecosystem.upper()).props(
+                            f"color={ecosystem_color}"
+                        ).classes("w-28")
 
                         status = wf["status"]
                         color = (
@@ -122,7 +123,9 @@ async def workflows_page():
                             else (
                                 "blue"
                                 if status == "running"
-                                else "orange" if status == "submitted" else "red"
+                                else "orange"
+                                if status == "submitted"
+                                else "red"
                             )
                         )
                         ui.badge(status.upper()).props(f"color={color}").classes("w-28")
@@ -135,16 +138,17 @@ async def workflows_page():
                             if status == "completed":
                                 ui.button(
                                     "View",
-                                    on_click=lambda wid=wf[
-                                        "workflow_id"
-                                    ]: ui.navigate.to(f"/results/{wid}"),
+                                    on_click=lambda wid=wf["workflow_id"]: (
+                                        ui.navigate.to(f"/results/{wid}")
+                                    ),
                                 ).props("flat color=teal icon=visibility")
 
                             async def confirm_delete(
                                 workflow_id=wf["workflow_id"], name=wf["name"]
                             ):
-                                with ui.dialog() as dialog, ui.card().classes(
-                                    "p-6 w-96"
+                                with (
+                                    ui.dialog() as dialog,
+                                    ui.card().classes("p-6 w-96"),
                                 ):
                                     ui.label("Delete Workflow").classes(
                                         "text-xl font-bold text-red-600 mb-2"

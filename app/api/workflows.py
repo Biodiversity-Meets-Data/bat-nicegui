@@ -97,7 +97,9 @@ async def api_submit_workflow(
             print(f"Workflow API body: {response_preview}")
     except httpx.HTTPError as exc:
         print(f"Workflow API exception: {type(exc).__name__}: {exc}")
-        raise HTTPException(status_code=502, detail=f"Workflow API error: {exc}") from exc
+        raise HTTPException(
+            status_code=502, detail=f"Workflow API error: {exc}"
+        ) from exc
 
     if response.status_code >= 300:
         raise HTTPException(
@@ -108,11 +110,15 @@ async def api_submit_workflow(
     try:
         response_payload = response.json()
     except ValueError as exc:
-        raise HTTPException(status_code=502, detail="Workflow API returned invalid JSON") from exc
+        raise HTTPException(
+            status_code=502, detail="Workflow API returned invalid JSON"
+        ) from exc
 
     workflow_id = response_payload.get("workflow_id") or response_payload.get("id")
     if not workflow_id:
-        raise HTTPException(status_code=502, detail="Workflow API did not return workflow_id")
+        raise HTTPException(
+            status_code=502, detail="Workflow API did not return workflow_id"
+        )
 
     print("=" * 60)
     print(f"WORKFLOW SUBMITTED - ID: {workflow_id}")
@@ -180,7 +186,9 @@ async def api_download_workflow_results(
     token: Optional[str] = None,
     credentials: Optional[HTTPAuthorizationCredentials] = Depends(optional_security),
 ):
-    async def _close_stream(response: httpx.Response, client: httpx.AsyncClient) -> None:
+    async def _close_stream(
+        response: httpx.Response, client: httpx.AsyncClient
+    ) -> None:
         await response.aclose()
         await client.aclose()
 
@@ -216,9 +224,7 @@ async def api_download_workflow_results(
                 detail=f"Workflow API error: {response.status_code} {detail}",
             )
 
-        content_type = response.headers.get(
-            "content-type", "application/octet-stream"
-        )
+        content_type = response.headers.get("content-type", "application/octet-stream")
         filename = response.headers.get(
             "content-disposition", "attachment; filename=results.zip"
         )
@@ -229,7 +235,9 @@ async def api_download_workflow_results(
             background=BackgroundTask(_close_stream, response, http_client),
         )
     except httpx.HTTPError as exc:
-        raise HTTPException(status_code=502, detail=f"Workflow API error: {exc}") from exc
+        raise HTTPException(
+            status_code=502, detail=f"Workflow API error: {exc}"
+        ) from exc
 
 
 @router.delete("/api/workflows/{workflow_id}")
