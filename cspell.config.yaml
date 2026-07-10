@@ -3,6 +3,8 @@ ignorePaths: []
 dictionaryDefinitions: []
 dictionaries: []
 words:
+  - arcname
+  - aread
   - bitshifted
   - circlemarker
   - dotenv
@@ -14,12 +16,14 @@ words:
   - orcid
   - passlib
   - pipefail
+  - Precip
   - pycache
   - Pydantic
   - pyjwt
   - PYTHONDONTWRITEBYTECODE
   - PYTHONUNBUFFERED
   - rocrate
+  - rocratefile
   - softprops
   - stdlib
   - urllib

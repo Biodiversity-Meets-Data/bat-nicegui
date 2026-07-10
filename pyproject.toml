@@ -28,3 +28,8 @@ dev = ["mypy", "ruff", "types-passlib"]
 # This project is a deployable application, not an importable library, so uv
 # should install the dependencies without installing the project itself.
 package = false
+
+[tool.mypy]
+strict = true      # Use --strict mode for type checking.
+mypy_path = "app"  # Add app/ to mypy's module search path.
+files = ["app"]    # Directories to type check.
