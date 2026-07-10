@@ -266,6 +266,18 @@ uv sync --upgrade   # Update venv and lockfile to the latest versions of depende
 
 Commit both `pyproject.toml` and `uv.lock` whenever dependencies change.
 
+### Formatting, linting and type checking
+
+This project uses [ruff](https://docs.astral.sh/ruff) for static checking,
+and [mypy](https://mypy-lang.org) for type checking.
+
+```bash
+uv run ruff check           # Lint check.
+uv run ruff format --check  # Format check only (does not reformat files).
+uv run ruff format          # Format files.
+uv run mypy                 # Type check.
+```
+
 ### Versioning
 
 This repository uses
