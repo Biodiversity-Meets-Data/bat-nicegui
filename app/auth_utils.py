@@ -1,7 +1,6 @@
 """Authentication and password utilities."""
 
 from datetime import datetime, timedelta, timezone
-from typing import Optional
 
 import jwt
 from fastapi.security import HTTPBearer
@@ -20,7 +19,7 @@ def create_access_token(user_id: str) -> str:
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def verify_token(token: str) -> Optional[str]:
+def verify_token(token: str) -> str | None:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload.get("sub")

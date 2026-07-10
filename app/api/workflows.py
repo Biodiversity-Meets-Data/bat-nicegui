@@ -1,7 +1,5 @@
 """Workflow API routes."""
 
-from typing import Optional
-
 import httpx
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
@@ -183,8 +181,8 @@ async def api_get_workflows(
 @router.get("/api/workflows/{workflow_id}/download")
 async def api_download_workflow_results(
     workflow_id: str,
-    token: Optional[str] = None,
-    credentials: Optional[HTTPAuthorizationCredentials] = Depends(optional_security),
+    token: str | None = None,
+    credentials: HTTPAuthorizationCredentials | None = Depends(optional_security),
 ):
     async def _close_stream(
         response: httpx.Response, client: httpx.AsyncClient

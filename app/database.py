@@ -6,9 +6,10 @@ SQLite database with users and workflows tables
 import os
 import sqlite3
 import uuid
+from collections.abc import Iterator
 from contextlib import contextmanager
 from datetime import datetime, timezone
-from typing import Optional, List, Dict
+from typing import Any
 
 DATABASE_PATH = os.getenv("DATABASE_PATH", "/app/data/bmd.db")
 
@@ -114,7 +115,7 @@ def init_db() -> None:
 
 
 def create_user(
-    email: str, password_hash: str, name: str, orcid: Optional[str] = None
+    email: str, password_hash: str, name: str, orcid: str | None = None
 ) -> str:
     """Create a new user and return the user_id"""
     conn = get_connection()
@@ -136,7 +137,7 @@ def create_user(
     return user_id
 
 
-def get_user_by_email(email: str) -> Optional[Dict]:
+def get_user_by_email(email: str) -> dict[str, Any] | None:
     """Get user by email"""
     conn = get_connection()
     cursor = conn.cursor()
@@ -150,7 +151,7 @@ def get_user_by_email(email: str) -> Optional[Dict]:
     return None
 
 
-def get_user_by_id(user_id: str) -> Optional[Dict]:
+def get_user_by_id(user_id: str) -> dict[str, Any] | None:
     """Get user by user_id"""
     conn = get_connection()
     cursor = conn.cursor()
@@ -165,7 +166,7 @@ def get_user_by_id(user_id: str) -> Optional[Dict]:
 
 
 @contextmanager
-def get_cursor():
+def get_cursor() -> Iterator[sqlite3.Cursor]:
     """Yield a new cursor to a database.
 
     * On context manager entry: yield a new database cursor.
@@ -243,7 +244,7 @@ def delete_user(user_id: str) -> bool:
     return deleted
 
 
-def check_email_exists(email: str, exclude_user_id: Optional[str] = None) -> bool:
+def check_email_exists(email: str, exclude_user_id: str | None = None) -> bool:
     """Check if email exists, optionally excluding a specific user"""
     conn = get_connection()
     cursor = conn.cursor()
@@ -306,7 +307,7 @@ def create_workflow(
     return workflow_id
 
 
-def get_user_workflows(user_id: str) -> List[Dict]:
+def get_user_workflows(user_id: str) -> list[dict[str, Any]]:
     """Get all workflows for a user"""
     conn = get_connection()
     cursor = conn.cursor()
@@ -326,7 +327,7 @@ def get_user_workflows(user_id: str) -> List[Dict]:
     return [dict(row) for row in rows]
 
 
-def get_workflow_by_id(workflow_id: str) -> Optional[Dict]:
+def get_workflow_by_id(workflow_id: str) -> dict[str, Any] | None:
     """Get a specific workflow by ID"""
     conn = get_connection()
     cursor = conn.cursor()
@@ -343,9 +344,9 @@ def get_workflow_by_id(workflow_id: str) -> Optional[Dict]:
 def update_workflow_status(
     workflow_id: str,
     status: str,
-    results: Optional[str] = None,
-    error: Optional[str] = None,
-):
+    results: str | None = None,
+    error: str | None = None,
+) -> None:
     """Update workflow status and optionally results or error"""
     conn = get_connection()
     cursor = conn.cursor()
@@ -388,7 +389,7 @@ def delete_workflow(workflow_id: str) -> bool:
     return deleted
 
 
-def get_all_workflows_by_status(status: str) -> List[Dict]:
+def get_all_workflows_by_status(status: str) -> list[dict[str, Any]]:
     """Get all workflows with a specific status (admin use)"""
     conn = get_connection()
     cursor = conn.cursor()

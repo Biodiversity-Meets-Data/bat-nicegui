@@ -1,7 +1,5 @@
 """Shared NiceGUI UI helpers."""
 
-from typing import Optional
-
 from nicegui import app, ui
 
 from auth_utils import verify_token
@@ -307,7 +305,7 @@ async def do_logout():
     ui.navigate.to("/login")
 
 
-def check_auth() -> Optional[str]:
+def check_auth() -> str | None:
     """Check if user is authenticated."""
     token = app.storage.user.get("token")
     if not token:
