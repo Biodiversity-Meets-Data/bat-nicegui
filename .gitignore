@@ -9,6 +9,7 @@ __pycache__/
 
 # Local database files.
 data/
+.nicegui/
 
 # OS files.
 .DS_Store
