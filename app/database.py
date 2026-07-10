@@ -5,7 +5,7 @@ SQLite database with users and workflows tables
 
 import sqlite3
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, List, Dict
 import os
 
@@ -163,7 +163,7 @@ def update_user(
     cursor = conn.cursor()
 
     update_fields = ["updated_at = ?"]
-    params = [datetime.utcnow().isoformat()]
+    params = [datetime.now(timezone.utc).isoformat()]
 
     if name is not None:
         update_fields.append("name = ?")
@@ -319,11 +319,11 @@ def update_workflow_status(
     cursor = conn.cursor()
 
     update_fields = ["status = ?", "updated_at = ?"]
-    params = [status, datetime.utcnow().isoformat()]
+    params = [status, datetime.now(timezone.utc).isoformat()]
 
     if status == "completed":
         update_fields.append("completed_at = ?")
-        params.append(datetime.utcnow().isoformat())
+        params.append(datetime.now(timezone.utc).isoformat())
 
     if results:
         update_fields.append("results = ?")
@@ -368,7 +368,7 @@ def get_all_workflows_by_status(status: str) -> List[Dict]:
         JOIN users u ON w.user_id = u.user_id
         WHERE w.status = ?
         ORDER BY w.created_at DESC
-    """,
+        """,
         (status,),
     )
 
