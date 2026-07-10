@@ -49,7 +49,7 @@ async def terrestrial_sdm_page(client: Client):
         for entry in ias_data
         if entry.get("scientificName")
     ]
-    habitat_species_names = []
+    habitat_species_names: list[str] = []
 
     def build_species_options(selected_directives):
         options = {}

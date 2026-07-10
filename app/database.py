@@ -25,7 +25,7 @@ class UserNotFoundError(DatabaseError):
         self.user_id = user_id
 
 
-def get_connection():
+def get_connection() -> sqlite3.Connection:
     """Get a database connection with row factory"""
     os.makedirs(os.path.dirname(DATABASE_PATH), exist_ok=True)
     conn = sqlite3.connect(DATABASE_PATH, check_same_thread=False)
@@ -33,7 +33,7 @@ def get_connection():
     return conn
 
 
-def init_db():
+def init_db() -> None:
     """Initialize the database with required tables"""
     conn = get_connection()
     cursor = conn.cursor()

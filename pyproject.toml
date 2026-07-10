@@ -22,7 +22,7 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["mypy", "ruff"]
+dev = ["mypy", "ruff", "types-passlib"]
 
 [tool.uv]
 # This project is a deployable application, not an importable library, so uv
