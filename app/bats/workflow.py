@@ -7,7 +7,7 @@ from typing import Any
 import httpx
 from nicegui import app, ui
 
-from bats.map_widget import MapGeometry, read_map_geometry
+from bats.map_widget import MapGeometry
 from bats.registry import EcosystemCategory
 from config import LOCAL_API_BASE_URL
 
@@ -63,11 +63,12 @@ class WorkflowPayload:
         }
 
 
-async def build_workflow_payload(
+def build_workflow_payload(
     name: str,
     description: str,
     ecosystem_type: EcosystemCategory,
     bat_specific_parameters: BatSpecificParameters,
+    geometry: MapGeometry | None,
     species_name: str | None = None,
     require_species: bool = True,
 ) -> WorkflowPayload:
@@ -77,15 +78,14 @@ async def build_workflow_payload(
     A BAT without a species input passes ``require_species=False`` to opt out of
     the species requirement; the wire still carries an empty ``species_name``.
     """
-    bat_specific_parameters.validate_input()
+    # Validate inputs in the order they appear on the form.
     if not name:
         raise WorkflowValidationError("Please enter a workflow name")
-    if require_species and not species_name:
-        raise WorkflowValidationError("Please select a species")
-
-    geometry = await read_map_geometry()
     if geometry is None:
         raise WorkflowValidationError("Please draw an area on the map")
+    if require_species and not species_name:
+        raise WorkflowValidationError("Please select a species")
+    bat_specific_parameters.validate_input()
 
     return WorkflowPayload(
         name=name,
