@@ -31,10 +31,27 @@ CI runs these and so should you, before every commit. All must be clean.
 uv run ruff check           # Lint.
 uv run ruff format --check  # Formatting (run `uv run ruff format` to fix).
 uv run mypy                 # Type check.
+uv run pytest               # Unit tests.
 ```
 
 `mypy` is configured in `pyproject.toml` as `strict = true` over `app/`. New
 code must type-check under strict mode.
+
+## Tests
+
+Tests live in the top-level `tests/` directory (outside `app/`, so they are not
+type-checked under strict `mypy` and are not shipped in the deployed image).
+
+Tests are run with:
+
+```bash
+uv run pytest
+```
+
+The app runs with `app/` as its source root (`uvicorn --app-dir app`), so its
+modules import without an `app.` prefix (`from bats.registry import ...`).
+`tests/conftest.py` puts `app/` on `sys.path` so tests import them the same way;
+import test targets exactly as the application does.
 
 ## Code conventions
 

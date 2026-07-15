@@ -250,6 +250,9 @@ bat-nicegui/
 ├── static/
 │   ├── logo.png               # BMD logo
 │   └── eu-ias-directive.json  # EU IAS directive data
+├── tests/
+│   ├── conftest.py            # Puts app/ on sys.path for imports
+│   └── test_registry.py       # BAT registry tests
 ├── Dockerfile           # Docker build instructions
 ├── docker-compose.yml   # Docker Compose configuration
 ├── pyproject.toml       # Project metadata and dependencies
@@ -295,6 +298,17 @@ uv run ruff check           # Lint check.
 uv run ruff format --check  # Format check only (does not reformat files).
 uv run ruff format          # Format files.
 uv run mypy                 # Type check.
+```
+
+### Testing
+
+This project uses [pytest](https://docs.pytest.org). Tests live in the
+top-level `tests/` directory (outside `app/`, so they stay out of strict
+`mypy` checks and the deployed image). Tests run in CI on every push.
+
+```bash
+# Run the test suite.
+uv run pytest
 ```
 
 ### Versioning
