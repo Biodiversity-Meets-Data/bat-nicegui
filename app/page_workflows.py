@@ -7,7 +7,7 @@ from nicegui import app, ui
 
 from config import LOCAL_API_BASE_URL
 from database import get_user_workflows
-from ui_common import apply_bmd_theme, check_auth, create_footer, create_header
+from ui_common import apply_bmd_theme, check_auth, PageHeader
 
 
 @ui.page("/workflows")
@@ -16,9 +16,7 @@ async def workflows_page() -> RedirectResponse | None:
     if not user_id:
         return RedirectResponse("/login")
 
-    apply_bmd_theme()
-    ui.run_javascript("document.body.classList.remove('public-auth')")
-    create_header("workflows")
+    apply_bmd_theme(header=PageHeader.WORKFLOW_PAGE)
 
     with ui.column().classes("w-full max-w-6xl mx-auto p-6 gap-6"):
         with ui.row().classes("w-full justify-between items-center"):
@@ -197,5 +195,5 @@ async def workflows_page() -> RedirectResponse | None:
         await ui.run_javascript(
             "window.bindWorkflowIdCopyButtons && window.bindWorkflowIdCopyButtons();"
         )
-    create_footer()
+
     return None
