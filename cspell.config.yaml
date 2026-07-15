@@ -1,12 +1,18 @@
 version: "0.2"
+language: en-GB
 ignorePaths: []
 dictionaryDefinitions: []
 dictionaries: []
 words:
   - arcname
   - aread
+  - ASGI
   - bitshifted
   - circlemarker
+  - classmethod
+  - dataclass
+  - Dataclasses
+  - docstrings
   - dotenv
   - fastapi
   - healthcheck
@@ -25,6 +31,7 @@ words:
   - rocrate
   - rocratefile
   - softprops
+  - Starlette
   - stdlib
   - urllib
   - uvicorn
