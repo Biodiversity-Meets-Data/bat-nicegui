@@ -13,12 +13,8 @@ from database import (
     get_user_by_id,
     update_user_profile,
 )
-from ui_common import (
-    apply_bmd_theme,
-    check_auth,
-    optional_label,
-    required_label,
-)
+from ui_common import apply_bmd_theme, check_auth
+from ui_widgets import optional_label, required_label
 
 
 @ui.page("/account")

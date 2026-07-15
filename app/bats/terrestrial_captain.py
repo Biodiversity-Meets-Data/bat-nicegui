@@ -2,14 +2,14 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, TypeVar
+from typing import Any
 
 from nicegui import ui
 
 from bats.base_page import BasePage
 from bats.registry import get_bat_by_name
 from bats.workflow import BatSpecificParameters
-from ui_common import required_label
+from ui_widgets import drop_down_menu
 
 
 class CaptainAnalysis(Enum):
@@ -40,25 +40,6 @@ class TerrestrialCaptainParameters(BatSpecificParameters):
             "species_set": self.species_set.value,
             "generate_report": self.generate_report,
         }
-
-
-E = TypeVar("E", bound=Enum)
-
-
-def drop_down_menu(label: str, choices: type[E], default: E) -> ui.select:
-    """Add a labeled drop-down menu whose options are the members/variants
-    of an Enum. Each option's text is the variant's value.
-    """
-    with ui.column().classes("w-full gap-1 mt-4"):
-        required_label(label)
-        return (
-            ui.select(
-                options={member: member.value for member in choices},
-                value=default,
-            )
-            .props("outlined")
-            .classes("w-full")
-        )
 
 
 class TerrestrialCaptainPage(BasePage):

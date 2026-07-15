@@ -26,12 +26,8 @@ from bats.workflow import (
     build_workflow_payload,
     submit_workflow,
 )
-from ui_common import (
-    apply_bmd_theme,
-    check_auth,
-    optional_label,
-    required_label,
-)
+from ui_common import apply_bmd_theme, check_auth
+from ui_widgets import optional_label, required_label
 
 
 class BasePage(ABC):

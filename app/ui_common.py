@@ -315,20 +315,6 @@ def apply_bmd_theme(
     add_footer()
 
 
-def required_label(text: str) -> None:
-    """Create a label with required asterisk."""
-    with ui.row().classes("items-center gap-0 mb-1"):
-        ui.label(text).classes("field-label")
-        ui.label("*").classes("required-asterisk")
-
-
-def optional_label(text: str) -> None:
-    """Create a label with optional hint."""
-    with ui.row().classes("items-center gap-2 mb-1"):
-        ui.label(text).classes("field-label")
-        ui.label("(optional)").classes("optional-hint")
-
-
 async def do_logout() -> None:
     """Logout from the application."""
     ui.navigate.to("/api/auth/logout")

@@ -11,7 +11,7 @@ from nicegui import ui
 from bats.base_page import BasePage
 from bats.registry import get_bat_by_name
 from bats.workflow import BatSpecificParameters, WorkflowValidationError
-from ui_common import required_label
+from ui_widgets import required_label
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

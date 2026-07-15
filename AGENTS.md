@@ -77,6 +77,8 @@ Non-obvious structure (the full tree is in the README):
   `BatSpecificParameters` subclass for its typed parameters.
 - `page_*.py` — top-level, non-BAT pages (login, signup, account, …).
 - `ui_common.py` — shared header/footer/theme/auth helpers.
+- `ui_widgets.py` — reusable input-widget builders (`required_label`,
+  `optional_label`, `drop_down_menu`).
 - `api/` — FastAPI endpoints; `schemas.py` — Pydantic request models;
   `database.py` — SQLite access; `config.py` — env-backed settings.
 
