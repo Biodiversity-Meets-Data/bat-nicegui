@@ -73,6 +73,14 @@ import test targets exactly as the application does.
   `ui` layer.
 - **Docstrings.** When possible, avoid naming literal methods/symbols in
   docstrings and comments; they go stale on rename.
+  Try to describe a member's role or behaviour generically (e.g.
+  "implement the abstract methods") rather than naming specific methods.
+  Only keep a literal name when it's an unavoidable entry-point convention,
+  and keep it minimal.
+  A nuance to this rule is for stable methods/symbols, such as for instance
+  third-party/framework API names (e.g. NiceGUI's `@ui.page`), which are fine
+  to reference in docstrings since they are unlikely to change much over
+  time.
 
 ## Layout of `app/`
 
@@ -92,7 +100,9 @@ Non-obvious structure (the full tree is in the README):
 - `bats/<name>.py` — one page module per BAT (e.g. `terrestrial_sdm.py`,
   `terrestrial_captain.py`). Each subclasses `BasePage` and defines a
   `BatSpecificParameters` subclass for its typed parameters.
-- `page_*.py` — top-level, non-BAT pages (login, signup, account, …).
+- `pages/` — non-BAT application pages (login, signup, account, …), one module
+  per page. `pages/__init__.py` holds `register_ui_pages`, which imports every
+  page (and BAT) module to trigger route registration.
 - `ui_common.py` — shared header/footer/theme/auth helpers.
 - `ui_widgets.py` — reusable input-widget builders (`required_label`,
   `optional_label`, `drop_down_menu`).
@@ -119,8 +129,9 @@ path is to copy an existing BAT page and adapt it:
    attribute and implement the abstract methods (build the BAT-specific input
    widgets; collect them into the arguments object). Override the species hooks
    only if the BAT has a species input.
-4. Call the subclass's `register()` at the bottom of the module. `pages.py`
-   imports every BAT module listed in the registry, which triggers registration.
+4. Call the subclass's `register()` at the bottom of the module.
+   `pages/__init__.py` imports every BAT module listed in the registry, which
+   triggers registration.
 5. Read the
    [BATs Onboarding Guide](https://github.com/Biodiversity-Meets-Data/infrastructure-docs/blob/main/docs/BAT_onboarding_guide.md).
 
