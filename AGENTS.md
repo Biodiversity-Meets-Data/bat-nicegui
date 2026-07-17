@@ -104,8 +104,8 @@ Non-obvious structure (the full tree is in the README):
   per page. `pages/__init__.py` holds `register_ui_pages`, which imports every
   page (and BAT) module to trigger route registration.
 - `ui_common.py` — shared header/footer/theme/auth helpers.
-- `ui_widgets.py` — reusable input-widget builders (`required_label`,
-  `optional_label`, `drop_down_menu`).
+- `ui_widgets.py` — reusable widget builders (`required_label`,
+  `optional_label`, `page_title`, `drop_down_menu`).
 - `api/` — FastAPI endpoints; `schemas.py` — Pydantic request models;
   `database.py` — SQLite access; `config.py` — env-backed settings.
 

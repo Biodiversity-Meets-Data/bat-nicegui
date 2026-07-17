@@ -7,6 +7,7 @@ from nicegui import app, ui
 
 from database import get_workflow_by_id
 from ui_common import apply_bmd_theme, check_auth
+from ui_widgets import page_title
 
 
 @ui.page("/results/{workflow_id}")
@@ -42,10 +43,7 @@ async def results_page(workflow_id: str) -> RedirectResponse | None:
                 icon="arrow_back", on_click=lambda: ui.navigate.to("/workflows")
             ).props("flat round")
             with ui.column().classes("gap-0"):
-                ui.label("Analysis Results").classes("text-xl font-bold").style(
-                    "background: linear-gradient(135deg, #2ECC71, #0077B6); "
-                    "-webkit-background-clip: text; -webkit-text-fill-color: transparent;"
-                )
+                page_title("Analysis Results")
                 ui.label(f"{workflow['name']}").classes("text-sm text-gray-500")
             ui.button(
                 "Download Results",

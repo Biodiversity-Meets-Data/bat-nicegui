@@ -11,6 +11,7 @@ from nicegui import app, ui
 from config import LOCAL_API_BASE_URL
 from database import get_user_workflows
 from ui_common import apply_bmd_theme, check_auth, PageHeader
+from ui_widgets import page_title
 
 
 class UserWorkflowsPage:
@@ -35,10 +36,7 @@ class UserWorkflowsPage:
         with ui.column().classes("w-full max-w-6xl mx-auto p-6 gap-6"):
             # Add page main header and refresh button.
             with ui.row().classes("w-full justify-between items-center"):
-                ui.label("Your Workflows").classes("text-3xl font-bold").style(
-                    "background: linear-gradient(135deg, #2ECC71, #0077B6); "
-                    "-webkit-background-clip: text; -webkit-text-fill-color: transparent;"
-                )
+                page_title("Your Workflows")
                 ui.button(
                     "Refresh", on_click=lambda: ui.navigate.to("/workflows")
                 ).classes("bmd-btn-secondary bmd-btn").props("icon=refresh")

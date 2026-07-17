@@ -15,7 +15,7 @@ from database import (
     update_user_profile,
 )
 from ui_common import apply_bmd_theme, check_auth
-from ui_widgets import optional_label, required_label
+from ui_widgets import optional_label, page_title, required_label
 
 
 class UserAccountPage:
@@ -39,11 +39,7 @@ class UserAccountPage:
         """Build the page: title plus the three settings sections."""
 
         with ui.column().classes("w-full max-w-2xl mx-auto p-6 gap-6"):
-            # Add page main title.
-            ui.label("Account Settings").classes("text-3xl font-bold").style(
-                "background: linear-gradient(135deg, #2ECC71, #0077B6); "
-                "-webkit-background-clip: text; -webkit-text-fill-color: transparent;"
-            )
+            page_title("Account Settings")
             # Add page sections.
             self.add_profile_section()
             self.add_sso_info_section()

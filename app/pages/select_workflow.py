@@ -10,6 +10,7 @@ from nicegui import ui
 
 from bats.registry import EcosystemCategory, Bat, bats_by_category
 from ui_common import apply_bmd_theme, check_auth
+from ui_widgets import page_title
 
 
 def render_bat_card(bat: Bat) -> None:
@@ -51,12 +52,7 @@ async def select_workflow_page() -> RedirectResponse | None:
     apply_bmd_theme()
 
     with ui.column().classes("w-full max-w-5xl mx-auto p-6 gap-6"):
-        ui.label("Biodiversity Analysis Tools").classes(
-            "text-3xl font-bold mb-2"
-        ).style(
-            "background: linear-gradient(135deg, #2ECC71, #0077B6); "
-            "-webkit-background-clip: text; -webkit-text-fill-color: transparent;"
-        )
+        page_title("Biodiversity Analysis Tools")
         ui.label("Select a category, then choose a tool.").classes(
             "text-lg text-gray-600 mb-2"
         )

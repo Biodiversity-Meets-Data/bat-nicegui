@@ -1,4 +1,4 @@
-"""Reusable NiceGUI input-widget builders shared across pages."""
+"""Reusable NiceGUI widget builders shared across pages."""
 
 from enum import Enum
 from typing import TypeVar
@@ -22,6 +22,15 @@ def optional_label(text: str) -> None:
     with ui.row().classes("items-center gap-2 mb-1"):
         ui.label(text).classes("field-label")
         ui.label("(optional)").classes("optional-hint")
+
+
+def page_title(text: str) -> None:
+    """Create a page heading styled with the BMD theme gradient."""
+
+    ui.label(text).classes("text-3xl font-bold").style(
+        "background: linear-gradient(135deg, #2ECC71, #0077B6); "
+        "-webkit-background-clip: text; -webkit-text-fill-color: transparent;"
+    )
 
 
 def drop_down_menu(label: str, choices: type[E], default: E) -> ui.select:

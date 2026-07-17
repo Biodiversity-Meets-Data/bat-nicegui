@@ -27,7 +27,7 @@ from bats.workflow import (
     submit_workflow,
 )
 from ui_common import apply_bmd_theme, check_auth
-from ui_widgets import optional_label, required_label
+from ui_widgets import optional_label, page_title, required_label
 
 
 # Placeholder shown in the "Analysis Area" field until the user draws an area.
@@ -53,11 +53,7 @@ class BasePage(ABC):
         """Main method that builds the entire page for the BAT."""
 
         with ui.column().classes("w-full max-w-6xl mx-auto p-6 gap-6"):
-            # Add a title to the page.
-            ui.label("Create New Workflow").classes("text-3xl font-bold").style(
-                "background: linear-gradient(135deg, #2ECC71, #0077B6); "
-                "-webkit-background-clip: text; -webkit-text-fill-color: transparent;"
-            )
+            page_title("Create New Workflow")
 
             # Add two columns with user-input widgets.
             with ui.row().classes("w-full gap-6 flex-wrap lg:flex-nowrap"):
