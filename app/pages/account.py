@@ -16,6 +16,8 @@ from database import (
 )
 from ui_common import apply_bmd_theme, check_auth
 from ui_widgets import (
+    Color,
+    card_header,
     optional_text_input,
     page_title,
     required_text_input,
@@ -53,10 +55,7 @@ class UserAccountPage:
         """Adds the profile information section: name, email, ORCID."""
 
         with ui.card().classes("bmd-card p-6 w-full"):
-            ui.label("Profile Information").classes(
-                "text-xl font-semibold text-gray-800"
-            )
-
+            card_header("Profile Information")
             self.name_input = required_text_input(
                 label="Full Name", value=self.user.get("name", "")
             )
@@ -77,9 +76,7 @@ class UserAccountPage:
         """Build the SSO (single sign-on) information section."""
 
         with ui.card().classes("bmd-card p-6 w-full"):
-            ui.label("Password & Login").classes(
-                "text-xl font-semibold text-gray-800 mb-2"
-            )
+            card_header("Password and Login")
             ui.label(
                 "Your password and login credentials are managed by your BMD "
                 "SSO account, not here."
@@ -97,11 +94,12 @@ class UserAccountPage:
         """Build the account-deletion section."""
 
         with ui.card().classes("bmd-card p-6 w-full border-2 border-red-200"):
-            ui.label("Danger Zone").classes("text-xl font-semibold text-red-600 mb-2")
+            card_header("Danger Zone", color=Color.RED)
             ui.label(
-                "Once you delete your account, there is no going back. All your "
-                "workflows will be permanently deleted. This only removes your "
-                "local BMD data — your SSO account itself is not deleted."
+                "Once you delete your account, there is no going back. "
+                "All your workflows will be permanently deleted. "
+                "Note that this only removes your local BMD data - your SSO "
+                "account itself is not deleted."
             ).classes("text-sm text-gray-600 mb-4")
 
             ui.button("Delete Account", on_click=self.confirm_deletion).classes(

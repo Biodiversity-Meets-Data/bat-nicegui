@@ -28,6 +28,7 @@ from bats.workflow import (
 )
 from ui_common import apply_bmd_theme, check_auth
 from ui_widgets import (
+    card_header,
     optional_textarea_input,
     page_title,
     required_label,
@@ -79,7 +80,7 @@ class BasePage(ABC):
         """Add parameters (user-input widgets) common to all BAT pages."""
 
         # Add a title to the user-input section.
-        ui.label("Workflow Parameters").classes("text-xl font-semibold text-gray-800")
+        card_header("Workflow Parameters")
 
         # Workflow name and description inputs.
         self.name_input = required_text_input(

@@ -1,15 +1,20 @@
 """Reusable NiceGUI widget builders shared across pages."""
 
-from enum import Enum
+import enum
 from typing import TypeVar
 
 from nicegui import ui
 
-E = TypeVar("E", bound=Enum)
+E = TypeVar("E", bound=enum.Enum)
+
+
+class Color(enum.StrEnum):
+    GRAY = "text-gray-800"
+    RED = "text-red-600"
 
 
 def required_label(text: str) -> None:
-    """Create a label with required asterisk."""
+    """Add a label with required asterisk."""
 
     with ui.row().classes("items-center gap-0 mb-1"):
         ui.label(text).classes("field-label")
@@ -17,7 +22,7 @@ def required_label(text: str) -> None:
 
 
 def optional_label(text: str) -> None:
-    """Create a label with optional hint."""
+    """Add a label with optional hint."""
 
     with ui.row().classes("items-center gap-2 mb-1"):
         ui.label(text).classes("field-label")
@@ -25,12 +30,17 @@ def optional_label(text: str) -> None:
 
 
 def page_title(text: str) -> None:
-    """Create a page heading styled with the BMD theme gradient."""
+    """Add a page heading styled with the BMD theme gradient."""
 
     ui.label(text).classes("text-3xl font-bold").style(
         "background: linear-gradient(135deg, #2ECC71, #0077B6); "
         "-webkit-background-clip: text; -webkit-text-fill-color: transparent;"
     )
+
+
+def card_header(text: str, color: Color = Color.GRAY) -> None:
+    """Add a section/card header."""
+    ui.label(text).classes(f"text-xl font-semibold {color}")
 
 
 def _text_input(
@@ -40,7 +50,7 @@ def _text_input(
     hint: str,
     required: bool,
 ) -> ui.input:
-    """User input field widget builder."""
+    """User free text input widget builder."""
 
     with ui.column().classes("w-full gap-1 mt-3"):
         required_label(label) if required else optional_label(text=label)
