@@ -113,9 +113,9 @@ class UserAccountPage:
     async def update_profile(self) -> None:
         """Validate the profile inputs and persist them to the database."""
 
-        name = self.name_input.value.strip()
-        email = self.email_input.value.strip()
-        orcid = self.orcid_input.value.strip()
+        name = (self.name_input.value or "").strip()
+        email = (self.email_input.value or "").strip()
+        orcid = (self.orcid_input.value or "").strip()
 
         # Verify user input.
         # ORCID is optional (can be an empty string), but when passed

@@ -128,8 +128,8 @@ class BasePage(ABC):
         """Validate the user inputs, then submit the workflow."""
         try:
             payload = build_workflow_payload(
-                name=self.name_input.value,
-                description=self.desc_input.value or "",
+                name=(self.name_input.value or "").strip(),
+                description=(self.desc_input.value or "").strip(),
                 ecosystem_type=self.BAT.category,
                 bat_specific_parameters=self.get_specific_parameters(),
                 geometry=self.map.geometry,
