@@ -15,7 +15,11 @@ from database import (
     update_user_profile,
 )
 from ui_common import apply_bmd_theme, check_auth
-from ui_widgets import optional_label, page_title, required_label
+from ui_widgets import (
+    optional_text_input,
+    page_title,
+    required_text_input,
+)
 
 
 class UserAccountPage:
@@ -50,38 +54,20 @@ class UserAccountPage:
 
         with ui.card().classes("bmd-card p-6 w-full"):
             ui.label("Profile Information").classes(
-                "text-xl font-semibold text-gray-800 mb-4"
+                "text-xl font-semibold text-gray-800"
             )
 
-            # Add name input field.
-            with ui.column().classes("w-full gap-1"):
-                required_label("Full Name")
-                self.name_input = (
-                    ui.input(value=self.user.get("name", ""))
-                    .props("outlined")
-                    .classes("w-full")
-                )
-
-            # Add email input field.
-            with ui.column().classes("w-full gap-1 mt-4"):
-                required_label("Email")
-                self.email_input = (
-                    ui.input(value=self.user.get("email", ""))
-                    .props("outlined")
-                    .classes("w-full")
-                )
-
-            # Add ORCID input field.
-            with ui.column().classes("w-full gap-1 mt-4"):
-                optional_label("ORCID")
-                self.orcid_input = (
-                    ui.input(value=self.user.get("orcid", "") or "")
-                    .props("outlined")
-                    .classes("w-full")
-                )
-                ui.label("ORCID identifier (format: 0000-0000-0000-0000)").classes(
-                    "text-xs text-gray-400 mt-1"
-                )
+            self.name_input = required_text_input(
+                label="Full Name", value=self.user.get("name", "")
+            )
+            self.email_input = required_text_input(
+                label="Email", value=self.user.get("email", "")
+            )
+            self.orcid_input = optional_text_input(
+                label="ORCID",
+                value=self.user.get("orcid", "") or "",
+                hint="ORCID identifier (format: 0000-0000-0000-0000)",
+            )
 
             ui.button("Save Changes", on_click=self.update_profile).classes(
                 "bmd-btn mt-6"
@@ -158,18 +144,15 @@ class UserAccountPage:
         """Open a confirmation dialog for user account deletion."""
 
         with ui.dialog() as dialog, ui.card().classes("p-6"):
-            ui.label("Delete Account").classes("text-xl font-bold text-red-600 mb-4")
+            ui.label("Delete Account").classes("text-xl font-bold text-red-600")
             ui.label(
                 "Are you sure you want to delete your account? This action cannot be undone."
-            ).classes("text-gray-600 mb-4")
+            ).classes("text-gray-600")
 
-            with ui.column().classes("w-full gap-1 mb-4"):
-                ui.label("Type your email to confirm:").classes("text-sm font-medium")
-                confirm_email_input = (
-                    ui.input(placeholder=self.user["email"])
-                    .props("outlined")
-                    .classes("w-full")
-                )
+            # To avoid mistakes, user must type email before deletion.
+            confirm_email_input = required_text_input(
+                label="Type your email to confirm:", placeholder=self.user["email"]
+            )
 
             with ui.row().classes("gap-4 justify-end"):
                 ui.button("Cancel", on_click=dialog.close).props("flat")
