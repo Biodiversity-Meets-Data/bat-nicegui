@@ -1,0 +1,39 @@
+version: "0.2"
+language: en-GB
+ignorePaths: []
+dictionaryDefinitions: []
+dictionaries: []
+words:
+  - arcname
+  - aread
+  - ASGI
+  - bitshifted
+  - circlemarker
+  - classmethod
+  - dataclass
+  - Dataclasses
+  - docstrings
+  - dotenv
+  - fastapi
+  - healthcheck
+  - httpx
+  - Lngs
+  - nicegui
+  - orcid
+  - passlib
+  - pipefail
+  - Precip
+  - pycache
+  - Pydantic
+  - pyjwt
+  - PYTHONDONTWRITEBYTECODE
+  - PYTHONUNBUFFERED
+  - rocrate
+  - rocratefile
+  - softprops
+  - Starlette
+  - stdlib
+  - urllib
+  - uvicorn
+ignoreWords: []
+import: []

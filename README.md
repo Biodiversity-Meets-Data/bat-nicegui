@@ -2,23 +2,32 @@
 
 ![Version](https://img.shields.io/static/v1?label=version&message=0.1.4&color=blue)
 
-A modern web application for Biodiversity Analysis Tools, built with NiceGUI and FastAPI.
+A modern web application for Biodiversity Analysis Tools, built with NiceGUI
+and FastAPI.
 
-⛓️‍💥 Live version: [http://134.94.199.13/](http://134.94.199.13/docs)
-📓 API Documentation: [http://134.94.199.13/docs](http://134.94.199.13/docs)
+- ⛓️‍💥 Live version: [http://bats.bmd-project.eu/login](http://bats.bmd-project.eu/login)
+- 📓 API Documentation: [http://bats.bmd-project.eu/docs](http://bats.bmd-project.eu/docs)
 
 ![BMD Logo](static/bats.png)
 
-## Features
+<br>
 
-- **User Authentication**: Secure signup/login with JWT tokens and SQLite backend
-- **Interactive Map**: Draw bounding boxes and polygons on a Europe-restricted Leaflet map
-- **Workflow Submission**: Submit analysis workflows with configurable parameters
-- **Workflow Tracking**: View all submitted workflows and their status
-- **Ecosystem Types**: Tag workflows by ecosystem (terrestrial/freshwater)
-- **RO-Crate Submission**: Generate `workflow.yaml` and `rocrate.json` from templates and upload as a ZIP
-- **Webhook Integration**: Receive results from Argo Workflow via webhooks
-- **Themed UI**: Beautiful green-to-teal gradient theme matching the BMD brand
+## Application Features
+
+- **User Authentication**: secure signup/login with JWT tokens and SQLite
+  backend.
+- **Interactive Map**: draw bounding boxes and polygons on a Europe-restricted
+  Leaflet map.
+- **Workflow Submission**: submit analysis workflows with configurable
+  parameters.
+- **Workflow Tracking**: view all submitted workflows and their status.
+- **Ecosystem Types**: tag workflows by ecosystem (terrestrial/freshwater).
+- **RO-Crate Submission**: generate `workflow.yaml` and `rocrate.json` from
+  templates and upload them as a ZIP.
+- **Webhook Integration**: receive results from Argo Workflow via webhooks.
+- **Themed UI**: beautiful green-to-teal gradient theme matching the BMD brand.
+
+<br>
 
 ## Tech Stack
 
@@ -31,7 +40,7 @@ A modern web application for Biodiversity Analysis Tools, built with NiceGUI and
 
 ## Request Flow Diagram
 
-```
+```txt
 Browser (NiceGUI UI)
   | 1) POST /api/auth/login
   v
@@ -45,6 +54,8 @@ workflow-api (external service)
   v
 bmd-bat-app (updates SQLite, UI refresh)
 ```
+
+<br>
 
 ## Quick Start
 
@@ -67,31 +78,27 @@ docker-compose up --build
 # Access the application at http://localhost:8080
 ```
 
-### Manual Installation
+### Local installation
 
-```bash
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# or: venv\Scripts\activate  # Windows
+The application can be run with the following commands, and becomes
+available locally on [localhost:8000](http://localhost:8000).
 
-# Install dependencies
-pip install -r requirements.txt
+```sh
+# Install dependencies - also creates a .venv automatically if needed.
+uv sync
 
-# Set environment variables
-export SECRET_KEY="your-secret-key"
+# Start the application - available on http://localhost:8000
 export DATABASE_PATH="./data/bmd.db"
-export WORKFLOW_WAIT_TIME=20
-
-# Run the application
-cd app
-python main.py
+uv run -- uvicorn main:fastapi_app --reload --app-dir app
 ```
 
-## Configuration
+**Note:** the above commands assume you have [uv](https://docs.astral.sh/uv)
+installed on your local machine.
+
+### Configuration environment variables
 
 | Variable | Description | Default |
-|----------|-------------|---------|
+| -------- | ----------- | ------- |
 | `SECRET_KEY` | JWT signing key (CHANGE IN PRODUCTION) | `bmd-secret-key-...` |
 | `DATABASE_PATH` | SQLite database file path | `/app/data/bmd.db` |
 | `WORKFLOW_WAIT_TIME` | Simulated workflow processing time (seconds) | `20` |
@@ -103,22 +110,24 @@ python main.py
 | `WORKFLOW_DRY_RUN` | Validate only (true/false) | `false` |
 | `WORKFLOW_FORCE` | Force re-execution (true/false) | `false` |
 
+<br>
+
 ## API Endpoints
 
 ### Authentication
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/signup` | Create new user account |
-| POST | `/api/auth/login` | Login and get JWT token |
+| Method | Endpoint           | Description             |
+|--------|--------------------|-------------------------|
+| POST   | `/api/auth/signup` | Create new user account |
+| POST   | `/api/auth/login`  | Login and get JWT token |
 
 ### Workflows
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/workflows/submit` | Submit new analysis workflow |
-| GET | `/api/workflows` | Get all workflows for authenticated user |
-| POST | `/api/workflows/webhook/{workflow_id}` | Webhook for workflow completion |
+| Method | Endpoint                               | Description                              |
+|--------|----------------------------------------|------------------------------------------|
+| POST   | `/api/workflows/submit`                | Submit new analysis workflow             |
+| GET    | `/api/workflows`                       | Get all workflows for authenticated user |
+| POST   | `/api/workflows/webhook/{workflow_id}` | Webhook for workflow completion          |
 
 ### Workflow Webhook Payload
 
@@ -138,52 +147,62 @@ POST /api/workflows/webhook/{workflow_id}
 }
 ```
 
+<br>
+
 ## Database Schema
+
+Schemas (tables) stored in the application's SQLite database.
 
 ### Users Table
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `user_id` | TEXT (PK) | UUID primary key |
-| `email` | TEXT (UNIQUE) | User email |
-| `password_hash` | TEXT | Bcrypt hashed password |
-| `name` | TEXT | User's full name |
-| `created_at` | TIMESTAMP | Account creation time |
-| `updated_at` | TIMESTAMP | Last update time |
+| Column          | Type          | Description            |
+|-----------------|---------------|------------------------|
+| `user_id`       | TEXT (PK)     | UUID primary key       |
+| `email`         | TEXT (UNIQUE) | User email             |
+| `password_hash` | TEXT          | Bcrypt hashed password |
+| `name`          | TEXT          | User's full name       |
+| `created_at`    | TIMESTAMP     | Account creation time  |
+| `updated_at`    | TIMESTAMP     | Last update time       |
 
 ### Workflows Table
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `workflow_id` | TEXT (PK) | UUID primary key |
-| `user_id` | TEXT (FK) | Reference to users table |
-| `name` | TEXT | Workflow name |
-| `description` | TEXT | Workflow description |
-| `species_name` | TEXT | Selected species (scientific name) |
-| `ecosystem_type` | TEXT | Ecosystem type (terrestrial, freshwater) |
-| `geometry_type` | TEXT | rectangle or polygon |
-| `geometry_wkt` | TEXT | WKT polygon/rectangle |
-| `parameters` | TEXT | JSON object of parameters (time_period, directive_types, etc.) |
-| `status` | TEXT | submitted, running, completed, failed |
-| `results` | TEXT | JSON results (when completed) |
-| `error_message` | TEXT | Error message (when failed) |
-| `created_at` | TIMESTAMP | Submission time |
-| `updated_at` | TIMESTAMP | Last update time |
-| `completed_at` | TIMESTAMP | Completion time |
+| Column           | Type      | Description                                                    |
+|------------------|-----------|----------------------------------------------------------------|
+| `workflow_id`    | TEXT (PK) | UUID primary key                                               |
+| `user_id`        | TEXT (FK) | Reference to users table                                       |
+| `name`           | TEXT      | Workflow name                                                  |
+| `description`    | TEXT      | Workflow description                                           |
+| `species_name`   | TEXT      | Selected species (scientific name)                             |
+| `ecosystem_type` | TEXT      | Ecosystem type (terrestrial, freshwater)                       |
+| `geometry_type`  | TEXT      | rectangle or polygon                                           |
+| `geometry_wkt`   | TEXT      | WKT polygon/rectangle                                          |
+| `parameters`     | TEXT      | JSON object of parameters (time_period, directive_types, etc.) |
+| `status`         | TEXT      | submitted, running, completed, failed                          |
+| `results`        | TEXT      | JSON results (when completed)                                  |
+| `error_message`  | TEXT      | Error message (when failed)                                    |
+| `created_at`     | TIMESTAMP | Submission time                                                |
+| `updated_at`     | TIMESTAMP | Last update time                                               |
+| `completed_at`   | TIMESTAMP | Completion time                                                |
+
+<br>
 
 ## External Workflow Submission
 
 On submission, the backend reads:
+
 - `app/templates/terrestrial-sdm/workflow.yaml`
 - `app/templates/terrestrial-sdm/ro-crate-metadata.json`
 
-These files are zipped into an RO-Crate and POSTed to `WORKFLOW_API_URL`. The external API returns
-the `workflow_id`, which is stored in the local database. Webhook delivery uses
-`WORKFLOW_WEBHOOK_URL_TEMPLATE` (supports `{workflow_id}`).
+These files are zipped into an RO-Crate and POSTed to `WORKFLOW_API_URL`.
+The external API returns the `workflow_id`, which is stored in the local
+database. Webhook delivery uses `WORKFLOW_WEBHOOK_URL_TEMPLATE` (supports
+`{workflow_id}`).
+
+<br>
 
 ## Project Structure
 
-```
+```sh
 bat-nicegui/
 ├── app/
 │   ├── main.py                # Composition root (FastAPI app + NiceGUI mount)
@@ -210,16 +229,18 @@ bat-nicegui/
 │           ├── workflow.yaml           # Argo workflow template
 │           └── ro-crate-metadata.json  # RO-Crate metadata template
 ├── static/
-│   ├── logo.png         # BMD logo
+│   ├── logo.png               # BMD logo
 │   └── eu-ias-directive.json  # EU IAS directive data
 ├── Dockerfile           # Docker build instructions
 ├── docker-compose.yml   # Docker Compose configuration
-├── requirements.txt     # Python dependencies
+├── pyproject.toml       # Project metadata and dependencies
+├── uv.lock              # Pinned dependency versions (uv)
 └── README.md            # This file
 ```
 
-## Development
+<br>
 
+## Development
 
 ### Adding New Features
 
@@ -228,24 +249,58 @@ bat-nicegui/
 3. Add non-create UI pages as top-level `app/page_*.py` modules
 4. Add/create workflow UI pages under `app/bats/` (for terrestrial SDM use `app/bats/terrestrial_sdm.py`)
 
-> ⚠️ Please read the [BATs Onboarding Guide](https://github.com/Biodiversity-Meets-Data/infrastructure-docs/blob/c83249cdf1fd0605b046558fb8ca9b7b69fafcdb/docs/BAT_onboarding_guide.md) before contributing new BATs to this codebase. 
+> ⚠️ Please read the
+> [BATs Onboarding Guide](https://github.com/Biodiversity-Meets-Data/infrastructure-docs/blob/main/docs/BAT_onboarding_guide.md)
+> before contributing new BATs to this codebase.
 
-## Versioning
+### Managing dependencies
 
-This repository uses [`bitshifted/git-auto-semver@v2`](https://github.com/marketplace/actions/git-automatic-semantic-versioning) in [`.github/workflows/ci-pipeline.yml`](.github/workflows/ci-pipeline.yml) to calculate semantic versions.
+Dependencies are declared in `pyproject.toml` and pinned in `uv.lock`. Use
+[uv](https://docs.astral.sh/uv/) to manage them:
 
-- Pushes to `main` calculate the next semantic version and can create tags/releases.
-- Pull request runs calculate a short commit-hash version for CI validation.
+```bash
+uv sync             # Install everything (synchronizes venv and lockfile with pyproject.toml).
+uv sync --no-dev    # Install runtime dependencies only.
+uv sync --upgrade   # Update venv and lockfile to the latest versions of dependencies.
+```
+
+Commit both `pyproject.toml` and `uv.lock` whenever dependencies change.
+
+### Formatting, linting and type checking
+
+This project uses [ruff](https://docs.astral.sh/ruff) for static checking,
+and [mypy](https://mypy-lang.org) for type checking.
+
+```bash
+uv run ruff check           # Lint check.
+uv run ruff format --check  # Format check only (does not reformat files).
+uv run ruff format          # Format files.
+uv run mypy                 # Type check.
+```
+
+### Versioning
+
+This repository uses
+[`bitshifted/git-auto-semver@v2`](https://github.com/marketplace/actions/git-automatic-semantic-versioning)
+in [`.github/workflows/ci-pipeline.yml`](.github/workflows/ci-pipeline.yml) to
+compute semantic versions.
+
+- Pushes to `main` compute the next semantic version, and can create
+  tags/releases.
+- Pull request runs compute a short commit-hash version for CI validation.
 
 ### Allowed Commit Prefixes
 
 | Commit prefix / marker | Version bump | Example |
-|------------------------|--------------|---------|
+| ---------------------- | ------------ | ------- |
 | `build:`, `chore:`, `ci:`, `docs:`, `fix:`, `perf:`, `refactor:`, `revert:`, `style:`, `test:` | Patch (`x.y.Z`) | `fix: handle empty geometry payload` |
 | `feat:` | Minor (`x.Y.0`) | `feat: add account ORCID validation` |
 | `BREAKING CHANGE` (in commit message body/footer) | Major (`X.0.0`) | `BREAKING CHANGE: remove legacy workflow endpoint` |
 
-Tags are expected in `v<major>.<minor>.<patch>` format (for example, `v1.4.2`), and this repository starts from `0.1.0` when no previous tags exist.
+Tags are expected in `v<major>.<minor>.<patch>` format (for example, `v1.4.2`),
+and this repository starts from `0.1.0` when no previous tags exist.
+
+<br>
 
 ## Security Notes
 
@@ -258,9 +313,13 @@ Tags are expected in `v<major>.<minor>.<patch>` format (for example, `v1.4.2`), 
 5. Add rate limiting for API endpoints
 6. Enable proper logging and monitoring
 
+<br>
+
 ## License
 
 EUPL v1.2 (`EUPL-1.2`) - See [LICENSE](LICENSE) file for details.
+
+<br>
 
 ## Contributing
 

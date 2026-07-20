@@ -3,6 +3,7 @@ BMD - Biodiversity Meets Data
 Composition root for FastAPI + NiceGUI application.
 """
 
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -15,13 +16,15 @@ from pages import register_ui_pages
 
 
 @asynccontextmanager
-async def lifespan(fastapi: FastAPI):
+async def lifespan(fastapi: FastAPI) -> AsyncIterator[None]:
     _ = fastapi
     init_db()
     yield
 
 
-fastapi_app = FastAPI(title="BMD Biodiversity Analysis Tools (BATs) API", lifespan=lifespan)
+fastapi_app = FastAPI(
+    title="BMD Biodiversity Analysis Tools (BATs) API", lifespan=lifespan
+)
 
 # Static files
 app.add_static_files("/static", "static")

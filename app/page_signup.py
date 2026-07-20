@@ -8,11 +8,11 @@ from ui_common import apply_bmd_theme, create_footer, optional_label, required_l
 
 
 @ui.page("/signup")
-def signup_page():
+def signup_page() -> None:
     apply_bmd_theme()
     ui.run_javascript("document.body.classList.add('public-auth')")
 
-    async def do_signup():
+    async def do_signup() -> None:
         name = name_input.value
         email = email_input.value
         password = password_input.value

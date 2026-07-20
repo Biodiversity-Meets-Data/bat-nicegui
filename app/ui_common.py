@@ -1,13 +1,11 @@
 """Shared NiceGUI UI helpers."""
 
-from typing import Optional
-
 from nicegui import app, ui
 
 from auth_utils import verify_token
 
 
-def create_footer():
+def create_footer() -> None:
     """Global BMD footer."""
     with ui.footer().classes(
         "w-full justify-center items-center py-3 bg-transparent text-xs text-gray-500",
@@ -25,7 +23,7 @@ def create_footer():
         )
 
 
-def apply_bmd_theme():
+def apply_bmd_theme() -> None:
     """Apply BMD theme styling."""
     ui.add_head_html(
         """
@@ -263,21 +261,23 @@ def optional_label(text: str) -> None:
         ui.label("(optional)").classes("optional-hint")
 
 
-def create_header(current_page: str = ""):
+def create_header(current_page: str = "") -> None:
     """Create the BMD header with navigation."""
     user_name = app.storage.user.get("user_name", "User")
 
     with ui.header().classes("bmd-header items-center justify-between"):
         with ui.row().classes("items-center gap-3"):
-            with ui.column().classes("gap-0 cursor-pointer").on(
-                "click", lambda: ui.navigate.to("/workflows")
+            with (
+                ui.column()
+                .classes("gap-0 cursor-pointer")
+                .on("click", lambda: ui.navigate.to("/workflows"))
             ):
                 ui.label("BMD").classes("bmd-logo-text")
                 ui.label("Biodiversity Meets Data").classes("bmd-subtitle")
 
         with ui.row().classes("gap-3 items-center"):
             ui.link("Workflows", "/workflows").classes(
-                f'nav-link {"active" if current_page == "workflows" else ""}'
+                f"nav-link {'active' if current_page == 'workflows' else ''}"
             )
             ui.button(
                 "+ New Workflow", on_click=lambda: ui.navigate.to("/select-workflow")
@@ -300,12 +300,12 @@ def create_header(current_page: str = ""):
                     )
 
 
-async def do_logout():
+async def do_logout() -> None:
     app.storage.user.clear()
     ui.navigate.to("/login")
 
 
-def check_auth() -> Optional[str]:
+def check_auth() -> str | None:
     """Check if user is authenticated."""
     token = app.storage.user.get("token")
     if not token:

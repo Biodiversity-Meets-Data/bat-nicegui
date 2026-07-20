@@ -1,6 +1,6 @@
 """Workflow API routes."""
 
-from typing import Optional
+from typing import Any
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException
@@ -33,7 +33,7 @@ router = APIRouter()
 async def api_submit_workflow(
     workflow: WorkflowSubmit,
     credentials: HTTPAuthorizationCredentials = Depends(security),
-):
+) -> dict[str, Any]:
     user_id = verify_token(credentials.credentials)
     if not user_id:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
@@ -97,7 +97,9 @@ async def api_submit_workflow(
             print(f"Workflow API body: {response_preview}")
     except httpx.HTTPError as exc:
         print(f"Workflow API exception: {type(exc).__name__}: {exc}")
-        raise HTTPException(status_code=502, detail=f"Workflow API error: {exc}") from exc
+        raise HTTPException(
+            status_code=502, detail=f"Workflow API error: {exc}"
+        ) from exc
 
     if response.status_code >= 300:
         raise HTTPException(
@@ -108,11 +110,15 @@ async def api_submit_workflow(
     try:
         response_payload = response.json()
     except ValueError as exc:
-        raise HTTPException(status_code=502, detail="Workflow API returned invalid JSON") from exc
+        raise HTTPException(
+            status_code=502, detail="Workflow API returned invalid JSON"
+        ) from exc
 
     workflow_id = response_payload.get("workflow_id") or response_payload.get("id")
     if not workflow_id:
-        raise HTTPException(status_code=502, detail="Workflow API did not return workflow_id")
+        raise HTTPException(
+            status_code=502, detail="Workflow API did not return workflow_id"
+        )
 
     print("=" * 60)
     print(f"WORKFLOW SUBMITTED - ID: {workflow_id}")
@@ -146,7 +152,9 @@ async def api_submit_workflow(
 
 
 @router.post("/api/workflows/webhook/{workflow_id}")
-async def workflow_webhook(workflow_id: str, webhook_data: WorkflowWebhook):
+async def workflow_webhook(
+    workflow_id: str, webhook_data: WorkflowWebhook
+) -> dict[str, str]:
     """Webhook endpoint called by Argo Workflow when job completes."""
     print(f"WEBHOOK RECEIVED for workflow {workflow_id}")
     print(f"Status: {webhook_data.status}")
@@ -165,7 +173,7 @@ async def workflow_webhook(workflow_id: str, webhook_data: WorkflowWebhook):
 @router.get("/api/workflows")
 async def api_get_workflows(
     credentials: HTTPAuthorizationCredentials = Depends(security),
-):
+) -> dict[str, list[dict[str, Any]]]:
     user_id = verify_token(credentials.credentials)
     if not user_id:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
@@ -177,10 +185,12 @@ async def api_get_workflows(
 @router.get("/api/workflows/{workflow_id}/download")
 async def api_download_workflow_results(
     workflow_id: str,
-    token: Optional[str] = None,
-    credentials: Optional[HTTPAuthorizationCredentials] = Depends(optional_security),
-):
-    async def _close_stream(response: httpx.Response, client: httpx.AsyncClient) -> None:
+    token: str | None = None,
+    credentials: HTTPAuthorizationCredentials | None = Depends(optional_security),
+) -> StreamingResponse:
+    async def _close_stream(
+        response: httpx.Response, client: httpx.AsyncClient
+    ) -> None:
         await response.aclose()
         await client.aclose()
 
@@ -216,9 +226,7 @@ async def api_download_workflow_results(
                 detail=f"Workflow API error: {response.status_code} {detail}",
             )
 
-        content_type = response.headers.get(
-            "content-type", "application/octet-stream"
-        )
+        content_type = response.headers.get("content-type", "application/octet-stream")
         filename = response.headers.get(
             "content-disposition", "attachment; filename=results.zip"
         )
@@ -229,14 +237,16 @@ async def api_download_workflow_results(
             background=BackgroundTask(_close_stream, response, http_client),
         )
     except httpx.HTTPError as exc:
-        raise HTTPException(status_code=502, detail=f"Workflow API error: {exc}") from exc
+        raise HTTPException(
+            status_code=502, detail=f"Workflow API error: {exc}"
+        ) from exc
 
 
 @router.delete("/api/workflows/{workflow_id}")
 async def api_delete_workflow(
     workflow_id: str,
     credentials: HTTPAuthorizationCredentials = Depends(security),
-):
+) -> dict[str, str]:
     user_id = verify_token(credentials.credentials)
     if not user_id:
         raise HTTPException(status_code=401, detail="Invalid or expired token")

@@ -11,7 +11,7 @@ from ui_common import apply_bmd_theme, check_auth, create_footer, create_header
 
 
 @ui.page("/workflows")
-async def workflows_page():
+async def workflows_page() -> RedirectResponse | None:
     user_id = check_auth()
     if not user_id:
         return RedirectResponse("/login")
@@ -71,7 +71,8 @@ async def workflows_page():
                     "text-gray-400"
                 )
                 ui.button(
-                    "+ New Workflow", on_click=lambda: ui.navigate.to("/select-workflow")
+                    "+ New Workflow",
+                    on_click=lambda: ui.navigate.to("/select-workflow"),
                 ).classes("bmd-btn mt-4")
         else:
             with ui.card().classes("bmd-card p-6 w-full"):
@@ -111,9 +112,9 @@ async def workflows_page():
                             if ecosystem == "terrestrial"
                             else ("blue" if ecosystem == "freshwater" else "grey")
                         )
-                        ui.badge(ecosystem.upper()).props(f"color={ecosystem_color}").classes(
-                            "w-28"
-                        )
+                        ui.badge(ecosystem.upper()).props(
+                            f"color={ecosystem_color}"
+                        ).classes("w-28")
 
                         status = wf["status"]
                         color = (
@@ -122,7 +123,9 @@ async def workflows_page():
                             else (
                                 "blue"
                                 if status == "running"
-                                else "orange" if status == "submitted" else "red"
+                                else "orange"
+                                if status == "submitted"
+                                else "red"
                             )
                         )
                         ui.badge(status.upper()).props(f"color={color}").classes("w-28")
@@ -135,16 +138,18 @@ async def workflows_page():
                             if status == "completed":
                                 ui.button(
                                     "View",
-                                    on_click=lambda wid=wf[
-                                        "workflow_id"
-                                    ]: ui.navigate.to(f"/results/{wid}"),
+                                    on_click=lambda wid=wf["workflow_id"]: (
+                                        ui.navigate.to(f"/results/{wid}")
+                                    ),
                                 ).props("flat color=teal icon=visibility")
 
                             async def confirm_delete(
-                                workflow_id=wf["workflow_id"], name=wf["name"]
-                            ):
-                                with ui.dialog() as dialog, ui.card().classes(
-                                    "p-6 w-96"
+                                workflow_id: str = wf["workflow_id"],
+                                name: str = wf["name"],
+                            ) -> None:
+                                with (
+                                    ui.dialog() as dialog,
+                                    ui.card().classes("p-6 w-96"),
                                 ):
                                     ui.label("Delete Workflow").classes(
                                         "text-xl font-bold text-red-600 mb-2"
@@ -161,7 +166,7 @@ async def workflows_page():
                                             "Cancel", on_click=dialog.close
                                         ).props("flat")
 
-                                        async def do_delete():
+                                        async def do_delete() -> None:
                                             token = app.storage.user.get("token")
                                             import httpx
 
@@ -193,3 +198,4 @@ async def workflows_page():
             "window.bindWorkflowIdCopyButtons && window.bindWorkflowIdCopyButtons();"
         )
     create_footer()
+    return None

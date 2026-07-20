@@ -1,6 +1,6 @@
 """Pydantic request models."""
 
-from typing import Optional
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -23,11 +23,11 @@ class WorkflowSubmit(BaseModel):
     ecosystem_type: str
     geometry_type: str
     geometry_wkt: str
-    parameters: dict
+    parameters: dict[str, Any]
 
 
 class WorkflowWebhook(BaseModel):
     workflow_id: str
     status: str
-    results: Optional[dict] = None
-    error_message: Optional[str] = None
+    results: dict[str, Any] | None = None
+    error_message: str | None = None

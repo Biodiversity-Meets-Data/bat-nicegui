@@ -12,7 +12,7 @@ from config import (
 )
 
 
-def build_rocrate_zip(context: dict) -> bytes:
+def build_rocrate_zip(context: dict[str, str]) -> bytes:
     # Placeholder for template rendering with dynamic context in future.
     _ = context
     template_dir = TEMPLATES_DIR / "terrestrial-sdm"
@@ -43,8 +43,8 @@ def build_rocrate_zip(context: dict) -> bytes:
         return zip_path.read_bytes()
 
 
-def build_workflow_api_headers() -> dict:
-    headers = {}
+def build_workflow_api_headers() -> dict[str, str]:
+    headers: dict[str, str] = {}
     if WORKFLOW_API_KEY:
         if WORKFLOW_API_AUTH_SCHEME:
             headers[WORKFLOW_API_AUTH_HEADER] = (

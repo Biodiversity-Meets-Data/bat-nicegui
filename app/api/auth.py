@@ -10,7 +10,7 @@ router = APIRouter()
 
 
 @router.post("/api/auth/signup")
-async def api_signup(user: UserCreate):
+async def api_signup(user: UserCreate) -> dict[str, str]:
     existing = get_user_by_email(user.email)
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -22,7 +22,7 @@ async def api_signup(user: UserCreate):
 
 
 @router.post("/api/auth/login")
-async def api_login(user: UserLogin):
+async def api_login(user: UserLogin) -> dict[str, str]:
     db_user = get_user_by_email(user.email)
     if not db_user or not verify_password(user.password, db_user["password_hash"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")

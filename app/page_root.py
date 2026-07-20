@@ -7,7 +7,7 @@ from ui_common import check_auth, create_footer
 
 
 @ui.page("/")
-def root_page():
+def root_page() -> RedirectResponse:
     user_id = check_auth()
     create_footer()
     if user_id:

@@ -18,7 +18,7 @@ from ui_common import (
 
 
 @ui.page("/create/terrestrial")
-async def terrestrial_sdm_page(client: Client):
+async def terrestrial_sdm_page(client: Client) -> RedirectResponse | None:
     user_id = check_auth()
     if not user_id:
         return RedirectResponse("/login")
@@ -34,7 +34,9 @@ async def terrestrial_sdm_page(client: Client):
         Path(__file__).resolve().parent.parent / "static",
         Path(__file__).resolve().parent.parent.parent / "static",
     ]
-    static_dir = next((p for p in static_candidates if p.exists()), static_candidates[0])
+    static_dir = next(
+        (p for p in static_candidates if p.exists()), static_candidates[0]
+    )
     ias_path = static_dir / "eu-ias-directive.json"
     try:
         with ias_path.open("r", encoding="utf-8") as handle:
@@ -47,10 +49,10 @@ async def terrestrial_sdm_page(client: Client):
         for entry in ias_data
         if entry.get("scientificName")
     ]
-    habitat_species_names = []
+    habitat_species_names: list[str] = []
 
-    def build_species_options(selected_directives):
-        options = {}
+    def build_species_options(selected_directives: list[str]) -> dict[str, str]:
+        options: dict[str, str] = {}
         if "invasive_species" in (selected_directives or []):
             for name in ias_species_names:
                 options[name] = f"{name} <span class='species-pill'>IAS</span>"
@@ -94,9 +96,11 @@ async def terrestrial_sdm_page(client: Client):
                 with ui.column().classes("w-full gap-1 mt-4"):
                     required_label("Choose EU Directive")
                     with ui.row().classes("w-full gap-4"):
-                        invasive_cb = ui.checkbox(
-                            "Invasive Species", value=False
-                        ).props("checked-icon=check_box").classes("flex-1")
+                        invasive_cb = (
+                            ui.checkbox("Invasive Species", value=False)
+                            .props("checked-icon=check_box")
+                            .classes("flex-1")
+                        )
                         habitat_cb = (
                             ui.checkbox("Habitat", value=False)
                             .props("checked-icon=check_box disable")
@@ -114,8 +118,8 @@ async def terrestrial_sdm_page(client: Client):
                         .classes("w-full")
                     )
 
-                def update_species_options():
-                    selected = []
+                def update_species_options() -> None:
+                    selected: list[str] = []
                     if invasive_cb.value:
                         selected.append("invasive_species")
                     if habitat_cb.value:
@@ -125,7 +129,7 @@ async def terrestrial_sdm_page(client: Client):
                         species_select.value = None
                     species_select.update()
 
-                def update_species_display():
+                def update_species_display() -> None:
                     species_select.props(
                         f"display-value={json.dumps(species_select.value or '')}"
                     )
@@ -143,7 +147,7 @@ async def terrestrial_sdm_page(client: Client):
                             ui.checkbox(period, value=False).classes("w-full")
                         )
 
-                def get_selected_time_periods():
+                def get_selected_time_periods() -> list[str]:
                     return [
                         period
                         for period, checkbox in zip(time_periods, time_period_checks)
@@ -174,7 +178,7 @@ async def terrestrial_sdm_page(client: Client):
                         "text-sm text-gray-500 p-3 bg-gray-50 rounded-lg"
                     ).props("id=geometry-wkt")
 
-                async def submit_workflow():
+                async def submit_workflow() -> None:
                     if not name_input.value:
                         ui.notify("Please enter a workflow name", type="warning")
                         return
@@ -242,7 +246,7 @@ async def terrestrial_sdm_page(client: Client):
                             if response.status_code == 200:
                                 result = response.json()
                                 ui.notify(
-                                    f'Workflow submitted! ID: {result["workflow_id"][:8]}...',
+                                    f"Workflow submitted! ID: {result['workflow_id'][:8]}...",
                                     type="positive",
                                 )
                                 ui.run_javascript(
@@ -378,3 +382,4 @@ async def terrestrial_sdm_page(client: Client):
         timeout=5.0,
     )
     create_footer()
+    return None
