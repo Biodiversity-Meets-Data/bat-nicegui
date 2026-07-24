@@ -7,6 +7,7 @@ words:
   - arcname
   - aread
   - ASGI
+  - authlib
   - bitshifted
   - circlemarker
   - classmethod
@@ -17,6 +18,8 @@ words:
   - fastapi
   - healthcheck
   - httpx
+  - itsdangerous
+  - jinja
   - Lngs
   - nicegui
   - orcid
@@ -34,6 +37,7 @@ words:
   - Starlette
   - stdlib
   - urllib
+  - userinfo
   - uvicorn
 ignoreWords: []
 import: []

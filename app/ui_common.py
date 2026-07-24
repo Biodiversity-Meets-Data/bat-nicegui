@@ -301,8 +301,8 @@ def create_header(current_page: str = "") -> None:
 
 
 async def do_logout() -> None:
-    app.storage.user.clear()
-    ui.navigate.to("/login")
+    """Logout from the application."""
+    ui.navigate.to("/api/auth/logout")
 
 
 def check_auth() -> str | None:

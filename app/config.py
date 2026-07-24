@@ -23,4 +23,12 @@ WORKFLOW_WEBHOOK_URL_TEMPLATE = os.getenv(
 WORKFLOW_DRY_RUN = os.getenv("WORKFLOW_DRY_RUN", "false").lower() == "true"
 WORKFLOW_FORCE = os.getenv("WORKFLOW_FORCE", "false").lower() == "true"
 
+KEYCLOAK_SERVER_URL = os.getenv("KEYCLOAK_SERVER_URL", "")
+KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM", "")
+KEYCLOAK_CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID", "")
+KEYCLOAK_CLIENT_SECRET = os.getenv("KEYCLOAK_CLIENT_SECRET", "")
+KEYCLOAK_DISCOVERY_URL = (
+    f"{KEYCLOAK_SERVER_URL}/realms/{KEYCLOAK_REALM}/.well-known/openid-configuration"
+)
+
 TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"

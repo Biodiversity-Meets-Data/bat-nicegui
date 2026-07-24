@@ -5,13 +5,12 @@ import re
 from fastapi.responses import RedirectResponse
 from nicegui import app, ui
 
-from auth_utils import hash_password, verify_password
+from config import KEYCLOAK_REALM, KEYCLOAK_SERVER_URL
 from database import (
     check_email_exists,
     DatabaseError,
     delete_user,
     get_user_by_id,
-    update_user_password,
     update_user_profile,
 )
 from ui_common import (
@@ -110,76 +109,28 @@ async def account_page() -> RedirectResponse | None:
             ui.button("Save Changes", on_click=update_profile).classes("bmd-btn mt-6")
 
         with ui.card().classes("bmd-card p-6 w-full"):
-            ui.label("Change Password").classes(
-                "text-xl font-semibold text-gray-800 mb-4"
+            ui.label("Password & Login").classes(
+                "text-xl font-semibold text-gray-800 mb-2"
             )
+            ui.label(
+                "Your password and login credentials are managed by your BMD "
+                "SSO account, not here."
+            ).classes("text-sm text-gray-600 mb-4")
 
-            with ui.column().classes("w-full gap-1"):
-                required_label("Current Password")
-                current_pw_input = (
-                    ui.input(placeholder="Enter current password", password=True)
-                    .props("outlined")
-                    .classes("w-full")
-                )
-
-            with ui.column().classes("w-full gap-1 mt-4"):
-                required_label("New Password")
-                new_pw_input = (
-                    ui.input(placeholder="At least 6 characters", password=True)
-                    .props("outlined")
-                    .classes("w-full")
-                )
-
-            with ui.column().classes("w-full gap-1 mt-4"):
-                required_label("Confirm New Password")
-                confirm_pw_input = (
-                    ui.input(placeholder="Repeat new password", password=True)
-                    .props("outlined")
-                    .classes("w-full")
-                )
-
-            async def update_password() -> None:
-                current_pw = current_pw_input.value
-                new_pw = new_pw_input.value
-                confirm_pw = confirm_pw_input.value
-
-                # Verify user inputs.
-                if not all((current_pw, new_pw, confirm_pw)):
-                    ui.notify("Please fill in all password fields", type="negative")
-                    return
-                if not verify_password(current_pw, user["password_hash"]):
-                    ui.notify("Current password is incorrect", type="negative")
-                    return
-                if new_pw != confirm_pw:
-                    ui.notify("New passwords do not match", type="negative")
-                    return
-                if len(new_pw) < 6:
-                    ui.notify("Password must be at least 6 characters", type="negative")
-                    return
-                if new_pw == current_pw:
-                    ui.notify(
-                        "New password is the same as current password", type="negative"
-                    )
-                    return
-
-                # Update password in database.
-                try:
-                    update_user_password(user_id, password_hash=hash_password(new_pw))
-                    current_pw_input.value = ""
-                    new_pw_input.value = ""
-                    confirm_pw_input.value = ""
-                    ui.notify("Password changed successfully", type="positive")
-                except DatabaseError as e:
-                    ui.notify(f"Password update failed: {e}", type="negative")
-
-            ui.button("Change Password", on_click=update_password).classes(
-                "bmd-btn-secondary bmd-btn mt-6"
+            account_console_url = (
+                f"{KEYCLOAK_SERVER_URL}/realms/{KEYCLOAK_REALM}/account"
             )
+            ui.button(
+                "Manage account on SSO",
+                on_click=lambda: ui.navigate.to(account_console_url, new_tab=True),
+            ).props("icon=open_in_new outline").classes("bmd-btn-secondary bmd-btn")
 
         with ui.card().classes("bmd-card p-6 w-full border-2 border-red-200"):
             ui.label("Danger Zone").classes("text-xl font-semibold text-red-600 mb-2")
             ui.label(
-                "Once you delete your account, there is no going back. All your workflows will be permanently deleted."
+                "Once you delete your account, there is no going back. All your "
+                "workflows will be permanently deleted. This only removes your "
+                "local BMD data — your SSO account itself is not deleted."
             ).classes("text-sm text-gray-600 mb-4")
 
             async def confirm_delete() -> None:

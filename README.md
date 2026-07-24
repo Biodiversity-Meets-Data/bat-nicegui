@@ -14,8 +14,8 @@ and FastAPI.
 
 ## Application Features
 
-- **User Authentication**: secure signup/login with JWT tokens and SQLite
-  backend.
+- **User Authentication**: Single sign-on via Keycloak (OpenID Connect), with
+  a local JWT session and SQLite backend
 - **Interactive Map**: draw bounding boxes and polygons on a Europe-restricted
   Leaflet map.
 - **Workflow Submission**: submit analysis workflows with configurable
@@ -34,7 +34,7 @@ and FastAPI.
 - **Frontend**: NiceGUI with Tailwind CSS
 - **Backend**: FastAPI (Python)
 - **Database**: SQLite
-- **Authentication**: JWT tokens with bcrypt password hashing
+- **Authentication**: Keycloak (OpenID Connect) with a local JWT session token
 - **Map**: Leaflet.js with Leaflet.Draw plugin
 - **Container**: Docker
 
@@ -42,7 +42,7 @@ and FastAPI.
 
 ```txt
 Browser (NiceGUI UI)
-  | 1) POST /api/auth/login
+  | 1) GET /api/auth/login -> Keycloak -> GET /api/auth/callback
   v
 bmd-bat-app (FastAPI + NiceGUI)
   | 2) POST /api/workflows/submit
@@ -72,10 +72,10 @@ cp .env.example .env
 # Edit .env and set a secure SECRET_KEY
 nano .env
 
-# Build and run
-docker-compose up --build
+# Build and run detached
+docker compose up -d --build
 
-# Access the application at http://localhost:8080
+# Access the application at http://localhost
 ```
 
 ### Local installation
@@ -101,14 +101,18 @@ installed on your local machine.
 | -------- | ----------- | ------- |
 | `SECRET_KEY` | JWT signing key (CHANGE IN PRODUCTION) | `bmd-secret-key-...` |
 | `DATABASE_PATH` | SQLite database file path | `/app/data/bmd.db` |
-| `WORKFLOW_WAIT_TIME` | Simulated workflow processing time (seconds) | `20` |
-| `ARGO_WORKFLOW_URL` | Argo Workflow server URL | `http://argo-workflow-server:2746` |
-| `ARGO_WORKFLOW_NAMESPACE` | Argo namespace | `argo` |
-| `WORKFLOW_API_URL` | External workflow submission endpoint | `http://localhost:1245/api/v1/workflows` |
-| `WORKFLOW_API_KEY` | API key for workflow API (sent as Bearer token) | (empty) |
-| `WORKFLOW_WEBHOOK_URL_TEMPLATE` | Webhook URL template (supports `{workflow_id}`) | `http://localhost:8080/api/workflows/webhook/{workflow_id}` |
+| `LOCAL_API_BASE_URL` | Public base URL for this app, used by auth redirects | `http://localhost:8080` |
+| `WORKFLOW_API_URL` | External workflow submission endpoint | `http://workflow-api:8002/api/v1/workflows` |
+| `WORKFLOW_API_KEY` | API key for workflow API | configured in Compose |
+| `WORKFLOW_API_AUTH_HEADER` | Header used for workflow API authentication | `Api-Key` in Compose, `Authorization` in Python default |
+| `WORKFLOW_API_AUTH_SCHEME` | Optional auth scheme prefix, e.g. `Bearer` | empty in Compose, `Bearer` in Python default |
+| `WORKFLOW_WEBHOOK_URL_TEMPLATE` | Webhook URL template (supports `{workflow_id}`) | `http://bmd-bat-app:8080/api/workflows/webhook/{workflow_id}` |
 | `WORKFLOW_DRY_RUN` | Validate only (true/false) | `false` |
 | `WORKFLOW_FORCE` | Force re-execution (true/false) | `false` |
+| `KEYCLOAK_SERVER_URL` | Base URL of the Keycloak instance | (empty) |
+| `KEYCLOAK_REALM` | Keycloak realm name | (empty) |
+| `KEYCLOAK_CLIENT_ID` | Keycloak confidential client ID | (empty) |
+| `KEYCLOAK_CLIENT_SECRET` | Keycloak client secret | (empty) |
 
 <br>
 
@@ -117,9 +121,23 @@ installed on your local machine.
 ### Authentication
 
 | Method | Endpoint           | Description             |
-|--------|--------------------|-------------------------|
+| ------ | ------------------ | ----------------------- |
 | POST   | `/api/auth/signup` | Create new user account |
 | POST   | `/api/auth/login`  | Login and get JWT token |
+
+Login is delegated to Keycloak via OpenID Connect (Authorization Code flow).
+After a successful Keycloak login, the app still mints its own local session
+JWT, used by the endpoints below and by the workflow UI.
+
+| Method | Endpoint             | Description                                                |
+| ------ | -------------------- | ---------------------------------------------------------- |
+| GET    | `/api/auth/login`    | Redirects to Keycloak's login page                         |
+| GET    | `/api/auth/callback` | Keycloak redirect target; exchanges the code, creates/matches the local user, issues the local session JWT |
+| GET    | `/api/auth/logout`   | Clears the local session and ends the Keycloak SSO session |
+
+Your Keycloak realm needs a confidential client with the Authorization Code
+flow enabled, a redirect URI of `<LOCAL_API_BASE_URL>/api/auth/callback`, and
+a post-logout redirect URI of `<LOCAL_API_BASE_URL>/login`.
 
 ### Workflows
 
@@ -155,19 +173,21 @@ Schemas (tables) stored in the application's SQLite database.
 
 ### Users Table
 
-| Column          | Type          | Description            |
-|-----------------|---------------|------------------------|
-| `user_id`       | TEXT (PK)     | UUID primary key       |
-| `email`         | TEXT (UNIQUE) | User email             |
-| `password_hash` | TEXT          | Bcrypt hashed password |
-| `name`          | TEXT          | User's full name       |
-| `created_at`    | TIMESTAMP     | Account creation time  |
-| `updated_at`    | TIMESTAMP     | Last update time       |
+| Column          | Type          | Description                                   |
+| --------------- | ------------- | --------------------------------------------- |
+| `user_id`       | TEXT (PK)     | UUID primary key                              |
+| `email`         | TEXT (UNIQUE) | User email                                    |
+| `password_hash` | TEXT          | Bcrypt hashed password                        |
+| `name`          | TEXT          | User's full name                              |
+| `created_at`    | TIMESTAMP     | Account creation time                         |
+| `orcid`         | TEXT          | Optional ORCID identifier                     |
+| `keycloak_sub`  | TEXT (UNIQUE) | Keycloak subject identifier linked to account |
+| `updated_at`    | TIMESTAMP     | Last update time                              |
 
 ### Workflows Table
 
 | Column           | Type      | Description                                                    |
-|------------------|-----------|----------------------------------------------------------------|
+| ---------------- | --------- | -------------------------------------------------------------- |
 | `workflow_id`    | TEXT (PK) | UUID primary key                                               |
 | `user_id`        | TEXT (FK) | Reference to users table                                       |
 | `name`           | TEXT      | Workflow name                                                  |
@@ -212,7 +232,6 @@ bat-nicegui/
 │   ├── bats/
 │   │   └── terrestrial_sdm.py # /create/terrestrial page
 │   ├── page_login.py
-│   ├── page_signup.py
 │   ├── page_select_workflow.py
 │   ├── page_account.py
 │   ├── page_workflows.py

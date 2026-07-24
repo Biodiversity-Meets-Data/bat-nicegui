@@ -4,8 +4,9 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 
-# Virtual environments (uv creates .venv)
+# Virtual environments (uv creates .venv) and containers.
 .venv/
+.dockerignore
 
 # Local database files.
 data/
@@ -13,3 +14,9 @@ data/
 
 # OS files.
 .DS_Store
+
+# Config files
+.env
+
+# Agents
+.claude

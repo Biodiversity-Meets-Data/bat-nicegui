@@ -58,6 +58,14 @@ def init_db() -> None:
     except sqlite3.OperationalError:
         pass  # Column already exists
 
+    # Add keycloak_sub column if it doesn't exist (for existing databases)
+    # Note: SQLite's ALTER TABLE ADD COLUMN cannot carry a UNIQUE constraint,
+    # so uniqueness is enforced via a separate index below instead.
+    try:
+        cursor.execute("ALTER TABLE users ADD COLUMN keycloak_sub TEXT")
+    except sqlite3.OperationalError:
+        pass  # Column already exists
+
     # Create workflows table with workflow_id and user_id as foreign key
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS workflows (
@@ -108,6 +116,9 @@ def init_db() -> None:
         "CREATE INDEX IF NOT EXISTS idx_workflows_status ON workflows(status)"
     )
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)")
+    cursor.execute(
+        "CREATE UNIQUE INDEX IF NOT EXISTS idx_users_keycloak_sub ON users(keycloak_sub)"
+    )
 
     conn.commit()
     conn.close()
@@ -185,6 +196,55 @@ def get_cursor() -> Iterator[sqlite3.Cursor]:
         raise
     finally:
         conn.close()
+
+
+def get_user_by_keycloak_sub(keycloak_sub: str) -> dict[str, Any] | None:
+    """Get user by Keycloak subject identifier."""
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM users WHERE keycloak_sub = ?", (keycloak_sub,))
+    row = cursor.fetchone()
+    conn.close()
+
+    if row:
+        return dict(row)
+    return None
+
+
+def set_user_keycloak_sub(user_id: str, keycloak_sub: str) -> None:
+    """Backfill the Keycloak subject identifier onto an existing local user."""
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "UPDATE users SET keycloak_sub = ?, updated_at = ? WHERE user_id = ?",
+        (keycloak_sub, datetime.utcnow().isoformat(), user_id),
+    )
+
+    conn.commit()
+    conn.close()
+
+
+def create_user_from_keycloak(keycloak_sub: str, email: str, name: str) -> str:
+    """Create a new user identified by Keycloak and return the user_id"""
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    user_id = str(uuid.uuid4())
+
+    cursor.execute(
+        """
+        INSERT INTO users (user_id, email, password_hash, name, keycloak_sub)
+        VALUES (?, ?, ?, ?, ?)
+    """,
+        (user_id, email, "", name, keycloak_sub),
+    )
+
+    conn.commit()
+    conn.close()
+
+    return user_id
 
 
 def update_user_profile(user_id: str, name: str, email: str, orcid: str) -> None:
