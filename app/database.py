@@ -6,7 +6,7 @@ SQLite database with users and workflows tables.
 import os
 import sqlite3
 import uuid
-from collections.abc import Iterator
+from collections.abc import Generator
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from typing import Any
@@ -36,7 +36,7 @@ def get_connection() -> sqlite3.Connection:
 
 
 @contextmanager
-def get_cursor() -> Iterator[sqlite3.Cursor]:
+def get_cursor() -> Generator[sqlite3.Cursor]:
     """Yield a new cursor to a database.
 
     * On context manager entry: yield a new database cursor.
@@ -190,49 +190,41 @@ def get_user_by_id(user_id: str) -> dict[str, Any] | None:
 
 def get_user_by_keycloak_sub(keycloak_sub: str) -> dict[str, Any] | None:
     """Get user by Keycloak subject identifier."""
-    conn = get_connection()
-    cursor = conn.cursor()
+    with get_cursor() as cursor:
+        cursor.execute("SELECT * FROM users WHERE keycloak_sub = ?", (keycloak_sub,))
+        row = cursor.fetchone()
 
-    cursor.execute("SELECT * FROM users WHERE keycloak_sub = ?", (keycloak_sub,))
-    row = cursor.fetchone()
-    conn.close()
-
-    if row:
-        return dict(row)
-    return None
+    return dict(row) if row else None
 
 
 def set_user_keycloak_sub(user_id: str, keycloak_sub: str) -> None:
-    """Backfill the Keycloak subject identifier onto an existing local user."""
-    conn = get_connection()
-    cursor = conn.cursor()
+    """Backfill the Keycloak subject identifier onto an existing local user.
 
-    cursor.execute(
-        "UPDATE users SET keycloak_sub = ?, updated_at = ? WHERE user_id = ?",
-        (keycloak_sub, datetime.utcnow().isoformat(), user_id),
-    )
-
-    conn.commit()
-    conn.close()
+    Raises:
+        UserNotFoundError: if no user exists with the given user_id.
+    """
+    with get_cursor() as cursor:
+        cursor.execute(
+            "UPDATE users SET keycloak_sub = ?, updated_at = ? WHERE user_id = ?",
+            (keycloak_sub, datetime.now(timezone.utc).isoformat(), user_id),
+        )
+        # No database entry update means that the user could not be found.
+        if cursor.rowcount == 0:
+            raise UserNotFoundError(user_id)
 
 
 def create_user_from_keycloak(keycloak_sub: str, email: str, name: str) -> str:
     """Create a new user identified by Keycloak and return the user_id"""
-    conn = get_connection()
-    cursor = conn.cursor()
-
     user_id = str(uuid.uuid4())
 
-    cursor.execute(
-        """
-        INSERT INTO users (user_id, email, password_hash, name, keycloak_sub)
-        VALUES (?, ?, ?, ?, ?)
-    """,
-        (user_id, email, "", name, keycloak_sub),
-    )
-
-    conn.commit()
-    conn.close()
+    with get_cursor() as cursor:
+        cursor.execute(
+            """
+            INSERT INTO users (user_id, email, password_hash, name, keycloak_sub)
+            VALUES (?, ?, ?, ?, ?)
+        """,
+            (user_id, email, "", name, keycloak_sub),
+        )
 
     return user_id
 
