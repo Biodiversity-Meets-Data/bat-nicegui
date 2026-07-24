@@ -47,23 +47,46 @@ async def api_auth_login(request: Request) -> RedirectResponse:
 @ui.page("/api/auth/callback", response_timeout=15.0)
 async def api_auth_callback(request: Request) -> RedirectResponse:
     token = await oauth.keycloak.authorize_access_token(request)
-    claims = token.get("userinfo") or {}
-    keycloak_sub = claims.get("sub")
-    if keycloak_sub is None:
+    claims = token.get("userinfo")
+    if claims is None:
         return RedirectResponse("/login")
 
-    email = claims.get("email") or ""
+    # Retrieve keycloak "subject" - the user's internal UUID in keycloak.
+    keycloak_sub = claims.get("sub")
+    if not keycloak_sub:
+        return RedirectResponse("/login")
+    keycloak_sub = cast(str, keycloak_sub)
+
+    # Retrieve user email from Keycloak. An email must be set.
+    email = claims.get("email")
+    if not email:
+        return RedirectResponse("/login")
+    email = cast(str, email)
+
+    # Retrieve user name from Keycloak. If missing, use email as username.
     name = claims.get("name") or claims.get("preferred_username") or email
 
+    # An unverified email is not a trustworthy identifier - it must not be used
+    # to reach an existing account, nor stored as a new account's identity.
+    if claims.get("email_verified") is not True:
+        return RedirectResponse("/login")
+
+    # Check if the keycloak user already exists in the local database.
     user = get_user_by_keycloak_sub(keycloak_sub)
-    if not user and email:
+    if not user:
+        # If the keycloak user does not exist locally yet, test if there is a
+        # pre-existing user with the same email, and if yes, then link the
+        # keycloak ID to this local account. This is essentially a "migration"
+        # for pre-existing users.
         user = get_user_by_email(email)
         if user:
             set_user_keycloak_sub(user["user_id"], keycloak_sub)
 
     if user:
+        # Case 1: the user already exists in the local database.
         user_id = user["user_id"]
     else:
+        # Case 2: the user does not exist yet, and gets created.
         user_id = create_user_from_keycloak(keycloak_sub, email, name)
 
     access_token = create_access_token(user_id)
