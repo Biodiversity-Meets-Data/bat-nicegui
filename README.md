@@ -80,8 +80,11 @@ docker compose up -d --build
 
 ### Local installation
 
-The application can be run with the following commands, and becomes
-available locally on [localhost:8000](http://localhost:8000).
+1. Create a copy of the `.env.sample` environment config file and renamed it
+   to `.env`.
+2. Change/set the required environment variables in your `.env` file.
+3. The application can now be run with the following commands, and becomes
+   available locally on [localhost:8000](http://localhost:8000).
 
 ```sh
 # Install dependencies - also creates a .venv automatically if needed.
@@ -89,7 +92,7 @@ uv sync
 
 # Start the application - available on http://localhost:8000
 export DATABASE_PATH="./data/bmd.db"
-uv run -- uvicorn main:fastapi_app --reload --app-dir app
+uv run --env-file .env -- uvicorn main:fastapi_app --reload --app-dir app
 ```
 
 **Note:** the above commands assume you have [uv](https://docs.astral.sh/uv)
