@@ -1,137 +1,84 @@
-"""Workflow selection page."""
+"""BAT (Biodiversity Analysis Tool) selection page.
+
+BATs are grouped in tabs corresponding to ecosystem categories. Each BAT is
+presented as a tile/card with an icon and a short description. Clicking on
+the tile/card opens the corresponding BAT page.
+"""
 
 from fastapi.responses import RedirectResponse
 from nicegui import ui
 
-from ui_common import apply_bmd_theme, check_auth, create_footer, create_header
+from bats.registry import EcosystemCategory, Bat, bats_by_category
+from ui_common import apply_bmd_theme, check_auth
+
+
+def render_bat_card(bat: Bat) -> None:
+    """Renders a single BAT tile/card."""
+
+    async def show_about() -> None:
+        with ui.dialog() as dialog, ui.card().classes("p-6 max-w-2xl"):
+            ui.markdown(bat.about_md)
+            ui.button("Close", on_click=dialog.close).classes("bmd-btn mt-4")
+        dialog.open()
+
+    card = ui.card().classes("bat-card p-4")
+    card.on("click", lambda: ui.navigate.to(bat.route))
+
+    with card, ui.column().classes("w-full h-full items-center justify-between gap-2"):
+        with ui.column().classes("w-full items-center gap-1"):
+            ui.icon(bat.icon).classes("bat-card-icon")
+            ui.label(bat.label).classes(
+                "text-base font-semibold text-gray-800 text-center"
+            )
+            ui.label(bat.description).classes(
+                "text-xs text-gray-600 text-center bat-card-desc"
+            )
+        with ui.column().classes("items-center gap-1"):
+            # `click.stop` keeps the About click from bubbling to the card's
+            # launch handler. Do not also pass `on_click=` -- that would drop
+            # the modifier.
+            ui.button("About").props("outline size=sm").on("click.stop", show_about)
 
 
 @ui.page("/select-workflow")
 async def select_workflow_page() -> RedirectResponse | None:
+
+    # The page is only accessible to authenticated users.
     user_id = check_auth()
     if not user_id:
         return RedirectResponse("/login")
 
     apply_bmd_theme()
-    ui.run_javascript("document.body.classList.remove('public-auth')")
-    create_header()
-
-    terrestrial_about_md = """
-## Terrestrial Ecosystems
-
-Analyze biodiversity patterns across land-based ecosystems including forests, grasslands, mountains, and urban areas.
-
-### Features:
-- **Species Distribution Modeling** - Predict suitable habitats for terrestrial species
-- **Multi-scale Analysis** - From local to continental scales
-- **Environmental Variables** - Temperature, precipitation, elevation, soil types
-- **Temporal Analysis** - Historical and current data integration
-
-### Typical Use Cases:
-- Forest biodiversity assessments
-- Conservation planning for protected areas
-- Climate change impact studies
-- Species range predictions
-"""
-
-    freshwater_about_md = """
-## Freshwater Ecosystems
-
-Analyze biodiversity in rivers, lakes, wetlands, and other freshwater habitats.
-
-### Features:
-- **Aquatic Species Modeling** - Fish, amphibians, invertebrates
-- **Hydrological Integration** - Water quality, flow patterns
-- **Habitat Connectivity** - River network analysis
-- **Invasive Species Tracking** - Monitor non-native species spread
-
-### Status:
-🚧 **Coming Soon** - This workflow is currently under development and will be available in a future release.
-"""
 
     with ui.column().classes("w-full max-w-5xl mx-auto p-6 gap-6"):
-        ui.label("Select Workflow Type").classes("text-3xl font-bold mb-2").style(
+        ui.label("Biodiversity Analysis Tools").classes(
+            "text-3xl font-bold mb-2"
+        ).style(
             "background: linear-gradient(135deg, #2ECC71, #0077B6); "
             "-webkit-background-clip: text; -webkit-text-fill-color: transparent;"
         )
-        ui.label("Choose the ecosystem type for your biodiversity analysis").classes(
-            "text-lg text-gray-600 mb-6"
+        ui.label("Select a category, then choose a tool.").classes(
+            "text-lg text-gray-600 mb-2"
         )
 
-        with ui.row().classes("w-full gap-8 flex-wrap lg:flex-nowrap"):
-            with ui.card().classes("ecosystem-card p-8 flex-1 min-w-80"):
-                with ui.column().classes("w-full items-center gap-4"):
-                    ui.icon("forest").classes("ecosystem-icon")
-                    ui.label("Terrestrial").classes("text-2xl font-bold text-gray-800")
-                    ui.label(
-                        "Land-based ecosystems: forests, grasslands, mountains"
-                    ).classes("text-sm text-gray-600 text-center")
+        with ui.tabs().classes("w-full") as tabs:
+            for category in EcosystemCategory:
+                ui.tab(category.slug, label=category.label, icon=category.icon)
 
-                    with ui.row().classes("w-full gap-3 mt-6"):
-
-                        async def show_terrestrial_about() -> None:
-                            with (
-                                ui.dialog() as dialog,
-                                ui.card().classes("p-6 max-w-2xl"),
-                            ):
-                                ui.markdown(terrestrial_about_md)
-                                ui.button("Close", on_click=dialog.close).classes(
-                                    "bmd-btn mt-4"
-                                )
-                            dialog.open()
-
-                        ui.button(
-                            "About",
-                            on_click=show_terrestrial_about,
-                        ).props("outline").classes("ecosystem-action-btn flex-1").style(
-                            "background: rgba(46, 204, 113, 0.05); "
-                            "border: 2px solid rgba(46, 204, 113, 0.3); "
-                            "color: #1A9F53;"
+        default_category = next(iter(EcosystemCategory))
+        with ui.tab_panels(tabs, value=default_category.slug).classes(
+            "w-full bmd-card"
+        ):
+            for category in EcosystemCategory:
+                with ui.tab_panel(category.slug):
+                    bats = bats_by_category(category)
+                    if not bats:
+                        ui.label("No tools available yet — coming soon.").classes(
+                            "text-sm text-gray-500 p-4"
                         )
+                    else:
+                        with ui.row().classes("w-full gap-4 flex-wrap p-2"):
+                            for bat in bats:
+                                render_bat_card(bat)
 
-                        ui.button(
-                            "Select",
-                            on_click=lambda: ui.navigate.to("/create/terrestrial"),
-                        ).classes("bmd-btn ecosystem-action-btn flex-1").props(
-                            "icon=arrow_forward"
-                        )
-
-            with ui.card().classes("ecosystem-card disabled p-8 flex-1 min-w-80"):
-                with ui.column().classes("w-full items-center gap-4"):
-                    ui.icon("water").classes("ecosystem-icon")
-                    ui.label("Freshwater").classes("text-2xl font-bold text-gray-500")
-                    ui.label("Rivers, lakes, wetlands, and aquatic habitats").classes(
-                        "text-sm text-gray-500 text-center"
-                    )
-                    ui.badge("COMING SOON").props("color=grey").classes("mt-2")
-
-                    with ui.row().classes("w-full gap-3 mt-6"):
-
-                        async def show_freshwater_about() -> None:
-                            with (
-                                ui.dialog() as dialog,
-                                ui.card().classes("p-6 max-w-2xl"),
-                            ):
-                                ui.markdown(freshwater_about_md)
-                                ui.button("Close", on_click=dialog.close).classes(
-                                    "bmd-btn mt-4"
-                                )
-                            dialog.open()
-
-                        ui.button(
-                            "About",
-                            on_click=show_freshwater_about,
-                        ).props("outline").classes("ecosystem-action-btn flex-1").style(
-                            "background: rgba(156, 163, 175, 0.05); "
-                            "border: 2px solid rgba(156, 163, 175, 0.3); "
-                            "color: #6B7280;"
-                        )
-
-                        ui.button(
-                            "Select",
-                        ).classes("ecosystem-action-btn flex-1").props("disable").style(
-                            "background: #E5E7EB; color: #9CA3AF;"
-                        )
-
-    create_footer()
     return None

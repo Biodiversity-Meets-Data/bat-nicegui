@@ -6,7 +6,7 @@ from fastapi.responses import RedirectResponse
 from nicegui import app, ui
 
 from database import get_workflow_by_id
-from ui_common import apply_bmd_theme, check_auth, create_footer
+from ui_common import apply_bmd_theme, check_auth
 
 
 @ui.page("/results/{workflow_id}")
@@ -16,7 +16,6 @@ async def results_page(workflow_id: str) -> RedirectResponse | None:
         return RedirectResponse("/login")
 
     apply_bmd_theme()
-    ui.run_javascript("document.body.classList.remove('public-auth')")
 
     workflow = get_workflow_by_id(workflow_id)
     if not workflow or workflow["user_id"] != user_id:
@@ -25,7 +24,6 @@ async def results_page(workflow_id: str) -> RedirectResponse | None:
             ui.button(
                 "Back to Workflows", on_click=lambda: ui.navigate.to("/workflows")
             ).classes("bmd-btn mt-4")
-        create_footer()
         return None
 
     try:
@@ -201,5 +199,5 @@ async def results_page(workflow_id: str) -> RedirectResponse | None:
             ui.button(
                 "<- Back to Workflows", on_click=lambda: ui.navigate.to("/workflows")
             ).classes("bmd-btn mt-4")
-    create_footer()
+
     return None

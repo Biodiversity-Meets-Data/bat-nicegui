@@ -16,8 +16,6 @@ from database import (
 from ui_common import (
     apply_bmd_theme,
     check_auth,
-    create_footer,
-    create_header,
     optional_label,
     required_label,
 )
@@ -30,13 +28,10 @@ async def account_page() -> RedirectResponse | None:
         return RedirectResponse("/login")
 
     apply_bmd_theme()
-    ui.run_javascript("document.body.classList.remove('public-auth')")
-    create_header("account")
 
     user = get_user_by_id(user_id)
     if not user:
         ui.label("User not found").classes("text-xl text-red-500")
-        create_footer()
         return None
 
     with ui.column().classes("w-full max-w-2xl mx-auto p-6 gap-6"):
@@ -175,5 +170,5 @@ async def account_page() -> RedirectResponse | None:
             ui.button("Delete Account", on_click=confirm_delete).classes(
                 "bmd-btn-danger bmd-btn"
             ).props("icon=delete")
-    create_footer()
+
     return None

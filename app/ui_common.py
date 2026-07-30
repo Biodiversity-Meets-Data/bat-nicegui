@@ -1,12 +1,68 @@
 """Shared NiceGUI UI helpers."""
 
+import enum
+
 from nicegui import app, ui
 
 from auth_utils import verify_token
 
 
-def create_footer() -> None:
-    """Global BMD footer."""
+class PageHeader(enum.Enum):
+    NONE = enum.auto()
+    BASE = enum.auto()
+    WORKFLOW_PAGE = enum.auto()
+
+
+def add_header(header: PageHeader = PageHeader.BASE) -> None:
+    """Adds the BMD header with navigation tools to the page.
+
+    Arguments:
+    * header: type of header to create. In headers for the workflow page, the
+        "Workflows" button is displayed as being pressed, indicating that the
+        Workflow page is the currently active page.
+    """
+    user_name = app.storage.user.get("user_name", "User")
+
+    with ui.header().classes("bmd-header items-center justify-between"):
+        with ui.row().classes("items-center gap-3"):
+            with (
+                ui.column()
+                .classes("gap-0 cursor-pointer")
+                .on("click", lambda: ui.navigate.to("/workflows"))
+            ):
+                ui.label("BMD").classes("bmd-logo-text")
+                ui.label("Biodiversity Meets Data").classes("bmd-subtitle")
+
+        with ui.row().classes("gap-3 items-center"):
+            ui.link("Workflows", "/workflows").classes(
+                "nav-link" + (" active" if header is PageHeader.WORKFLOW_PAGE else "")
+            )
+            ui.button(
+                "+ New Workflow", on_click=lambda: ui.navigate.to("/select-workflow")
+            ).props("unelevated rounded color=white text-color=primary").classes(
+                "font-semibold"
+            )
+
+            with ui.button(icon="account_circle").props("flat round color=white"):
+                with ui.menu().classes("min-w-48"):
+                    with ui.row().classes("px-4 py-3 border-b border-gray-100"):
+                        with ui.column().classes("gap-0"):
+                            ui.label(user_name).classes("font-semibold text-gray-800")
+                            ui.label("Logged in").classes("text-xs text-gray-500")
+                    ui.menu_item(
+                        "Account Settings", on_click=lambda: ui.navigate.to("/account")
+                    ).classes("py-2")
+                    ui.separator()
+                    ui.menu_item("Logout", on_click=lambda: do_logout()).classes(
+                        "py-2 text-red-600"
+                    )
+
+
+def add_footer() -> None:
+    """Adds a footer to the page. Currently this footer is used globally
+    for all pages.
+    """
+
     with ui.footer().classes(
         "w-full justify-center items-center py-3 bg-transparent text-xs text-gray-500",
     ):
@@ -23,8 +79,17 @@ def create_footer() -> None:
         )
 
 
-def apply_bmd_theme() -> None:
-    """Apply BMD theme styling."""
+def apply_bmd_theme(
+    header: PageHeader = PageHeader.BASE, public_auth: bool = False
+) -> None:
+    """Apply BMD theme styling.
+
+    Arguments
+    * header: type of header to be added to the page.
+    * public_auth: if True, the styling for public (non-authenticated) pages
+      is used.
+    """
+
     ui.add_head_html(
         """
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,20 +113,6 @@ def apply_bmd_theme() -> None:
             font-family: 'Outfit', sans-serif !important;
             min-height: 100vh;
             background: #F0F9F4; /* default for app/dashboard */
-        }
-
-        /* ------------------------------------------------------------------
-           Public pages (login / signup only)
-           ------------------------------------------------------------------ */
-        body.public-auth {
-            background-image:
-                url("https://www.transparenttextures.com/patterns/leaves.png"),
-                radial-gradient(circle at 25% 30%, rgba(46,204,113,0.35), transparent 45%),
-                radial-gradient(circle at 75% 70%, rgba(23,162,184,0.35), transparent 45%),
-                linear-gradient(135deg, #EAF6F0 0%, #DDEFE5 50%, #CFE8E3 100%);
-            background-size: 180px 180px, auto, auto, cover;
-            background-repeat: repeat;
-            background-attachment: fixed;
         }
 
         .bmd-header {
@@ -179,48 +230,38 @@ def apply_bmd_theme() -> None:
             font-weight: 400;
         }
 
-        /* Ecosystem selection cards */
-        .ecosystem-card {
+        /* Compact BAT cards inside category expansions */
+        .bat-card {
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(26, 58, 42, 0.1);
-            border: 2px solid rgba(46, 204, 113, 0.2);
-            transition: all 0.4s ease;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(26, 58, 42, 0.08);
+            border: 1px solid rgba(46, 204, 113, 0.15);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
             cursor: pointer;
+            width: 220px;
+            height: 210px;
         }
 
-        .ecosystem-card:not(.disabled):hover {
-            transform: translateY(-8px);
-            box-shadow: 0 16px 48px rgba(46, 204, 113, 0.25);
-            background: linear-gradient(135deg, rgba(46, 204, 113, 0.05) 0%, rgba(23, 162, 184, 0.05) 100%);
+        /* Clamp the description to 2 lines so a long one can't grow the card. */
+        .bat-card-desc {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .bat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 28px rgba(46, 204, 113, 0.18);
             border-color: rgba(46, 204, 113, 0.4);
         }
 
-        .ecosystem-card.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            background: #f5f5f5;
-        }
-
-        .ecosystem-icon {
-            font-size: 6rem;
+        .bat-card-icon {
+            font-size: 2.5rem;
             background: linear-gradient(135deg, #2ECC71 0%, #17A2B8 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-        }
-
-        .ecosystem-card.disabled .ecosystem-icon {
-            background: #9CA3AF;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .ecosystem-action-btn {
-            padding: 8px 16px;
-            min-height: 38px;
-            font-size: 0.875rem;
         }
 
         .species-pill {
@@ -246,6 +287,33 @@ def apply_bmd_theme() -> None:
     """
     )
 
+    # Add the decorative background used only on non-authenticated pages
+    # such as the login page.
+    if public_auth:
+        ui.add_head_html(
+            """
+            <style>
+                body {
+                    background-image:
+                        url("https://www.transparenttextures.com/patterns/leaves.png"),
+                        radial-gradient(circle at 25% 30%, rgba(46,204,113,0.35), transparent 45%),
+                        radial-gradient(circle at 75% 70%, rgba(23,162,184,0.35), transparent 45%),
+                        linear-gradient(135deg, #EAF6F0 0%, #DDEFE5 50%, #CFE8E3 100%);
+                    background-size: 180px 180px, auto, auto, cover;
+                    background-repeat: repeat;
+                    background-attachment: fixed;
+                }
+            </style>
+            """
+        )
+
+    # Add a header to the page, if it has one.
+    if header is not PageHeader.NONE:
+        add_header(header=header)
+
+    # Add a footer to the page.
+    add_footer()
+
 
 def required_label(text: str) -> None:
     """Create a label with required asterisk."""
@@ -259,45 +327,6 @@ def optional_label(text: str) -> None:
     with ui.row().classes("items-center gap-2 mb-1"):
         ui.label(text).classes("field-label")
         ui.label("(optional)").classes("optional-hint")
-
-
-def create_header(current_page: str = "") -> None:
-    """Create the BMD header with navigation."""
-    user_name = app.storage.user.get("user_name", "User")
-
-    with ui.header().classes("bmd-header items-center justify-between"):
-        with ui.row().classes("items-center gap-3"):
-            with (
-                ui.column()
-                .classes("gap-0 cursor-pointer")
-                .on("click", lambda: ui.navigate.to("/workflows"))
-            ):
-                ui.label("BMD").classes("bmd-logo-text")
-                ui.label("Biodiversity Meets Data").classes("bmd-subtitle")
-
-        with ui.row().classes("gap-3 items-center"):
-            ui.link("Workflows", "/workflows").classes(
-                f"nav-link {'active' if current_page == 'workflows' else ''}"
-            )
-            ui.button(
-                "+ New Workflow", on_click=lambda: ui.navigate.to("/select-workflow")
-            ).props("unelevated rounded color=white text-color=primary").classes(
-                "font-semibold"
-            )
-
-            with ui.button(icon="account_circle").props("flat round color=white"):
-                with ui.menu().classes("min-w-48"):
-                    with ui.row().classes("px-4 py-3 border-b border-gray-100"):
-                        with ui.column().classes("gap-0"):
-                            ui.label(user_name).classes("font-semibold text-gray-800")
-                            ui.label("Logged in").classes("text-xs text-gray-500")
-                    ui.menu_item(
-                        "Account Settings", on_click=lambda: ui.navigate.to("/account")
-                    ).classes("py-2")
-                    ui.separator()
-                    ui.menu_item("Logout", on_click=lambda: do_logout()).classes(
-                        "py-2 text-red-600"
-                    )
 
 
 async def do_logout() -> None:
