@@ -11,6 +11,7 @@ words:
   - bitshifted
   - circlemarker
   - classmethod
+  - conftest
   - dataclass
   - Dataclasses
   - docstrings
@@ -29,6 +30,7 @@ words:
   - pycache
   - Pydantic
   - pyjwt
+  - pytest
   - PYTHONDONTWRITEBYTECODE
   - PYTHONUNBUFFERED
   - rocrate
@@ -36,6 +38,7 @@ words:
   - softprops
   - Starlette
   - stdlib
+  - testpaths
   - urllib
   - userinfo
   - uvicorn

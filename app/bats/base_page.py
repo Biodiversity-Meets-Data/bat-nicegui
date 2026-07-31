@@ -18,7 +18,7 @@ from typing import ClassVar
 from fastapi.responses import RedirectResponse
 from nicegui import Client, ui
 
-from bats.map_widget import add_map_widget, create_wkt_label, init_map
+from bats.map_widget import MapGeometry, MapWidget
 from bats.registry import Bat
 from bats.workflow import (
     BatSpecificParameters,
@@ -26,12 +26,12 @@ from bats.workflow import (
     build_workflow_payload,
     submit_workflow,
 )
-from ui_common import (
-    apply_bmd_theme,
-    check_auth,
-    optional_label,
-    required_label,
-)
+from ui_common import apply_bmd_theme, check_auth
+from ui_widgets import optional_label, page_title, required_label
+
+
+# Placeholder shown in the "Analysis Area" field until the user draws an area.
+NO_GEOMETRY_MSG = "WKT: None - Draw on map ->"
 
 
 class BasePage(ABC):
@@ -44,6 +44,7 @@ class BasePage(ABC):
     BAT: ClassVar[Bat]
 
     def __init__(self) -> None:
+        self.map = MapWidget(on_change=self.update_geometry)
         self.build_page()
 
     # ------------------------- Page Construction --------------------------- #
@@ -52,11 +53,7 @@ class BasePage(ABC):
         """Main method that builds the entire page for the BAT."""
 
         with ui.column().classes("w-full max-w-6xl mx-auto p-6 gap-6"):
-            # Add a title to the page.
-            ui.label("Create New Workflow").classes("text-3xl font-bold").style(
-                "background: linear-gradient(135deg, #2ECC71, #0077B6); "
-                "-webkit-background-clip: text; -webkit-text-fill-color: transparent;"
-            )
+            page_title("Create New Workflow")
 
             # Add two columns with user-input widgets.
             with ui.row().classes("w-full gap-6 flex-wrap lg:flex-nowrap"):
@@ -71,7 +68,7 @@ class BasePage(ABC):
                     ).props("icon=send")
 
                 # Add "Analysis Area" selection widget.
-                add_map_widget()
+                self.map.build_widget()
 
     def add_shared_parameters(self) -> None:
         """Add parameters (user-input widgets) common to all BAT pages."""
@@ -99,10 +96,22 @@ class BasePage(ABC):
                 .classes("w-full")
             )
 
-        # Workflow analysis extent.
+        # Workflow analysis extent. The label is updated whenever the user
+        # draws or clears an area on the map.
         with ui.column().classes("w-full gap-1 mt-4"):
             required_label("Analysis Area")
-            create_wkt_label()
+            self.area_label = ui.label(NO_GEOMETRY_MSG).classes(
+                "text-sm text-gray-500 p-3 bg-gray-50 rounded-lg"
+            )
+
+    def update_geometry(self, geometry: MapGeometry | None) -> None:
+        """Updates the page's "Analysis Area" user input with the area drawn
+        by the user in the map widget associated to the page.
+
+        This method is passed to the map widget and called by the map widget
+        whenever the user draws/clears an area on the map (callback function).
+        """
+        self.area_label.text = f"WKT: {geometry.wkt}" if geometry else NO_GEOMETRY_MSG
 
     @abstractmethod
     def add_specific_parameters(self) -> None:
@@ -125,11 +134,12 @@ class BasePage(ABC):
     async def on_submit(self) -> None:
         """Validate the user inputs, then submit the workflow."""
         try:
-            payload = await build_workflow_payload(
+            payload = build_workflow_payload(
                 name=self.name_input.value,
                 description=self.desc_input.value or "",
                 ecosystem_type=self.BAT.category,
                 bat_specific_parameters=self.get_specific_parameters(),
+                geometry=self.map.geometry,
                 species_name=self.species_name(),
                 require_species=self.requires_species(),
             )
@@ -159,12 +169,11 @@ class BasePage(ABC):
 
             # Add base page styling (theme).
             apply_bmd_theme()
-            # Build page by creating a new instance of the class. Note that
-            # the actual object needs not to be kept.
-            cls()
+            # Build the page by creating a new instance of the class.
+            page = cls()
 
             # Wait for the browser's websocket connection before running
             # client-side JS code to render the map widget.
             await client.connected()
-            init_map()
+            page.map.initialize_map_widget()
             return None

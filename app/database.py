@@ -1,6 +1,6 @@
 """
-Database module for BMD application
-SQLite database with users and workflows tables
+Database module for the BMD application.
+SQLite database with users and workflows tables.
 """
 
 import os
@@ -27,15 +27,40 @@ class UserNotFoundError(DatabaseError):
 
 
 def get_connection() -> sqlite3.Connection:
-    """Get a database connection with row factory"""
+    """Get a database connection with row factory."""
+
     os.makedirs(os.path.dirname(DATABASE_PATH), exist_ok=True)
     conn = sqlite3.connect(DATABASE_PATH, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     return conn
 
 
+@contextmanager
+def get_cursor() -> Iterator[sqlite3.Cursor]:
+    """Yield a new cursor to a database.
+
+    * On context manager entry: yield a new database cursor.
+    * On context manager exit: try to commit the changes to the database,
+      roll back the changes on error. Always close the connection.
+    """
+
+    conn = get_connection()
+    try:
+        yield conn.cursor()
+        conn.commit()
+    except sqlite3.Error as e:
+        conn.rollback()
+        raise DatabaseError(str(e)) from e
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
 def init_db() -> None:
     """Initialize the database with required tables"""
+
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -128,74 +153,39 @@ def init_db() -> None:
 def create_user(
     email: str, password_hash: str, name: str, orcid: str | None = None
 ) -> str:
-    """Create a new user and return the user_id"""
-    conn = get_connection()
-    cursor = conn.cursor()
+    """Create a new user and return its user ID."""
 
     user_id = str(uuid.uuid4())
-
-    cursor.execute(
-        """
-        INSERT INTO users (user_id, email, password_hash, name, orcid)
-        VALUES (?, ?, ?, ?, ?)
-    """,
-        (user_id, email, password_hash, name, orcid),
-    )
-
-    conn.commit()
-    conn.close()
+    with get_cursor() as cursor:
+        cursor.execute(
+            """
+            INSERT INTO users (user_id, email, password_hash, name, orcid)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (user_id, email, password_hash, name, orcid),
+        )
 
     return user_id
 
 
 def get_user_by_email(email: str) -> dict[str, Any] | None:
-    """Get user by email"""
-    conn = get_connection()
-    cursor = conn.cursor()
+    """Get user by email."""
 
-    cursor.execute("SELECT * FROM users WHERE email = ?", (email,))
-    row = cursor.fetchone()
-    conn.close()
+    with get_cursor() as cursor:
+        cursor.execute("SELECT * FROM users WHERE email = ?", (email,))
+        row = cursor.fetchone()
 
-    if row:
-        return dict(row)
-    return None
+    return dict(row) if row else None
 
 
 def get_user_by_id(user_id: str) -> dict[str, Any] | None:
-    """Get user by user_id"""
-    conn = get_connection()
-    cursor = conn.cursor()
+    """Get user by user ID."""
 
-    cursor.execute("SELECT * FROM users WHERE user_id = ?", (user_id,))
-    row = cursor.fetchone()
-    conn.close()
+    with get_cursor() as cursor:
+        cursor.execute("SELECT * FROM users WHERE user_id = ?", (user_id,))
+        row = cursor.fetchone()
 
-    if row:
-        return dict(row)
-    return None
-
-
-@contextmanager
-def get_cursor() -> Iterator[sqlite3.Cursor]:
-    """Yield a new cursor to a database.
-
-    * On context manager entry: yield a new database cursor.
-    * On context manager exit: try to commit the changes to the database,
-      roll back the changes on error. Always close the connection.
-    """
-    conn = get_connection()
-    try:
-        yield conn.cursor()
-        conn.commit()
-    except sqlite3.Error as e:
-        conn.rollback()
-        raise DatabaseError(str(e)) from e
-    except Exception:
-        conn.rollback()
-        raise
-    finally:
-        conn.close()
+    return dict(row) if row else None
 
 
 def get_user_by_keycloak_sub(keycloak_sub: str) -> dict[str, Any] | None:
@@ -287,40 +277,28 @@ def update_user_password(user_id: str, password_hash: str) -> None:
 
 
 def delete_user(user_id: str) -> bool:
-    """Delete a user and all their workflows"""
-    conn = get_connection()
-    cursor = conn.cursor()
+    """Delete a user and all their workflows."""
 
-    # Delete user's workflows first
-    cursor.execute("DELETE FROM workflows WHERE user_id = ?", (user_id,))
-
-    # Delete the user
-    cursor.execute("DELETE FROM users WHERE user_id = ?", (user_id,))
-    deleted = cursor.rowcount > 0
-
-    conn.commit()
-    conn.close()
-
-    return deleted
+    with get_cursor() as cursor:
+        # Delete the user's workflows first.
+        cursor.execute("DELETE FROM workflows WHERE user_id = ?", (user_id,))
+        # Delete the user.
+        cursor.execute("DELETE FROM users WHERE user_id = ?", (user_id,))
+        return cursor.rowcount > 0
 
 
 def check_email_exists(email: str, exclude_user_id: str | None = None) -> bool:
-    """Check if email exists, optionally excluding a specific user"""
-    conn = get_connection()
-    cursor = conn.cursor()
+    """Check if email exists, optionally excluding a specific user."""
 
-    if exclude_user_id:
-        cursor.execute(
-            "SELECT 1 FROM users WHERE email = ? AND user_id != ?",
-            (email, exclude_user_id),
-        )
-    else:
-        cursor.execute("SELECT 1 FROM users WHERE email = ?", (email,))
-
-    exists = cursor.fetchone() is not None
-    conn.close()
-
-    return exists
+    with get_cursor() as cursor:
+        if exclude_user_id:
+            cursor.execute(
+                "SELECT 1 FROM users WHERE email = ? AND user_id != ?",
+                (email, exclude_user_id),
+            )
+        else:
+            cursor.execute("SELECT 1 FROM users WHERE email = ?", (email,))
+        return cursor.fetchone() is not None
 
 
 def create_workflow(
@@ -335,70 +313,59 @@ def create_workflow(
     parameters: str,
     status: str = "submitted",
 ) -> str:
-    """Create a new workflow"""
-    conn = get_connection()
-    cursor = conn.cursor()
+    """Create a new workflow."""
 
-    cursor.execute(
-        """
-        INSERT INTO workflows (
-            workflow_id, user_id, name, description, species_name,
-            ecosystem_type, geometry_type,
-            geometry_wkt, parameters, status
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """,
-        (
-            workflow_id,
-            user_id,
-            name,
-            description,
-            species_name,
-            ecosystem_type,
-            geometry_type,
-            geometry_wkt,
-            parameters,
-            status,
-        ),
-    )
-
-    conn.commit()
-    conn.close()
+    with get_cursor() as cursor:
+        cursor.execute(
+            """
+            INSERT INTO workflows (
+                workflow_id, user_id, name, description, species_name,
+                ecosystem_type, geometry_type,
+                geometry_wkt, parameters, status
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                workflow_id,
+                user_id,
+                name,
+                description,
+                species_name,
+                ecosystem_type,
+                geometry_type,
+                geometry_wkt,
+                parameters,
+                status,
+            ),
+        )
 
     return workflow_id
 
 
 def get_user_workflows(user_id: str) -> list[dict[str, Any]]:
-    """Get all workflows for a user"""
-    conn = get_connection()
-    cursor = conn.cursor()
+    """Get all workflows for the specified user."""
 
-    cursor.execute(
-        """
-        SELECT * FROM workflows 
-        WHERE user_id = ? 
-        ORDER BY created_at DESC
-    """,
-        (user_id,),
-    )
-
-    rows = cursor.fetchall()
-    conn.close()
+    with get_cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT * FROM workflows
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+            """,
+            (user_id,),
+        )
+        rows = cursor.fetchall()
 
     return [dict(row) for row in rows]
 
 
 def get_workflow_by_id(workflow_id: str) -> dict[str, Any] | None:
-    """Get a specific workflow by ID"""
-    conn = get_connection()
-    cursor = conn.cursor()
+    """Get a specific workflow by ID."""
 
-    cursor.execute("SELECT * FROM workflows WHERE workflow_id = ?", (workflow_id,))
-    row = cursor.fetchone()
-    conn.close()
+    with get_cursor() as cursor:
+        cursor.execute("SELECT * FROM workflows WHERE workflow_id = ?", (workflow_id,))
+        row = cursor.fetchone()
 
-    if row:
-        return dict(row)
-    return None
+    return dict(row) if row else None
 
 
 def update_workflow_status(
@@ -407,9 +374,7 @@ def update_workflow_status(
     results: str | None = None,
     error: str | None = None,
 ) -> None:
-    """Update workflow status and optionally results or error"""
-    conn = get_connection()
-    cursor = conn.cursor()
+    """Update workflow status and optionally results or error."""
 
     update_fields = ["status = ?", "updated_at = ?"]
     params = [status, datetime.now(timezone.utc).isoformat()]
@@ -427,45 +392,33 @@ def update_workflow_status(
         params.append(error)
 
     params.append(workflow_id)
-
     query = f"UPDATE workflows SET {', '.join(update_fields)} WHERE workflow_id = ?"
-    cursor.execute(query, params)
-
-    conn.commit()
-    conn.close()
+    with get_cursor() as cursor:
+        cursor.execute(query, params)
 
 
 def delete_workflow(workflow_id: str) -> bool:
-    """Delete a workflow by ID"""
-    conn = get_connection()
-    cursor = conn.cursor()
+    """Delete a workflow by ID."""
 
-    cursor.execute("DELETE FROM workflows WHERE workflow_id = ?", (workflow_id,))
-    deleted = cursor.rowcount > 0
-
-    conn.commit()
-    conn.close()
-
-    return deleted
+    with get_cursor() as cursor:
+        cursor.execute("DELETE FROM workflows WHERE workflow_id = ?", (workflow_id,))
+        return cursor.rowcount > 0
 
 
 def get_all_workflows_by_status(status: str) -> list[dict[str, Any]]:
-    """Get all workflows with a specific status (admin use)"""
-    conn = get_connection()
-    cursor = conn.cursor()
+    """Get all workflows with the specified status (admin use)."""
 
-    cursor.execute(
-        """
-        SELECT w.*, u.email, u.name as user_name
-        FROM workflows w
-        JOIN users u ON w.user_id = u.user_id
-        WHERE w.status = ?
-        ORDER BY w.created_at DESC
-        """,
-        (status,),
-    )
-
-    rows = cursor.fetchall()
-    conn.close()
+    with get_cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT w.*, u.email, u.name as user_name
+            FROM workflows w
+            JOIN users u ON w.user_id = u.user_id
+            WHERE w.status = ?
+            ORDER BY w.created_at DESC
+            """,
+            (status,),
+        )
+        rows = cursor.fetchall()
 
     return [dict(row) for row in rows]

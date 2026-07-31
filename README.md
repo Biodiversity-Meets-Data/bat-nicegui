@@ -231,12 +231,14 @@ bat-nicegui/
 │   │   └── workflows.py       # /api/workflows/* endpoints
 │   ├── bats/
 │   │   └── terrestrial_sdm.py # /create/terrestrial page
-│   ├── page_login.py
-│   ├── page_select_workflow.py
-│   ├── page_account.py
-│   ├── page_workflows.py
-│   ├── page_results.py
-│   ├── page_root.py
+│   ├── pages/                 # Non-BAT application pages
+│   │   ├── __init__.py        # register_ui_pages()
+│   │   ├── root.py            # / page
+│   │   ├── login.py           # /login page
+│   │   ├── select_workflow.py # /select-workflow page
+│   │   ├── account.py         # /account page
+│   │   ├── workflows.py       # /workflows page
+│   │   └── results.py         # /results/{id} page
 │   ├── ui_common.py           # Shared UI helpers/styles/header/footer/auth check
 │   ├── auth_utils.py          # JWT + password helpers
 │   ├── workflow_utils.py      # RO-Crate + workflow API helper functions
@@ -250,6 +252,9 @@ bat-nicegui/
 ├── static/
 │   ├── logo.png               # BMD logo
 │   └── eu-ias-directive.json  # EU IAS directive data
+├── tests/
+│   ├── conftest.py            # Puts app/ on sys.path for imports
+│   └── test_registry.py       # BAT registry tests
 ├── Dockerfile           # Docker build instructions
 ├── docker-compose.yml   # Docker Compose configuration
 ├── pyproject.toml       # Project metadata and dependencies
@@ -265,7 +270,7 @@ bat-nicegui/
 
 1. Add/extend API endpoints in `app/api/auth.py` or `app/api/workflows.py`
 2. Update database schema or queries in `app/database.py`
-3. Add non-create UI pages as top-level `app/page_*.py` modules
+3. Add non-create UI pages as `app/pages/<name>.py` modules
 4. Add/create workflow UI pages under `app/bats/` (for terrestrial SDM use `app/bats/terrestrial_sdm.py`)
 
 > ⚠️ Please read the
@@ -295,6 +300,17 @@ uv run ruff check           # Lint check.
 uv run ruff format --check  # Format check only (does not reformat files).
 uv run ruff format          # Format files.
 uv run mypy                 # Type check.
+```
+
+### Testing
+
+This project uses [pytest](https://docs.pytest.org). Tests live in the
+top-level `tests/` directory (outside `app/`, so they stay out of strict
+`mypy` checks and the deployed image). Tests run in CI on every push.
+
+```bash
+# Run the test suite.
+uv run pytest
 ```
 
 ### Versioning

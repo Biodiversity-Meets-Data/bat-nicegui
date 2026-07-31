@@ -25,7 +25,13 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["mypy", "ruff", "types-passlib", "types-authlib"]
+dev = [
+    "mypy",
+    "pytest>=9.1.1",
+    "ruff",
+    "types-authlib",
+    "types-passlib",
+]
 
 [tool.uv]
 # This project is a deployable application, not an importable library, so uv
@@ -36,3 +42,12 @@ package = false
 strict = true      # Use --strict mode for type checking.
 mypy_path = "app"  # Add app/ to mypy's module search path.
 files = ["app"]    # Directories to type check.
+
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.pyright]
+# Pyright/Pylance (editor) module resolution. The app runs with app/ as its
+# source root. This tell the editor to search there too.
+extraPaths = ["app"]
