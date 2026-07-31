@@ -8,7 +8,7 @@ from nicegui import app, ui
 
 from database import get_workflow_by_id
 from ui_common import apply_bmd_theme, check_auth
-from ui_widgets import page_title
+from ui_widgets import card_header, page_title
 
 
 class WorkflowResultsPage:
@@ -81,9 +81,7 @@ class WorkflowResultsPage:
         """Build the workflow-details card (id, species, created, status)."""
 
         with ui.card().classes("bmd-card p-6 w-full"):
-            ui.label("Workflow Details").classes(
-                "text-lg font-semibold text-gray-800 mb-4"
-            )
+            card_header("Workflow Details")
             with ui.row().classes("gap-8 flex-wrap"):
                 with ui.column().classes("gap-1"):
                     ui.label("Workflow ID").classes("text-xs text-gray-500")
@@ -108,7 +106,7 @@ class WorkflowResultsPage:
         """Build the summary card (species / occurrences / analysis area)."""
 
         with ui.card().classes("bmd-card p-6 w-full"):
-            ui.label("Summary").classes("text-lg font-semibold text-gray-800 mb-4")
+            card_header("Summary")
             with ui.row().classes("gap-8 justify-around"):
                 with ui.column().classes("items-center p-4"):
                     ui.label(str(self.results["summary"]["total_species"])).classes(
@@ -130,9 +128,7 @@ class WorkflowResultsPage:
         """Build the model-performance card (AUC / TSS / Kappa)."""
 
         with ui.card().classes("bmd-card p-6 w-full"):
-            ui.label("Model Performance Metrics").classes(
-                "text-lg font-semibold text-gray-800 mb-4"
-            )
+            card_header("Model Performance Metrics")
             with ui.row().classes("gap-6 justify-around"):
                 perf = self.results["model_performance"]
                 with ui.column().classes("items-center p-4"):
@@ -164,9 +160,7 @@ class WorkflowResultsPage:
         """Build the ranked top-species-by-habitat-suitability card."""
 
         with ui.card().classes("bmd-card p-6 flex-1 min-w-80"):
-            ui.label("Top Species by Habitat Suitability").classes(
-                "text-lg font-semibold text-gray-800 mb-4"
-            )
+            card_header("Top Species by Habitat Suitability")
             for i, species in enumerate(self.results.get("top_species", [])):
                 with ui.row().classes(
                     "w-full items-center justify-between py-3 border-b border-gray-100"
@@ -190,9 +184,7 @@ class WorkflowResultsPage:
         """Build the environmental-variable importance card."""
 
         with ui.card().classes("bmd-card p-6 flex-1 min-w-80"):
-            ui.label("Environmental Variable Importance").classes(
-                "text-lg font-semibold text-gray-800 mb-4"
-            )
+            card_header("Environmental Variable Importance")
             for var_name, var_data in self.results.get(
                 "environmental_variables", {}
             ).items():
@@ -216,7 +208,7 @@ class WorkflowResultsPage:
         """Build the fallback card shown when results lack a summary."""
 
         with ui.card().classes("bmd-card p-6 w-full"):
-            ui.label("Raw Results").classes("text-lg font-semibold text-gray-800 mb-4")
+            card_header("Raw Results")
             ui.code(str(self.results)).classes("w-full")
 
     # ---------------------- Page Route registration ------------------------ #

@@ -15,6 +15,8 @@ from dataclasses import dataclass
 from nicegui import ui
 from nicegui.events import GenericEventArguments
 
+from ui_widgets import card_header
+
 
 @dataclass(frozen=True, slots=True)
 class MapGeometry:
@@ -70,11 +72,7 @@ class MapWidget:
 
         with ui.card().classes("bmd-card p-6 flex-1 min-w-80"):
             # Add widget labels.
-            with ui.row().classes("items-center gap-2 mb-2"):
-                ui.label("Select Analysis Area").classes(
-                    "text-xl font-semibold text-gray-800"
-                )
-                ui.label("*").classes("required-asterisk text-xl")
+            card_header("Select Analysis Area")
             ui.label("Draw a rectangle or polygon on the map (Europe only)").classes(
                 "text-sm text-gray-500 mb-4"
             )

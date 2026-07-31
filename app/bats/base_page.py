@@ -27,7 +27,13 @@ from bats.workflow import (
     submit_workflow,
 )
 from ui_common import apply_bmd_theme, check_auth
-from ui_widgets import optional_label, page_title, required_label
+from ui_widgets import (
+    card_header,
+    optional_textarea_input,
+    page_title,
+    required_label,
+    required_text_input,
+)
 
 
 # Placeholder shown in the "Analysis Area" field until the user draws an area.
@@ -74,31 +80,19 @@ class BasePage(ABC):
         """Add parameters (user-input widgets) common to all BAT pages."""
 
         # Add a title to the user-input section.
-        ui.label("Workflow Parameters").classes(
-            "text-xl font-semibold mb-4 text-gray-800"
+        card_header("Workflow Parameters")
+
+        # Workflow name and description inputs.
+        self.name_input = required_text_input(
+            label="Workflow Name", placeholder="e.g. Alpine Species Survey"
         )
-
-        # Workflow name input.
-        with ui.column().classes("w-full gap-1"):
-            required_label("Workflow Name")
-            self.name_input = (
-                ui.input(placeholder="e.g., Alpine Species Survey")
-                .props("outlined")
-                .classes("w-full")
-            )
-
-        # Workflow description (optional).
-        with ui.column().classes("w-full gap-1 mt-4"):
-            optional_label("Description")
-            self.desc_input = (
-                ui.textarea(placeholder="Describe your analysis...")
-                .props("outlined rows=3")
-                .classes("w-full")
-            )
+        self.desc_input = optional_textarea_input(
+            label="Description", placeholder="Describe your analysis..."
+        )
 
         # Workflow analysis extent. The label is updated whenever the user
         # draws or clears an area on the map.
-        with ui.column().classes("w-full gap-1 mt-4"):
+        with ui.column().classes("w-full gap-1 mt-3"):
             required_label("Analysis Area")
             self.area_label = ui.label(NO_GEOMETRY_MSG).classes(
                 "text-sm text-gray-500 p-3 bg-gray-50 rounded-lg"
@@ -135,8 +129,8 @@ class BasePage(ABC):
         """Validate the user inputs, then submit the workflow."""
         try:
             payload = build_workflow_payload(
-                name=self.name_input.value,
-                description=self.desc_input.value or "",
+                name=(self.name_input.value or "").strip(),
+                description=(self.desc_input.value or "").strip(),
                 ecosystem_type=self.BAT.category,
                 bat_specific_parameters=self.get_specific_parameters(),
                 geometry=self.map.geometry,

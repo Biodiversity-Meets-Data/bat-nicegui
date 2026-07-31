@@ -3,6 +3,7 @@
 from nicegui import ui
 
 from ui_common import apply_bmd_theme, PageHeader
+from ui_widgets import card_header
 
 
 @ui.page("/login")
@@ -18,7 +19,7 @@ def login_page() -> None:
 
         with ui.column().classes("w-full items-center"):
             with ui.card().classes("bmd-card p-8 w-full max-w-md items-center"):
-                ui.label("Welcome").classes("text-2xl font-semibold text-gray-800 mb-4")
+                card_header("Welcome")
                 ui.label("Sign in with your BMD account to continue.").classes(
                     "text-gray-500 text-center mb-6"
                 )
