@@ -8,7 +8,6 @@ from nicegui import app, ui
 
 from config import KEYCLOAK_REALM, KEYCLOAK_SERVER_URL
 from database import (
-    check_email_exists,
     DatabaseError,
     delete_user,
     get_user_by_id,
@@ -20,6 +19,7 @@ from ui_widgets import (
     card_header,
     optional_text_input,
     page_title,
+    readonly_text_input,
     required_text_input,
 )
 
@@ -59,8 +59,11 @@ class UserAccountPage:
             self.name_input = required_text_input(
                 label="Full Name", value=self.user.get("name", "")
             )
-            self.email_input = required_text_input(
-                label="Email", value=self.user.get("email", "")
+            readonly_text_input(
+                label="Email",
+                value=self.user.get("email", ""),
+                hint="Your email is managed by your BMD SSO account and cannot "
+                "be changed here.",
             )
             self.orcid_input = optional_text_input(
                 label="ORCID",
@@ -112,17 +115,13 @@ class UserAccountPage:
         """Validate the profile inputs and persist them to the database."""
 
         name = (self.name_input.value or "").strip()
-        email = (self.email_input.value or "").strip()
         orcid = (self.orcid_input.value or "").strip()
 
         # Verify user input.
         # ORCID is optional (can be an empty string), but when passed
         # it must match the ORCID format.
-        if not name or not email:
-            ui.notify("Name and email are required", type="negative")
-            return
-        if check_email_exists(email, exclude_user_id=self.user_id):
-            ui.notify("Email is already in use", type="negative")
+        if not name:
+            ui.notify("Name is required", type="negative")
             return
         if orcid:
             orcid_pattern = r"^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$"
@@ -132,7 +131,7 @@ class UserAccountPage:
 
         # Update user profile in database.
         try:
-            update_user_profile(self.user_id, name, email, orcid)
+            update_user_profile(self.user_id, name, orcid)
             app.storage.user["user_name"] = name
             ui.notify("Profile updated successfully", type="positive")
         except DatabaseError as e:

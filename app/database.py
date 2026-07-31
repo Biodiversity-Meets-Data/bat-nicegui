@@ -237,8 +237,12 @@ def create_user_from_keycloak(keycloak_sub: str, email: str, name: str) -> str:
     return user_id
 
 
-def update_user_profile(user_id: str, name: str, email: str, orcid: str) -> None:
+def update_user_profile(user_id: str, name: str, orcid: str) -> None:
     """Update a user's profile data in the application's database.
+
+    Email is intentionally excluded: it is sourced from the SSO identity
+    provider and used to link local accounts to Keycloak subjects on login,
+    so it must not be user-editable here.
 
     Raises:
         UserNotFoundError: if no user exists with the given user_id.
@@ -246,11 +250,9 @@ def update_user_profile(user_id: str, name: str, email: str, orcid: str) -> None
 
     with get_cursor() as cursor:
         cursor.execute(
-            "UPDATE users SET name = ?, email = ?, orcid = ?, updated_at = ? "
-            "WHERE user_id = ?",
+            "UPDATE users SET name = ?, orcid = ?, updated_at = ? WHERE user_id = ?",
             (
                 name,
-                email,
                 orcid or None,
                 datetime.now(timezone.utc).isoformat(),
                 user_id,
@@ -285,20 +287,6 @@ def delete_user(user_id: str) -> bool:
         # Delete the user.
         cursor.execute("DELETE FROM users WHERE user_id = ?", (user_id,))
         return cursor.rowcount > 0
-
-
-def check_email_exists(email: str, exclude_user_id: str | None = None) -> bool:
-    """Check if email exists, optionally excluding a specific user."""
-
-    with get_cursor() as cursor:
-        if exclude_user_id:
-            cursor.execute(
-                "SELECT 1 FROM users WHERE email = ? AND user_id != ?",
-                (email, exclude_user_id),
-            )
-        else:
-            cursor.execute("SELECT 1 FROM users WHERE email = ?", (email,))
-        return cursor.fetchone() is not None
 
 
 def create_workflow(

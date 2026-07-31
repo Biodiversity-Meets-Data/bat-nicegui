@@ -49,6 +49,7 @@ def _text_input(
     placeholder: str | None,
     hint: str,
     required: bool,
+    readonly: bool = False,
 ) -> ui.input:
     """User free text input widget builder."""
 
@@ -56,9 +57,11 @@ def _text_input(
         required_label(label) if required else optional_label(text=label)
         input_field = (
             ui.input(value=value, placeholder=placeholder)
-            .props("outlined")
+            .props("outlined" + (" readonly" if readonly else ""))
             .classes("w-full")
         )
+        if readonly:
+            input_field.classes("opacity-70 cursor-not-allowed")
         if hint:
             ui.label(hint).classes("text-xs text-gray-400 mt-1")
         return input_field
@@ -76,6 +79,11 @@ def optional_text_input(
 ) -> ui.input:
     """A free text user input widget whose input is optional."""
     return _text_input(label, value, placeholder, hint, required=False)
+
+
+def readonly_text_input(label: str, value: str = "", hint: str = "") -> ui.input:
+    """A non-editable text field, for display of values the user may not change."""
+    return _text_input(label, value, None, hint, required=True, readonly=True)
 
 
 def optional_textarea_input(
