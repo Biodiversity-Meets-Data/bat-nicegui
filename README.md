@@ -5,8 +5,8 @@
 A modern web application for Biodiversity Analysis Tools, built with NiceGUI
 and FastAPI.
 
-- ⛓️‍💥 Live version: [http://bats.bmd-project.eu/login](http://bats.bmd-project.eu/login)
-- 📓 API Documentation: [http://bats.bmd-project.eu/docs](http://bats.bmd-project.eu/docs)
+- ⛓️‍💥 Live version: [https://bats.bmd-project.eu/login](http://bats.bmd-project.eu/login)
+- 📓 API Documentation: [https://bats.bmd-project.eu/docs](http://bats.bmd-project.eu/docs)
 
 ![BMD Logo](static/bats.png)
 
