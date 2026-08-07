@@ -26,6 +26,9 @@ services:
     ports: !reset []
     environment:
       LOCAL_API_BASE_URL: https://${DOMAIN:?Set DOMAIN}
+    networks:
+      - bmd-network
+      - workflow-network
     labels:
       - traefik.enable=true
       - traefik.http.routers.bmd.rule=Host(`${DOMAIN:?Set DOMAIN}`)
@@ -33,3 +36,8 @@ services:
       - traefik.http.routers.bmd.tls=true
       - traefik.http.routers.bmd.tls.certresolver=myresolver
       - traefik.http.services.bmd.loadbalancer.server.port=8080
+
+networks:
+  workflow-network:
+    external: true
+    name: bat_bmd-network
