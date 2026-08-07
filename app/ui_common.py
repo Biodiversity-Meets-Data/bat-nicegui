@@ -13,6 +13,16 @@ class PageHeader(enum.Enum):
     WORKFLOW_PAGE = enum.auto()
 
 
+def add_development_banner() -> None:
+    """Adds the platform maturity notice above authenticated pages."""
+    with ui.element("div").classes(
+        "w-full bg-red-700 px-4 py-2 text-center text-sm font-semibold text-white"
+    ):
+        ui.label(
+            "Early development phase: persistence is not guaranteed and changes are expected."
+        )
+
+
 def add_header(header: PageHeader = PageHeader.BASE) -> None:
     """Adds the BMD header with navigation tools to the page.
 
@@ -306,6 +316,9 @@ def apply_bmd_theme(
             </style>
             """
         )
+
+    # Keep the maturity notice visible across both public and authenticated pages.
+    add_development_banner()
 
     # Add a header to the page, if it has one.
     if header is not PageHeader.NONE:
