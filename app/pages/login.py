@@ -13,7 +13,7 @@ def login_page() -> None:
     with ui.column().classes("w-full min-h-screen items-center p-8 overflow-visible"):
         with ui.column().classes("items-center gap-4 mt-10 mb-10 overflow-visible"):
             ui.label("BMD").classes("text-7xl font-bold leading-none text-green-600")
-            ui.label("Biodiversity Analysis Tool").classes(
+            ui.label("Biodiversity Analysis Tools").classes(
                 "text-3xl font-semibold tracking-wide text-gray-700"
             )
 
