@@ -1,6 +1,6 @@
 # 🌿 BMD - BATs User Platform
 
-![Version](https://img.shields.io/static/v1?label=version&message=0.2.4&color=blue)
+![Version](https://img.shields.io/static/v1?label=version&message=0.2.5&color=blue)
 
 A modern web application for Biodiversity Analysis Tools, built with NiceGUI
 and FastAPI.
