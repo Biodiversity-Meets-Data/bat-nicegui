@@ -18,5 +18,8 @@ data/
 # Config files
 .env
 
+# Traefik certificate storage.
+letsencrypt/
+
 # Agents
 .claude
