@@ -78,6 +78,39 @@ docker compose up -d --build
 # Access the application at http://localhost
 ```
 
+### Production with Traefik and HTTPS
+
+Point a DNS `A` record for your production domain to the server before
+starting the stack. The domain must not be an IP address because Let's Encrypt
+does not issue certificates for IP addresses.
+
+Set these values in `.env`:
+
+```dotenv
+DOMAIN=bmd.example.org
+ACME_EMAIL=admin@example.org
+```
+
+The production overlay terminates TLS at Traefik, redirects HTTP to HTTPS,
+and keeps the BMD container off the host network. It also sets the public URL
+used for Keycloak redirects to `https://${DOMAIN}`.
+
+Initialize the certificate storage and start the production stack:
+
+```bash
+mkdir -p letsencrypt
+touch letsencrypt/acme.json
+chmod 600 letsencrypt/acme.json
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+```
+
+Use these Keycloak client URLs for the production domain:
+
+```text
+https://<your-domain>/api/auth/callback
+https://<your-domain>/login
+```
+
 ### Local installation
 
 The application can be run with the following commands, and becomes

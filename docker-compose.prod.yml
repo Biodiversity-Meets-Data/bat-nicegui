@@ -1,0 +1,35 @@
+services:
+  traefik:
+    image: traefik:v3.1
+    container_name: bmd-traefik
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - --certificatesresolvers.myresolver.acme.tlschallenge=true
+      - --certificatesresolvers.myresolver.acme.email=${ACME_EMAIL:?Set ACME_EMAIL}
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./letsencrypt:/letsencrypt
+    restart: unless-stopped
+    networks:
+      - bmd-network
+
+  bmd-app:
+    ports: !reset []
+    environment:
+      LOCAL_API_BASE_URL: https://${DOMAIN:?Set DOMAIN}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.bmd.rule=Host(`${DOMAIN:?Set DOMAIN}`)
+      - traefik.http.routers.bmd.entrypoints=websecure
+      - traefik.http.routers.bmd.tls=true
+      - traefik.http.routers.bmd.tls.certresolver=myresolver
+      - traefik.http.services.bmd.loadbalancer.server.port=8080

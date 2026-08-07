@@ -11,6 +11,7 @@ ENV WORKFLOW_WAIT_TIME=20
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
