@@ -31,6 +31,7 @@ services:
       - workflow-network
     labels:
       - traefik.enable=true
+      - traefik.docker.network=bat-nicegui_bmd-network
       - traefik.http.routers.bmd.rule=Host(`${DOMAIN:?Set DOMAIN}`)
       - traefik.http.routers.bmd.entrypoints=websecure
       - traefik.http.routers.bmd.tls=true
