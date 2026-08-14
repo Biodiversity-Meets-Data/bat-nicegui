@@ -4,23 +4,28 @@ ignorePaths: []
 dictionaryDefinitions: []
 dictionaries: []
 words:
+  - abstractmethod
   - arcname
   - aread
   - ASGI
   - authlib
   - bitshifted
+  - CHELSA
   - circlemarker
   - classmethod
   - conftest
   - dataclass
   - Dataclasses
+  - datatree
   - docstrings
   - dotenv
   - fastapi
+  - GBIF
   - healthcheck
   - httpx
   - itsdangerous
   - jinja
+  - letsencrypt
   - Lngs
   - nicegui
   - orcid
@@ -42,5 +47,6 @@ words:
   - urllib
   - userinfo
   - uvicorn
+  - VCPUs
 ignoreWords: []
 import: []
