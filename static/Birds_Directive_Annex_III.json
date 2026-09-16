@@ -1,0 +1,94 @@
+[
+  {
+    "colId": "9JR7Z",
+    "scientificName": "Alectoris barbara"
+  },
+  {
+    "colId": "BLSJ",
+    "scientificName": "Alectoris rufa"
+  },
+  {
+    "colId": "DGMX",
+    "scientificName": "Anas acuta"
+  },
+  {
+    "colId": "VJFBC",
+    "scientificName": "Anas clypeata"
+  },
+  {
+    "colId": "DGND",
+    "scientificName": "Anas crecca"
+  },
+  {
+    "colId": "VJFB8",
+    "scientificName": "Anas penelope"
+  },
+  {
+    "colId": "DGP6",
+    "scientificName": "Anas platyrhynchos"
+  },
+  {
+    "colId": "679X7",
+    "scientificName": "Anser anser"
+  },
+  {
+    "colId": "K56T",
+    "scientificName": "Aythya ferina"
+  },
+  {
+    "colId": "5VYJV",
+    "scientificName": "Aythya fuligula"
+  },
+  {
+    "colId": "K56W",
+    "scientificName": "Aythya marila"
+  },
+  {
+    "colId": "XBGG",
+    "scientificName": "Columba palumbus"
+  },
+  {
+    "colId": "6K3W6",
+    "scientificName": "Fulica atra"
+  },
+  {
+    "colId": "3F6V9",
+    "scientificName": "Gallinago gallinago"
+  },
+  {
+    "colId": "3RXRB",
+    "scientificName": "Lagopus muta"
+  },
+  {
+    "colId": "3WSC2",
+    "scientificName": "Lymnocryptes minimus"
+  },
+  {
+    "colId": "3Z83C",
+    "scientificName": "Melanitta nigra"
+  },
+  {
+    "colId": "6V58Q",
+    "scientificName": "Perdix perdix"
+  },
+  {
+    "colId": "4FWMN",
+    "scientificName": "Phasianus colchicus"
+  },
+  {
+    "colId": "4KKPV",
+    "scientificName": "Pluvialis apricaria"
+  },
+  {
+    "colId": "4VS4Z",
+    "scientificName": "Scolopax rusticola"
+  },
+  {
+    "colId": "6Z4ZB",
+    "scientificName": "Somateria mollissima"
+  },
+  {
+    "colId": "55QS7",
+    "scientificName": "Tetrao urogallus"
+  }
+]

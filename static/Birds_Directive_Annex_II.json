@@ -1,0 +1,294 @@
+[
+  {
+    "colId": "BFFT",
+    "scientificName": "Alauda arvensis"
+  },
+  {
+    "colId": "BLSD",
+    "scientificName": "Alectoris chukar"
+  },
+  {
+    "colId": "BLSJ",
+    "scientificName": "Alectoris rufa"
+  },
+  {
+    "colId": "DGMX",
+    "scientificName": "Anas acuta"
+  },
+  {
+    "colId": "VJFBC",
+    "scientificName": "Anas clypeata"
+  },
+  {
+    "colId": "DGND",
+    "scientificName": "Anas crecca"
+  },
+  {
+    "colId": "VJFB8",
+    "scientificName": "Anas penelope"
+  },
+  {
+    "colId": "DGP6",
+    "scientificName": "Anas platyrhynchos"
+  },
+  {
+    "colId": "VJFBB",
+    "scientificName": "Anas querquedula"
+  },
+  {
+    "colId": "DGPL",
+    "scientificName": "Anas strepera"
+  },
+  {
+    "colId": "679WV",
+    "scientificName": "Anser albifrons"
+  },
+  {
+    "colId": "679X7",
+    "scientificName": "Anser anser"
+  },
+  {
+    "colId": "5V9X4",
+    "scientificName": "Anser brachyrhynchus"
+  },
+  {
+    "colId": "679WS",
+    "scientificName": "Anser fabalis"
+  },
+  {
+    "colId": "K56T",
+    "scientificName": "Aythya ferina"
+  },
+  {
+    "colId": "5VYJV",
+    "scientificName": "Aythya fuligula"
+  },
+  {
+    "colId": "K56W",
+    "scientificName": "Aythya marila"
+  },
+  {
+    "colId": "N749",
+    "scientificName": "Branta bernicla"
+  },
+  {
+    "colId": "5WRC3",
+    "scientificName": "Branta canadensis"
+  },
+  {
+    "colId": "NM25",
+    "scientificName": "Bucephala clangula"
+  },
+  {
+    "colId": "PK44",
+    "scientificName": "Calidris canutus"
+  },
+  {
+    "colId": "5YVVD",
+    "scientificName": "Clangula hyemalis"
+  },
+  {
+    "colId": "XBFW",
+    "scientificName": "Columba livia"
+  },
+  {
+    "colId": "5ZQ9C",
+    "scientificName": "Columba oenas"
+  },
+  {
+    "colId": "XBGG",
+    "scientificName": "Columba palumbus"
+  },
+  {
+    "colId": "YNHJ",
+    "scientificName": "Corvus corone"
+  },
+  {
+    "colId": "YNHT",
+    "scientificName": "Corvus frugilegus"
+  },
+  {
+    "colId": "YNJ8",
+    "scientificName": "Corvus monedula"
+  },
+  {
+    "colId": "YYSJ",
+    "scientificName": "Coturnix coturnix"
+  },
+  {
+    "colId": "32ZQB",
+    "scientificName": "Cygnus olor"
+  },
+  {
+    "colId": "6JLDS",
+    "scientificName": "Francolinus francolinus"
+  },
+  {
+    "colId": "6K3W6",
+    "scientificName": "Fulica atra"
+  },
+  {
+    "colId": "3F6V9",
+    "scientificName": "Gallinago gallinago"
+  },
+  {
+    "colId": "3F6VX",
+    "scientificName": "Gallinula chloropus"
+  },
+  {
+    "colId": "6JYHZ",
+    "scientificName": "Garrulus glandarius"
+  },
+  {
+    "colId": "3J8XQ",
+    "scientificName": "Haematopus ostralegus"
+  },
+  {
+    "colId": "3RXRB",
+    "scientificName": "Lagopus muta"
+  },
+  {
+    "colId": "3SBPN",
+    "scientificName": "Larus argentatus"
+  },
+  {
+    "colId": "3SBPX",
+    "scientificName": "Larus cachinnans"
+  },
+  {
+    "colId": "3SBPZ",
+    "scientificName": "Larus canus"
+  },
+  {
+    "colId": "3SBQ9",
+    "scientificName": "Larus fuscus"
+  },
+  {
+    "colId": "3SBQM",
+    "scientificName": "Larus marinus"
+  },
+  {
+    "colId": "3SBQY",
+    "scientificName": "Larus ridibundus"
+  },
+  {
+    "colId": "72FCR",
+    "scientificName": "Limosa limosa"
+  },
+  {
+    "colId": "3WSC2",
+    "scientificName": "Lymnocryptes minimus"
+  },
+  {
+    "colId": "3Z83B",
+    "scientificName": "Melanitta fusca"
+  },
+  {
+    "colId": "3Z83C",
+    "scientificName": "Melanitta nigra"
+  },
+  {
+    "colId": "3ZDJV",
+    "scientificName": "Meleagris gallopavo"
+  },
+  {
+    "colId": "3ZTRN",
+    "scientificName": "Mergus merganser"
+  },
+  {
+    "colId": "3ZTRQ",
+    "scientificName": "Mergus serrator"
+  },
+  {
+    "colId": "479P3",
+    "scientificName": "Netta rufina"
+  },
+  {
+    "colId": "483SZ",
+    "scientificName": "Numenius arquata"
+  },
+  {
+    "colId": "483T6",
+    "scientificName": "Numenius phaeopus"
+  },
+  {
+    "colId": "6V58Q",
+    "scientificName": "Perdix perdix"
+  },
+  {
+    "colId": "4FWMN",
+    "scientificName": "Phasianus colchicus"
+  },
+  {
+    "colId": "4HPXM",
+    "scientificName": "Pica pica"
+  },
+  {
+    "colId": "4KKPY",
+    "scientificName": "Pluvialis squatarola"
+  },
+  {
+    "colId": "4RB9P",
+    "scientificName": "Rallus aquaticus"
+  },
+  {
+    "colId": "4VS4Z",
+    "scientificName": "Scolopax rusticola"
+  },
+  {
+    "colId": "6Z4ZB",
+    "scientificName": "Somateria mollissima"
+  },
+  {
+    "colId": "6ZXPP",
+    "scientificName": "Streptopelia decaocto"
+  },
+  {
+    "colId": "6ZXPY",
+    "scientificName": "Streptopelia turtur"
+  },
+  {
+    "colId": "5384V",
+    "scientificName": "Sturnus vulgaris"
+  },
+  {
+    "colId": "55QS6",
+    "scientificName": "Tetrao tetrix"
+  },
+  {
+    "colId": "58VJ2",
+    "scientificName": "Tringa erythropus"
+  },
+  {
+    "colId": "58VJB",
+    "scientificName": "Tringa nebularia"
+  },
+  {
+    "colId": "58VJH",
+    "scientificName": "Tringa totanus"
+  },
+  {
+    "colId": "59PLT",
+    "scientificName": "Turdus iliacus"
+  },
+  {
+    "colId": "7CYVX",
+    "scientificName": "Turdus merula"
+  },
+  {
+    "colId": "59PMR",
+    "scientificName": "Turdus philomelos"
+  },
+  {
+    "colId": "59PMS",
+    "scientificName": "Turdus pilaris"
+  },
+  {
+    "colId": "59PNF",
+    "scientificName": "Turdus viscivorus"
+  },
+  {
+    "colId": "7FFJL",
+    "scientificName": "Vanellus vanellus"
+  }
+]
