@@ -1,0 +1,242 @@
+[
+  {
+    "colId": "C64DY",
+    "scientificName": "Alyssum"
+  },
+  {
+    "colId": "66KMB",
+    "scientificName": "Anarrhinum longipedicellatum"
+  },
+  {
+    "colId": "9CVSF",
+    "scientificName": "Anthyllis lusitanica"
+  },
+  {
+    "colId": "332R",
+    "scientificName": "Armeria"
+  },
+  {
+    "colId": "GT52",
+    "scientificName": "Arnica montana"
+  },
+  {
+    "colId": "5VSLK",
+    "scientificName": "Artemisia eriantha"
+  },
+  {
+    "colId": "B3MH7",
+    "scientificName": "Artemisia genipi"
+  },
+  {
+    "colId": "HJNT",
+    "scientificName": "Aspius aspius"
+  },
+  {
+    "colId": "7R7BP",
+    "scientificName": "Astacus astacus"
+  },
+  {
+    "colId": "7RCB7",
+    "scientificName": "Austropotamobius pallipes"
+  },
+  {
+    "colId": "7RCBB",
+    "scientificName": "Austropotamobius torrentium"
+  },
+  {
+    "colId": "QLX7",
+    "scientificName": "Canis aureus"
+  },
+  {
+    "colId": "QLXL",
+    "scientificName": "Canis lupus"
+  },
+  {
+    "colId": "QS69",
+    "scientificName": "Capra ibex"
+  },
+  {
+    "colId": "QS6C",
+    "scientificName": "Capra pyrenaica"
+  },
+  {
+    "colId": "5ZZLR",
+    "scientificName": "Corallium rubrum"
+  },
+  {
+    "colId": "ZFXR",
+    "scientificName": "Cricetus cricetus"
+  },
+  {
+    "colId": "635G8",
+    "scientificName": "Euphrasia"
+  },
+  {
+    "colId": "6JVSD",
+    "scientificName": "Galanthus nivalis"
+  },
+  {
+    "colId": "3FKP4",
+    "scientificName": "Genetta genetta"
+  },
+  {
+    "colId": "6KB7S",
+    "scientificName": "Gentiana lutea"
+  },
+  {
+    "colId": "3H5HG",
+    "scientificName": "Graellsia isabellae"
+  },
+  {
+    "colId": "3HQWW",
+    "scientificName": "Gymnocephalus schraetzer"
+  },
+  {
+    "colId": "6LLM4",
+    "scientificName": "Helix pomatia"
+  },
+  {
+    "colId": "3L2WF",
+    "scientificName": "Herpestes ichneumon"
+  },
+  {
+    "colId": "PT32H",
+    "scientificName": "Hirudo medicinalis"
+  },
+  {
+    "colId": "3MSJL",
+    "scientificName": "Hucho hucho"
+  },
+  {
+    "colId": "3PZV3",
+    "scientificName": "Iris lusitanica"
+  },
+  {
+    "colId": "6NVLC",
+    "scientificName": "Lampetra fluviatilis"
+  },
+  {
+    "colId": "6PPQ3",
+    "scientificName": "Lepus timidus"
+  },
+  {
+    "colId": "KVG7H",
+    "scientificName": "Lethenteron"
+  },
+  {
+    "colId": "L2895",
+    "scientificName": "Leucobryum glaucum"
+  },
+  {
+    "colId": "727FT",
+    "scientificName": "Leuzea rhaponticoides"
+  },
+  {
+    "colId": "6PY8B",
+    "scientificName": "Lilium rubrum"
+  },
+  {
+    "colId": "5FPL",
+    "scientificName": "Lithothamnium"
+  },
+  {
+    "colId": "6QR9T",
+    "scientificName": "Lynx lynx"
+  },
+  {
+    "colId": "3Y44N",
+    "scientificName": "Margaritifera margaritifera"
+  },
+  {
+    "colId": "3Y9W2",
+    "scientificName": "Martes martes"
+  },
+  {
+    "colId": "QHPTG",
+    "scientificName": "Microcondylaea compressa"
+  },
+  {
+    "colId": "44QYC",
+    "scientificName": "Mustela putorius"
+  },
+  {
+    "colId": "45PCB",
+    "scientificName": "Narcissus bulbocodium"
+  },
+  {
+    "colId": "8VZL3",
+    "scientificName": "Narcissus"
+  },
+  {
+    "colId": "75YLX",
+    "scientificName": "Pelecus cultratus"
+  },
+  {
+    "colId": "RZ2Y2",
+    "scientificName": "Phymatholithon calcareum"
+  },
+  {
+    "colId": "4RDPJ",
+    "scientificName": "Rana esculenta"
+  },
+  {
+    "colId": "7936C",
+    "scientificName": "Rana perezi"
+  },
+  {
+    "colId": "7938M",
+    "scientificName": "Rana ridibunda"
+  },
+  {
+    "colId": "6WR99",
+    "scientificName": "Rana temporaria"
+  },
+  {
+    "colId": "4TQLC",
+    "scientificName": "Rupicapra rupicapra"
+  },
+  {
+    "colId": "4TR9P",
+    "scientificName": "Ruscus aculeatus"
+  },
+  {
+    "colId": "4TTHN",
+    "scientificName": "Rutilus pigus"
+  },
+  {
+    "colId": "6XCXT",
+    "scientificName": "Salmo salar"
+  },
+  {
+    "colId": "6458C",
+    "scientificName": "Scrophularia"
+  },
+  {
+    "colId": "4VZK9",
+    "scientificName": "Scrophularia sublyrata"
+  },
+  {
+    "colId": "854SN",
+    "scientificName": "Scyllarides latus"
+  },
+  {
+    "colId": "6YQ6H",
+    "scientificName": "Silurus aristotelis"
+  },
+  {
+    "colId": "56Q8K",
+    "scientificName": "Thymallus thymallus"
+  },
+  {
+    "colId": "7DFVQ",
+    "scientificName": "Ulex densus"
+  },
+  {
+    "colId": "7DL7C",
+    "scientificName": "Unio elongatulus"
+  },
+  {
+    "colId": "5D5BG",
+    "scientificName": "Zingel zingel"
+  }
+]
