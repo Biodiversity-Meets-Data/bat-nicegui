@@ -63,7 +63,8 @@ async def api_submit_workflow(
         data["webhook_url"] = WORKFLOW_WEBHOOK_URL_TEMPLATE
     data["dry_run"] = str(WORKFLOW_DRY_RUN).lower()
     data["force"] = str(WORKFLOW_FORCE).lower()
-    data["param-target_species"] = workflow.species_name
+    if workflow.species_name:
+        data["param-target_species"] = workflow.species_name
     data["param-climate_periods"] = time_period
     data["param-aoi_wkt"] = workflow.geometry_wkt
 
