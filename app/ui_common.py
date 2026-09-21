@@ -252,6 +252,30 @@ def apply_bmd_theme(
             height: 210px;
         }
 
+        .ecosystem-tab {
+            position: relative;
+            min-height: 64px;
+            min-width: 160px;
+            padding: 10px 18px;
+            border-radius: 12px;
+            box-sizing: border-box;
+            overflow: hidden;
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            color: white !important;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.75);
+            opacity: 0.58;
+            filter: grayscale(0.7);
+            transition: opacity 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .ecosystem-tab.q-tab--active {
+            opacity: 1;
+            filter: grayscale(0);
+            box-shadow: 0 4px 14px rgba(26, 58, 42, 0.25);
+        }
+
         /* Clamp the description to 2 lines so a long one can't grow the card. */
         .bat-card-desc {
             display: -webkit-box;
