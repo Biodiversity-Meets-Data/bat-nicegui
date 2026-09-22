@@ -56,7 +56,10 @@ async def api_submit_workflow(
         "time_period": time_period,
         "directive_types": directive_types,
     }
-    rocrate_zip = build_rocrate_zip(rocrate_context)
+    try:
+        rocrate_zip = build_rocrate_zip(workflow.bat_name, rocrate_context)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
     data = {}
     if WORKFLOW_WEBHOOK_URL_TEMPLATE:
@@ -136,6 +139,7 @@ async def api_submit_workflow(
     create_workflow(
         workflow_id=workflow_id,
         user_id=user_id,
+        bat_name=workflow.bat_name,
         name=workflow.name,
         description=workflow.description,
         species_name=workflow.species_name,

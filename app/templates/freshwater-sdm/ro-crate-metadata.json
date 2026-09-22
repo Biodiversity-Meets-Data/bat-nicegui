@@ -1,0 +1,141 @@
+{
+    "@context": [
+        "https://w3id.org/ro/crate/1.1/context",
+        "https://w3id.org/ro/terms/workflow-run/context"
+    ],
+    "@graph": [
+        {
+            "@id": "ro-crate-metadata.json",
+            "@type": "CreativeWork",
+            "about": {
+                "@id": "./"
+            },
+            "conformsTo": [
+                {
+                    "@id": "https://w3id.org/ro/crate/1.1"
+                },
+                {
+                    "@id": "https://w3id.org/workflowhub/workflow-ro-crate/1.0"
+                }
+            ]
+        },
+        {
+            "@id": "./",
+            "@type": "Dataset",
+            "name": "Freshwater SDM example workflow",
+            "description": "R-based example SDM workflow predicting current and future habitat suitability of freshwater species",
+            "keywords": [
+                "Freshwater species",
+                "Habitat suitability",
+                "SDM"
+            ],
+            "hasPart": [
+                {
+                    "@id": "workflow.yaml"
+                }
+            ],
+            "author": [
+                {
+                    "@id": "https://orcid.org/0000-0001-7561-7409"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0002-0577-6217"
+                }
+            ],
+            "license": {
+                "@id": "https://spdx.org/licenses/MIT"
+            },
+            "mainEntity": {
+                "@id": "workflow.yaml"
+            },
+            "conformsTo": [
+                {
+                    "@id": "https://w3id.org/workflowhub/workflow-ro-crate/1.0"
+                },
+                {
+                    "@id": "https://w3id.org/ro/wfrun/process/0.5"
+                },
+                {
+                    "@id": "https://w3id.org/ro/wfrun/workflow/0.5"
+                }
+            ]
+        },
+        {
+            "@id": "https://orcid.org/0000-0001-7561-7409",
+            "@type": "Person",
+            "name": "Marie Gutgesell"
+        },
+        {
+            "@id": "https://orcid.org/0000-0002-0577-6217",
+            "@type": "Person",
+            "name": "Namsrai Jargal"
+        },
+        {
+            "@id": "workflow.yaml",
+            "@type": [
+                "File",
+                "ComputationalWorkflow",
+                "SoftwareSourceCode"
+            ],
+            "name": "workflow.yaml",
+            "description": "Argo workflow definition for the SDM workflow",
+            "encodingFormat": "text/yaml",
+            "programmingLanguage": {
+                "@id": "https://argoproj.github.io/workflows"
+            },
+            "input": [
+                {
+                    "@id": "#target_species"
+                },
+                {
+                    "@id": "#climate_period"
+                },
+                {
+                    "@id": "#aoi_wkt"
+                }
+            ]
+        },
+        {
+            "@id": "#target_species",
+            "@type": "FormalParameter",
+            "additionalType": "Text",
+            "name": "target_species"
+        },
+                {
+            "@id": "#climate_period",
+            "@type": "FormalParameter",
+            "additionalType": "Text",
+            "name": "climate_period"
+        },
+                {
+            "@id": "#aoi_wkt",
+            "@type": "FormalParameter",
+            "additionalType": "Text",
+            "name": "aoi_wkt"
+        },
+        {
+            "@id": "https://argoproj.github.io/workflows",
+            "@type": "ComputerLanguage",
+            "name": "Argo",
+            "url": "https://argoproj.github.io/workflows"
+        },
+        {
+            "@id": "https://w3id.org/ro/wfrun/process/0.5",
+            "@type": "CreativeWork",
+            "name": "Process Run Crate",
+            "version": "0.1"
+        },
+        {
+            "@id": "https://w3id.org/ro/wfrun/workflow/0.5",
+            "@type": "CreativeWork",
+            "name": "Workflow Run Crate",
+            "version": "0.1"
+        },
+        {
+            "@id": "https://w3id.org/workflowhub/workflow-ro-crate/1.0",
+            "@type": "CreativeWork",
+            "name": "Workflow RO-Crate",
+            "version": "1.0"
+        }
+    ]
+}

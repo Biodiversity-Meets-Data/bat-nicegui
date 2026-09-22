@@ -50,6 +50,9 @@ class Bat:
     description: str
     # Material icon name for the card
     icon: str
+    # Paths are relative to app/templates and are resolved server-side.
+    workflow_yaml_path: str | None = None
+    rocrate_path: str | None = None
     # Map selection methods available on the BAT page.
     map_selection_modes: frozenset[MapSelectionMode] = frozenset(
         {
@@ -89,6 +92,8 @@ BAT_REGISTRY: tuple[Bat, ...] = (
         label="Species Distribution Modeling",
         description="Predict suitable habitats for terrestrial species",
         icon="pin_drop",
+        workflow_yaml_path="terrestrial-sdm/workflow.yaml",
+        rocrate_path="terrestrial-sdm/ro-crate-metadata.json",
     ),
     Bat(
         name="terrestrial_captain",
@@ -103,6 +108,8 @@ BAT_REGISTRY: tuple[Bat, ...] = (
         label="Habitat Suitability Model",
         description="Assess current and future habitat suitability for freshwater species",
         icon="water_drop",
+        workflow_yaml_path="freshwater-sdm/workflow.yaml",
+        rocrate_path="freshwater-sdm/ro-crate-metadata.json",
     ),
 )
 

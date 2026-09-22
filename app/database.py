@@ -96,6 +96,7 @@ def init_db() -> None:
         CREATE TABLE IF NOT EXISTS workflows (
             workflow_id TEXT PRIMARY KEY,
             user_id TEXT NOT NULL,
+            bat_name TEXT,
             name TEXT NOT NULL,
             description TEXT,
             species_name TEXT,
@@ -118,6 +119,12 @@ def init_db() -> None:
         cursor.execute(
             'ALTER TABLE workflows ADD COLUMN ecosystem_type TEXT DEFAULT "terrestrial"'
         )
+    except sqlite3.OperationalError:
+        pass  # Column already exists
+
+    # Add bat_name column if it doesn't exist (for existing databases)
+    try:
+        cursor.execute("ALTER TABLE workflows ADD COLUMN bat_name TEXT")
     except sqlite3.OperationalError:
         pass  # Column already exists
 
@@ -292,6 +299,7 @@ def delete_user(user_id: str) -> bool:
 def create_workflow(
     workflow_id: str,
     user_id: str,
+    bat_name: str,
     name: str,
     description: str,
     species_name: str | None,
@@ -307,14 +315,15 @@ def create_workflow(
         cursor.execute(
             """
             INSERT INTO workflows (
-                workflow_id, user_id, name, description, species_name,
+                workflow_id, user_id, bat_name, name, description, species_name,
                 ecosystem_type, geometry_type,
                 geometry_wkt, parameters, status
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 workflow_id,
                 user_id,
+                bat_name,
                 name,
                 description,
                 species_name,

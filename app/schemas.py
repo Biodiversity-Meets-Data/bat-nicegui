@@ -8,6 +8,7 @@ from pydantic import BaseModel
 class WorkflowSubmit(BaseModel):
     name: str
     description: str
+    bat_name: str
     species_name: str | None = None
     ecosystem_type: str
     geometry_type: str

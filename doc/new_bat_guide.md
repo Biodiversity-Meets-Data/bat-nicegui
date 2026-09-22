@@ -60,8 +60,9 @@ scripts/
 Every BAT is made of the same four components:
 
 * **Registry entry** in `bats/registry.py`. This is where the name, category,
-  label, card description, and icon for the BAT are defined. Derives the page
-  route.
+  label, card description, icon, and workflow template paths for the BAT are
+  defined. It derives the page route and is the server-side source of truth for
+  template selection.
 * **About text** in `bats/about/<bat_name>.md`. This is the long-form
   description of the BAT, shown in the "About" dialogue of the BAT selection
   page.
@@ -70,6 +71,44 @@ Every BAT is made of the same four components:
   the API.
 * **Page class** in `bats/<bat_name>.py`. A subclass of the shared base page.
   It builds the BAT-specific input widgets and collects their values.
+
+* **Workflow templates** in `app/templates/<template-name>/`. Each
+  submit-ready BAT must provide its own `workflow.yaml` and
+  `ro-crate-metadata.json` files.
+
+### Workflow and RO-Crate templates
+
+Template selection is configured in the BAT registry, not in the API request
+and not by passing filesystem paths from the browser. Register paths relative
+to `app/templates`:
+
+```py
+Bat(
+    name="freshwater_river_connectivity",
+    category=EcosystemCategory.FRESHWATER,
+    label="River Connectivity",
+    description="Assess barriers to fish migration",
+    icon="water_drop",
+    workflow_yaml_path="freshwater-river-connectivity/workflow.yaml",
+    rocrate_path="freshwater-river-connectivity/ro-crate-metadata.json",
+)
+```
+
+The page's registry name is sent as `bat_name` with each workflow submission.
+The backend resolves that name through `BAT_REGISTRY`, verifies that both
+registered files exist beneath `app/templates`, and packages exactly these two
+files in the RO-Crate ZIP. Do not expose absolute paths or accept template
+paths from user input.
+
+The `BasePage` submission flow adds `bat_name` automatically from the page's
+`BAT` registry entry. BAT-specific runtime values continue to be sent through
+the workflow API parameters, so the template files should define the
+appropriate Argo parameter names and container arguments.
+
+If a BAT has no template paths configured, it remains visible in the registry
+but submission is rejected with a configuration error. This is the current
+state of CAPTAIN; add its two template files and registry paths before making
+it submit-ready.
 
 <br>
 
@@ -165,6 +204,8 @@ BAT_REGISTRY: tuple[Bat, ...] = (
         label="River Connectivity",
         description="Assess barriers to fish migration",
         icon="water_drop",
+        workflow_yaml_path="freshwater-river-connectivity/workflow.yaml",
+        rocrate_path="freshwater-river-connectivity/ro-crate-metadata.json",
     ),
 )
 ```

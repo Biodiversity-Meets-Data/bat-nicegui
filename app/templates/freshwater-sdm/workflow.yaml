@@ -1,0 +1,144 @@
+kind: Workflow
+metadata:
+  generateName: freshwater-sdm-
+spec:
+  arguments:
+    parameters:
+      - name: target_species
+        description: Catalog of Life identifier of the species for which habitat suitability is predicted. Species are limited to those included in the relevant BMD project species lists (e.g. species covered by the EU IAS Regulation).
+        value: "3B3LX"
+      - name: climate_period
+        description: Climate period used for the habitat suitability prediction. Supported values are "1981-2010" (current), "2041-2070" (future), and "2071-2100" (future).
+        value: "1981-2010"
+      - name: aoi_wkt
+        description: Area of interest specified as a WKT polygon.
+        value: "POLYGON ((7.648039 48.681289, 7.648039 53.791998, 12.830061 53.791998, 12.830061 48.681289, 7.648039 48.681289))"
+  artifactGC:
+    forceFinalizerRemoval: true
+  podGC:
+    strategy: OnWorkflowSuccess
+  entrypoint: main-workflow
+  templates:
+    - name: main-workflow
+      steps:
+        - - name: download-occurences
+            template: download-occurences
+            arguments:
+              parameters:
+                - name: target_species
+                  value: "{{workflow.parameters.target_species}}"
+        - - name: run-sdm
+            template: run-sdm
+            arguments:
+              artifacts:
+                - name: gbif-occurences
+                  from: "{{steps.download-occurences.outputs.artifacts.gbif-occurences}}"
+              parameters:
+                - name: target_species
+                  value: "{{workflow.parameters.target_species}}"
+                - name: climate_period
+                  value: "{{workflow.parameters.climate_period}}"
+                - name: aoi_wkt
+                  value: "{{workflow.parameters.aoi_wkt}}"
+        - - name: render-dashboard
+            template: render-dashboard
+            arguments:
+              artifacts:
+                - name: sdm-results
+                  from: "{{steps.run-sdm.outputs.artifacts.sdm-results}}"
+          
+    - name: download-occurences
+      inputs:
+        parameters:
+          - name: target_species
+      container:
+        image: ghcr.io/lenipe/freshwater-sdm:latest
+        workingDir: /
+        env:
+          - name: GBIF_USER
+            valueFrom:
+              secretKeyRef:
+                name: gbif
+                key: user
+          - name: GBIF_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: gbif
+                key: password
+          - name: GBIF_MAIL
+            valueFrom:
+              secretKeyRef:
+                name: gbif
+                key: mail
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: bmd-dataspace-s3
+                key: accessKey
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: bmd-dataspace-s3
+                key: secretKey
+        command: ["Rscript", "freshwater_sdm_IAS/scripts/01_download.R"]
+        args:
+          - "--target_species={{inputs.parameters.target_species}}"
+      outputs:
+        artifacts:
+          - name: gbif-occurences
+            path: /freshwater_sdm_IAS/outputs/presence_subcatchments.csv
+            archive:
+              none: {}
+            artifactGC:
+              strategy: "OnWorkflowCompletion"
+    - name: run-sdm
+      inputs:
+        artifacts:
+          - name: gbif-occurences
+            path: /freshwater_sdm_IAS/outputs/presence_subcatchments.csv
+        parameters:
+          - name: target_species
+          - name: climate_period
+          - name: aoi_wkt
+      container:
+        image: ghcr.io/lenipe/freshwater-sdm:latest
+        command: ["Rscript", "freshwater_sdm_IAS/scripts/02_sdm.R"]
+        workingDir: /
+        args:
+          - "--target_species={{inputs.parameters.target_species}}"
+          - "--climate_period={{inputs.parameters.climate_period}}"
+          - "--aoi_wkt={{inputs.parameters.aoi_wkt}}"
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: bmd-dataspace-s3
+                key: accessKey
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: bmd-dataspace-s3
+                key: secretKey
+      outputs:
+        artifacts:
+          - name: sdm-results
+            path: /freshwater_sdm_IAS/outputs/
+            archive:
+              none: {}
+            artifactGC:
+              strategy: "OnWorkflowCompletion"
+    - name: render-dashboard
+      inputs:
+        artifacts:
+          - name: sdm-results
+            path: /freshwater_sdm_IAS/outputs/
+      container:
+        image: ghcr.io/lenipe/render-dashboard:latest
+        command: ["quarto", "render", "fw_sdm_quarto_dashboard.qmd", "--output-dir", "/freshwater_sdm_IAS/outputs"]
+        workingDir: /freshwater_sdm_IAS/dashboard
+      outputs:
+        artifacts:
+          - name: results
+            path: /freshwater_sdm_IAS/outputs/
+            archive:
+              none: {}
