@@ -53,13 +53,16 @@ async def select_workflow_page() -> RedirectResponse | None:
 
     with ui.column().classes("w-full max-w-5xl mx-auto p-6 gap-6"):
         page_title("Biodiversity Analysis Tools")
-        ui.label("Select a category, then choose a tool.").classes(
+        ui.label("Select an ecosystem, then choose a tool.").classes(
             "text-lg text-gray-600 mb-2"
         )
 
         with ui.tabs().classes("w-full") as tabs:
             for category in EcosystemCategory:
-                ui.tab(category.slug, label=category.label, icon=category.icon)
+                tab = ui.tab(category.slug, label=category.label, icon=category.icon)
+                tab.classes("ecosystem-tab").style(
+                    f"background-image: linear-gradient(rgba(26, 58, 42, 0.38), rgba(26, 58, 42, 0.38)), url('/static/{category.slug}.jpg');"
+                )
 
         default_category = next(iter(EcosystemCategory))
         with ui.tab_panels(tabs, value=default_category.slug).classes(

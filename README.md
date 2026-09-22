@@ -1,6 +1,6 @@
 # 🌿 BMD - BATs User Platform
 
-![Version](https://img.shields.io/static/v1?label=version&message=0.2.7&color=blue)
+![Version](https://img.shields.io/static/v1?label=version&message=0.2.11&color=blue)
 
 A modern web application for Biodiversity Analysis Tools, built with NiceGUI
 and FastAPI.
@@ -199,6 +199,52 @@ POST /api/workflows/webhook/{workflow_id}
   "error_message": null  // or error string if failed
 }
 ```
+
+<br>
+<br>
+
+## SQLite Database Schema
+
+The application stores users and submitted workflows in SQLite. Each workflow
+belongs to one user through `workflows.user_id`.
+
+```mermaid
+erDiagram
+    USERS ||--o{ WORKFLOWS : submits
+
+    USERS {
+        TEXT user_id PK
+        TEXT email UK
+        TEXT password_hash
+        TEXT name
+        TEXT orcid
+        TEXT keycloak_sub UK
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    WORKFLOWS {
+        TEXT workflow_id PK
+        TEXT user_id FK
+        TEXT name
+        TEXT description
+        TEXT species_name "nullable"
+        TEXT ecosystem_type
+        TEXT geometry_type
+        TEXT geometry_wkt
+        TEXT parameters
+        TEXT status
+        TEXT results
+        TEXT error_message
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+        TIMESTAMP completed_at
+    }
+```
+
+`species_name` is nullable because not every BAT requires a species. The
+`parameters`, `results`, and `error_message` fields store serialized workflow
+data and execution output.
 
 <br>
 <br>

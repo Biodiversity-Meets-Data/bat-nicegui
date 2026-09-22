@@ -66,14 +66,14 @@ class UserWorkflowsPage:
 
         with ui.card().classes("bmd-card p-6 w-full"):
             with ui.row().classes(
-                "w-full items-center py-3 border-b-2 border-gray-200 gap-4 font-semibold text-gray-600"
+                "w-full min-w-max items-center py-3 border-b-2 border-gray-200 gap-4 font-semibold text-gray-600"
             ):
-                ui.label("ID").classes("w-32")
-                ui.label("Name").classes("flex-1")
-                ui.label("Species").classes("w-24")
+                ui.label("Workflow ID").classes("w-64 shrink-0")
+                ui.label("Name").classes("flex-1 min-w-48")
                 ui.label("Ecosystem").classes("w-28")
                 ui.label("Status").classes("w-28")
                 ui.label("Created").classes("w-36")
+                ui.label("Ended").classes("w-36")
                 ui.label("Actions").classes("w-32")
 
             for wf in self.workflows:
@@ -83,11 +83,11 @@ class UserWorkflowsPage:
         """Build a single workflow row: id, metadata, status, and actions."""
 
         with ui.row().classes(
-            "w-full items-center py-3 border-b border-gray-100 gap-4"
+            "w-full min-w-max items-center py-3 border-b border-gray-100 gap-4"
         ):
-            with ui.row().classes("w-32 items-center gap-2"):
-                ui.label(wf["workflow_id"][:12] + "...").classes(
-                    "font-mono text-sm"
+            with ui.row().classes("w-64 shrink-0 items-center gap-2"):
+                ui.label(wf["workflow_id"]).classes(
+                    "font-mono text-sm whitespace-nowrap"
                 ).props(f'title="{wf["workflow_id"]}"')
                 ui.button(
                     icon="content_copy",
@@ -97,8 +97,7 @@ class UserWorkflowsPage:
                 )
 
             # Add workflow details field.
-            ui.label(wf["name"]).classes("font-semibold flex-1")
-            ui.label(wf.get("species_name") or "-").classes("w-24")
+            ui.label(wf["name"]).classes("font-semibold flex-1 min-w-48")
             ecosystem = (wf.get("ecosystem_type") or "unknown").lower()
             ecosystem_color = (
                 "green"
@@ -125,8 +124,11 @@ class UserWorkflowsPage:
             ui.label(wf["created_at"][:16] if wf["created_at"] else "N/A").classes(
                 "w-36 text-sm text-gray-500"
             )
+            ui.label(
+                wf["completed_at"][:16] if wf.get("completed_at") else "-"
+            ).classes("w-36 text-sm text-gray-500")
 
-            with ui.row().classes("w-32 items-center gap-2"):
+            with ui.row().classes("w-32 shrink-0 items-center gap-2"):
                 if status == "completed":
                     ui.button(
                         "View",
