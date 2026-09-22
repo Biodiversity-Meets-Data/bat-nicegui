@@ -80,6 +80,8 @@ spec:
             path: "/app/scripts/outputs/"
             archive:
               none: {}
+            artifactGC:
+              strategy: OnWorkflowCompletion
 
     - name: run-sdm
       inputs:
@@ -117,6 +119,8 @@ spec:
             path: /app/scripts/outputs/
             archive:
               none: {}
+              artifactGC:
+                strategy: OnWorkflowCompletion
 
     - name: render-dashboard
       inputs:
