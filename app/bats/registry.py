@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 
+from bats.map_widget import MapSelectionMode
+
 # Directory holding the long-form BAT descriptions markdown files.
 BAT_ABOUT_DIR = Path(__file__).parent / "about"
 
@@ -48,6 +50,14 @@ class Bat:
     description: str
     # Material icon name for the card
     icon: str
+    # Map selection methods available on the BAT page.
+    map_selection_modes: frozenset[MapSelectionMode] = frozenset(
+        {
+            MapSelectionMode.DRAW,
+            MapSelectionMode.COUNTRY,
+            MapSelectionMode.NATURA2000,
+        }
+    )
 
     @property
     def about_md(self) -> str:

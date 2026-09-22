@@ -2,6 +2,7 @@
 
 import pytest
 
+from bats.map_widget import MapSelectionMode
 from bats.registry import BAT_REGISTRY, Bat, EcosystemCategory
 
 
@@ -29,3 +30,10 @@ def test_about_md_raises_when_file_missing() -> None:
     )
     with pytest.raises(FileNotFoundError):
         _ = bat.about_md
+
+
+def test_registered_bats_enable_all_map_selection_modes() -> None:
+    """Current BATs expose drawing, country, and Natura2000 selection."""
+    assert all(
+        bat.map_selection_modes == frozenset(MapSelectionMode) for bat in BAT_REGISTRY
+    )

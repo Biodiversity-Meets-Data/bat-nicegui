@@ -31,4 +31,16 @@ KEYCLOAK_DISCOVERY_URL = (
     f"{KEYCLOAK_SERVER_URL}/realms/{KEYCLOAK_REALM}/.well-known/openid-configuration"
 )
 
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", "")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", "")
+AWS_BUCKET_NAME = os.getenv("AWS_BUCKET_NAME", "")
+AWS_REGION = os.getenv("AWS_REGION", os.getenv("AWS_DEFAULT_REGION", "eu-north-1"))
+AWS_COUNTRIES_KEY = os.getenv("AWS_COUNTRIES_KEY", "countries/countries.parquet")
+AWS_NATURA_INDEX_KEY = os.getenv(
+    "AWS_NATURA_INDEX_KEY", "natura2000/index/sites.parquet"
+)
+AWS_NATURA_GEOMETRY_PREFIX = os.getenv(
+    "AWS_NATURA_GEOMETRY_PREFIX", "natura2000/geometries"
+)
+
 TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
