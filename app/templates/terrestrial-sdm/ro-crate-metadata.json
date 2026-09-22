@@ -22,7 +22,7 @@
       "@id": "./",
       "@type": "Dataset",
       "name": "Species distribution modeling for bats example workflow",
-      "description": "This is an R-script demonstrating a SDM modeling workflow. The purpose of the script is to demonstrate (in a simplified way) what a workflow could look like based on bats species.",
+      "description": "An Argo-based species distribution modeling workflow for bats. The workflow downloads GBIF occurrences, runs the SDM using S3-hosted environmental data, and renders the results as a Quarto dashboard.",
       "author": {
         "@id": "https://orcid.org/0000-0001-7833-5474"
       },
@@ -64,7 +64,7 @@
         "SoftwareSourceCode"
       ],
       "name": "workflow.yaml",
-      "description": "Argo workflow definition for the sdm workflow",
+      "description": "Argo workflow definition with occurrence download, SDM modeling, and Quarto dashboard rendering steps. Runtime data are streamed from the configured S3 bucket.",
       "encodingFormat": "text/yaml",
       "programmingLanguage": {
         "@id": "https://argoproj.github.io/workflows"
@@ -79,6 +79,11 @@
         {
           "@id": "#aoi_wkt"
         }
+      ],
+      "output": [
+        {
+          "@id": "#dashboard-results"
+        }
       ]
     },
     {
@@ -92,7 +97,7 @@
       "@type": "FormalParameter",
       "additionalType": "Text",
       "name": "target_species",
-      "description":"Species scientific name",
+      "description":"Catalogue of Life identifier for the target species used by the GBIF occurrence download step.",
       "valueRequired": "true"
     },
     {
@@ -100,7 +105,7 @@
       "@type": "FormalParameter",
       "additionalType": "Text",
       "name": "climate_periods",
-      "description":"Time period selection",
+      "description":"Semicolon-separated climate periods used for SDM predictions, for example 1981-2010;2071-2100.",
       "valueRequired": "true"
     },
     {
@@ -108,8 +113,16 @@
       "@type": "FormalParameter",
       "additionalType": "Text",
       "name": "aoi_wkt",
-      "description":"Geometry in WKT",
+      "description":"Area of interest as a WKT geometry in EPSG:4326.",
       "valueRequired": "true"
+    },
+    {
+      "@id": "#dashboard-results",
+      "@type": "FormalParameter",
+      "additionalType": "File",
+      "name": "dashboard-results",
+      "description": "Workflow output directory containing SDM results and the rendered Quarto dashboard HTML.",
+      "valueRequired": "false"
     }
   ]
 }

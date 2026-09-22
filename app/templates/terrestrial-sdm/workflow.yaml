@@ -6,8 +6,8 @@ spec:
   arguments:
     parameters:
       - name: target_species
-        description: Species scientific name
-        value: "Myotis myotis"
+        description: Catalogue of Life species identifier
+        value: "456G3"
       - name: climate_periods
         description: Time period selection
         value: "1981-2010;2071-2100"
@@ -38,19 +38,38 @@ spec:
                 - name: gbif-occurrences
                   from: "{{steps.download-occurrences.outputs.artifacts.gbif-occurrences}}"
               parameters:
-                - name: target_species
-                  value: "{{workflow.parameters.target_species}}"
                 - name: climate_periods
                   value: "{{workflow.parameters.climate_periods}}"
                 - name: aoi_wkt
                   value: "{{workflow.parameters.aoi_wkt}}"
+        - - name: render-dashboard
+            template: render-dashboard
+            arguments:
+              artifacts:
+                - name: sdm-results
+                  from: "{{steps.run-sdm.outputs.artifacts.sdm-results}}"
 
     - name: download-occurrences
       inputs:
         parameters:
           - name: target_species
       container:
-        image: "taimurhk/gbif-maxent:v5"
+        image: "taimurhk/bat-sdm-s3:latest"
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: bmd-dataspace-s3
+                key: accessKey
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: bmd-dataspace-s3
+                key: secretKey
+          - name: AWS_DEFAULT_REGION
+            value: eu-north-1
+          - name: AWS_BUCKET_ADDRESS
+            value: s3://bii-bmd-workflow-engine-production
         command: ["Rscript", "/app/scripts/01_download.R"]
         args:
           - "--target_species={{inputs.parameters.target_species}}"
@@ -68,20 +87,49 @@ spec:
           - name: gbif-occurrences
             path: /app/scripts/outputs/
         parameters:
-          - name: target_species
           - name: climate_periods
           - name: aoi_wkt
       container:
-        image: "taimurhk/gbif-maxent:v5"
+        image: "taimurhk/bat-sdm-s3:latest"
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: bmd-dataspace-s3
+                key: accessKey
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: bmd-dataspace-s3
+                key: secretKey
+          - name: AWS_DEFAULT_REGION
+            value: eu-north-1
+          - name: AWS_BUCKET_ADDRESS
+            value: s3://bii-bmd-workflow-engine-production
         command: ["Rscript", "/app/scripts/02_sdm.R"]
         args:
-          - "--target_species={{inputs.parameters.target_species}}"
           - "--climate_periods={{inputs.parameters.climate_periods}}"
           - "--aoi_wkt={{inputs.parameters.aoi_wkt}}"
         workingDir: /app/scripts
       outputs:
         artifacts:
           - name: sdm-results
+            path: /app/scripts/outputs/
+            archive:
+              none: {}
+
+    - name: render-dashboard
+      inputs:
+        artifacts:
+          - name: sdm-results
+            path: /app/scripts/outputs/
+      container:
+        image: "taimurhk/bat-sdm-s3:latest"
+        command: ["Rscript", "/app/scripts/03_render_dashboard.R"]
+        workingDir: /app/scripts
+      outputs:
+        artifacts:
+          - name: dashboard-results
             path: /app/scripts/outputs/
             archive:
               none: {}
