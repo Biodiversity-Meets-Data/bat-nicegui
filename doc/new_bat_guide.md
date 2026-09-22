@@ -38,8 +38,12 @@ app/bats/
 ├── <bat_name>.py    # One module per BAT: its parameters + its page class
 ├── base_page.py     # BasePage: the parent class of every BAT page.
 ├── map_widget.py    # Shared "Analysis Area" Leaflet map widget
+├── map_data.py      # Server-side country and Natura2000 data access
 ├── registry.py      # Single source of truth: Bat, EcosystemCategory, BAT_REGISTRY
 └── workflow.py      # Domain layer: payload, validation, submission
+
+scripts/
+└── build_natura2000_index.py  # Builds lookup-friendly Natura2000 map artifacts
 ```
 
 > **✨ Notes:**
@@ -81,6 +85,64 @@ BATs, so a new BAT only supplies its own parameters. You inherit:
   validation error into a user notification.
 * Route registration and the authentication guard (unauthenticated visitors
   are redirected to the login page).
+
+The map selection methods are configured on the BAT registry entry. Each BAT
+can enable any combination of drawing, country selection, and Natura2000 site
+selection:
+
+```py
+from bats.map_widget import MapSelectionMode
+
+Bat(
+    name="freshwater_river_connectivity",
+    category=EcosystemCategory.FRESHWATER,
+    label="River Connectivity",
+    description="Assess barriers to fish migration",
+    icon="water_drop",
+    map_selection_modes=frozenset(
+        {
+            MapSelectionMode.DRAW,
+            MapSelectionMode.COUNTRY,
+            MapSelectionMode.NATURA2000,
+        }
+    ),
+)
+```
+
+Every method produces the same `MapGeometry` callback value and therefore the
+same `geometry_wkt` workflow field. Selecting a country or Natura2000 site
+replaces the current map selection, just as drawing a new shape does.
+
+Country and Natura2000 data are read server-side from S3. Configure the
+following environment variables when running a deployment:
+
+```sh
+AWS_BUCKET_NAME=your-bucket
+AWS_REGION=eu-north-1
+AWS_COUNTRIES_KEY=countries/countries.parquet
+AWS_NATURA_INDEX_KEY=natura2000/index/sites.parquet
+AWS_NATURA_GEOMETRY_PREFIX=natura2000
+```
+
+The raw Natura2000 polygon object is large and is not scanned during user
+interaction. A maintainer or external data pipeline must first generate the
+lookup-friendly index and per-site GeoJSON objects:
+
+```sh
+uv run python scripts/build_natura2000_index.py \
+  --output-dir ./data/natura2000-map \
+  --upload-prefix natura2000
+```
+
+The script loads `AWS_BUCKET_NAME` and the AWS credentials from the local
+`.env` file. Alternatively, export the variables in the shell and pass
+`--bucket` explicitly.
+
+The script reads
+`natura2000/Natura2000_end2024/NaturaSite_polygon.parquet`, writes
+`sites.parquet` and one `geometries/<SITECODE>.geojson` file per site, and can
+publish them under the configured S3 prefix. The application uses the index for
+search and fetches only the selected site's geometry.
 
 <br>
 <br>

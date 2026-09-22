@@ -13,6 +13,7 @@ A subclass must:
 """
 
 from abc import ABC, abstractmethod
+import json
 from typing import ClassVar
 
 from fastapi.responses import RedirectResponse
@@ -50,7 +51,10 @@ class BasePage(ABC):
     BAT: ClassVar[Bat]
 
     def __init__(self) -> None:
-        self.map = MapWidget(on_change=self.update_geometry)
+        self.map = MapWidget(
+            on_change=self.update_geometry,
+            selection_modes=self.BAT.map_selection_modes,
+        )
         self.build_page()
 
     # ------------------------- Page Construction --------------------------- #
@@ -94,9 +98,23 @@ class BasePage(ABC):
         # draws or clears an area on the map.
         with ui.column().classes("w-full gap-1 mt-3"):
             required_label("Analysis Area")
-            self.area_label = ui.label(NO_GEOMETRY_MSG).classes(
-                "text-sm text-gray-500 p-3 bg-gray-50 rounded-lg"
-            )
+            with ui.row().classes("w-full items-start gap-2 p-3 bg-gray-50 rounded-lg"):
+                self.area_label = (
+                    ui.label(NO_GEOMETRY_MSG)
+                    .classes("text-sm text-gray-500 flex-1 w-0")
+                    .style(
+                        "display: -webkit-box; "
+                        "-webkit-box-orient: vertical; "
+                        "-webkit-line-clamp: 2; "
+                        "overflow: hidden; "
+                        "overflow-wrap: anywhere;"
+                    )
+                )
+                self.copy_wkt_button = ui.button(
+                    icon="content_copy", on_click=self.copy_geometry_wkt
+                ).props("flat dense round size=sm")
+                self.copy_wkt_button.tooltip("Copy WKT")
+                self.copy_wkt_button.disable()
 
     def update_geometry(self, geometry: MapGeometry | None) -> None:
         """Updates the page's "Analysis Area" user input with the area drawn
@@ -106,6 +124,22 @@ class BasePage(ABC):
         whenever the user draws/clears an area on the map (callback function).
         """
         self.area_label.text = f"WKT: {geometry.wkt}" if geometry else NO_GEOMETRY_MSG
+        if geometry:
+            self.copy_wkt_button.enable()
+        else:
+            self.copy_wkt_button.disable()
+
+    async def copy_geometry_wkt(self) -> None:
+        """Copy the selected analysis-area WKT to the browser clipboard."""
+        geometry = self.map.geometry
+        if geometry is None:
+            ui.notify("Select an analysis area first", type="warning")
+            return
+        await ui.run_javascript(
+            f"navigator.clipboard.writeText({json.dumps(geometry.wkt)});",
+            timeout=5.0,
+        )
+        ui.notify("WKT copied to clipboard", type="positive")
 
     @abstractmethod
     def add_specific_parameters(self) -> None:
