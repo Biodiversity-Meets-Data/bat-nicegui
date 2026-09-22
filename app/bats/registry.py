@@ -97,6 +97,13 @@ BAT_REGISTRY: tuple[Bat, ...] = (
         description="Prioritize conservation areas",
         icon="hub",
     ),
+    Bat(
+        name="freshwater_sdm",
+        category=EcosystemCategory.FRESHWATER,
+        label="Habitat Suitability Model",
+        description="Assess current and future habitat suitability for freshwater species",
+        icon="water_drop",
+    ),
 )
 
 
