@@ -226,6 +226,7 @@ erDiagram
     WORKFLOWS {
         TEXT workflow_id PK
         TEXT user_id FK
+        TEXT bat_name
         TEXT name
         TEXT description
         TEXT species_name "nullable"
@@ -251,12 +252,16 @@ data and execution output.
 
 ## External Workflow Submission
 
-On submission, the backend reads:
+On submission, the backend uses the submitted `bat_name` to resolve the BAT's
+registered template paths under `app/templates`. For example:
 
 - `app/templates/terrestrial-sdm/workflow.yaml`
 - `app/templates/terrestrial-sdm/ro-crate-metadata.json`
 
-These files are zipped into an RO-Crate and POSTed to `WORKFLOW_API_URL`.
+The selected workflow and RO-Crate metadata files are zipped into an RO-Crate
+and POSTed to `WORKFLOW_API_URL`. Template paths are server-side registry
+configuration; they are never accepted from the browser. A BAT without
+configured templates cannot be submitted.
 The external API returns the `workflow_id`, which is stored in the local
 database. Webhook delivery uses `WORKFLOW_WEBHOOK_URL_TEMPLATE` (supports
 `{workflow_id}`).

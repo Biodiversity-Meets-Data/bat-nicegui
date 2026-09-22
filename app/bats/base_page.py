@@ -165,6 +165,7 @@ class BasePage(ABC):
             payload = build_workflow_payload(
                 name=(self.name_input.value or "").strip(),
                 description=(self.desc_input.value or "").strip(),
+                bat_name=self.BAT.name,
                 ecosystem_type=self.BAT.category,
                 bat_specific_parameters=self.get_specific_parameters(),
                 geometry=self.map.geometry,

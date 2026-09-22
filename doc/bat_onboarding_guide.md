@@ -19,8 +19,8 @@ A BAT is composed of the following elements:
   is run via the
   [ARGO workflow engine](https://argo-workflows.readthedocs.io/en/latest/quick-start).
 * ⚙️ **Job configuration files**: in order to communicate inputs from the
-  frontend to the backend each BAT must define two template files:
-  `ro-crate-metadata.json` and `workflow.yaml`.
+  frontend to the backend each submit-ready BAT must define two template
+  files: `ro-crate-metadata.json` and `workflow.yaml`.
 * 📚 **Documentation**: explanations for the end user about what the BAT does,
   what its input arguments are, and how to interpret its output.
 
@@ -85,8 +85,10 @@ the user input. This is basically a `.zip` that contains 2 files:
   workflow manager. In other words, a file that indicates what are the
   different steps to run. Each step runs in a separate Docker container.
 
-  Input values passed by the user are first stored in `ro-crate-metadata.json`,
-  and a custom script then injects/copies them to `workflow.yaml`.
+  The template pair is selected from the server-side BAT registry using the
+  submitted `bat_name`. The files are packaged unchanged into the RO-Crate;
+  runtime values are sent separately as workflow API parameters. The workflow
+  API then applies those `param-*` values when submitting the Argo workflow.
 
   **Artifacts** can be defined as outputs to preserve of each step, and
   these are then available to the subsequent steps of the workflow. E.g.,
@@ -102,54 +104,27 @@ For available workflow-related Kubernetes secrets (for example GBIF
 credentials), see the [Argo Workflow Secrets Catalog](./argo-secrets-catalog.md).
 
 To learn more about how the RO-crate are built, one function to look at is
-[`build_rocrate_zip()`](https://github.com/Biodiversity-Meets-Data/bat-nicegui/blob/main/app/main.py#L68),
+[`build_rocrate_zip()`](https://github.com/Biodiversity-Meets-Data/bat-nicegui/blob/main/app/workflow_utils.py),
 which generates the `.zip` RO-Crate.
 
 #### How arguments are passed from frontend (niceGUI) to backend
 
-1. User enters its input via fields defined in the BAT frontend (i.e. each
+1. User enters their input via fields defined in the BAT frontend (i.e. each
    BAT has its own webpage in the BMD SAP - single access point - application).
    * Reminder: BAT frontend use the niceGUI python framework and are hosted
      in [this project](https://github.com/Biodiversity-Meets-Data/bat-nicegui).
 
 2. The [bat-nicegui](https://github.com/Biodiversity-Meets-Data/bat-nicegui)
-   app creates a new `ro-crate-metadata.json` for the current run based on the
-   defined template. The important aspect is that the user input values are
-   stored in the `input:` section of the JSON file, by replacing the variable
-   placeholders (`#target_species` and `#aoi_wkt`) in the example below with
-   the user inputs.
+   app sends the BAT registry name (`bat_name`) together with the workflow
+   inputs. The backend resolves the BAT's registered template paths and creates
+   an RO-Crate ZIP containing the selected static files.
 
-   ```json
-   "input": [
-     {
-       "@id": "#target_species"
-     },
-     {
-       "@id": "#aoi_wkt"
-     }
-   ]
-   ```
+3. The workflow API sends the user values as `param-*` form fields alongside
+   the RO-Crate ZIP. The selected `workflow.yaml` must define matching Argo
+   parameter names and use them in its container arguments.
 
-3. A custom scrips generates a new `workflow.yaml` (based on the template
-   defined for the specific BAT that is being run) and injects the input
-   values defined in `ro-crate-metadata.json` into the `parameters:` section
-   of the `workflow.yaml` file.
-
-   ```yaml
-   spec:
-     arguments:
-       parameters:
-        - name: target_species
-          description: Species scientific name
-          value: "Myotis myotis"
-        - name: aoi_wkt
-          description: Geographical extent of analysis in WKT format
-          value: "POLYGON((3.8 51.2, 4.2 51.2, 4.2 50.8, 3.8 50.8, 3.8 51.2))"
-   ```
-
-4. A new run of the BAT is initiated by passing the `workflow.yaml` file
-   (which now contains all input argument values from the user) to the ARGO
-   workflow manager.
+4. A new run of the BAT is initiated by passing the selected `workflow.yaml`
+   file to the ARGO workflow manager.
 
 </br>
 </br>

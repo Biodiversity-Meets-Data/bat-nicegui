@@ -45,6 +45,7 @@ class WorkflowPayload:
 
     name: str
     description: str
+    bat_name: str
     species_name: str | None
     ecosystem_type: EcosystemCategory
     geometry: MapGeometry
@@ -55,6 +56,7 @@ class WorkflowPayload:
         return {
             "name": self.name,
             "description": self.description,
+            "bat_name": self.bat_name,
             "species_name": self.species_name or "",
             "ecosystem_type": self.ecosystem_type.slug,  # enum -> "terrestrial"
             "geometry_type": self.geometry.type,
@@ -66,6 +68,7 @@ class WorkflowPayload:
 def build_workflow_payload(
     name: str,
     description: str,
+    bat_name: str,
     ecosystem_type: EcosystemCategory,
     bat_specific_parameters: BatSpecificParameters,
     geometry: MapGeometry | None,
@@ -90,6 +93,7 @@ def build_workflow_payload(
     return WorkflowPayload(
         name=name,
         description=description,
+        bat_name=bat_name,
         species_name=species_name,
         ecosystem_type=ecosystem_type,
         geometry=geometry,

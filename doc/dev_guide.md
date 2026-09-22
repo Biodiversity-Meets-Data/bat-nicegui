@@ -211,7 +211,10 @@ bat-nicegui/
 │   ├── config.py              # Environment-backed settings
 │   ├── database.py            # SQLite database operations
 │   └── templates/
-│       └── terrestrial-sdm/
+│       ├── terrestrial-sdm/
+│       │   ├── workflow.yaml           # Argo workflow template
+│       │   └── ro-crate-metadata.json  # RO-Crate metadata template
+│       └── freshwater-sdm/
 │           ├── workflow.yaml           # Argo workflow template
 │           └── ro-crate-metadata.json  # RO-Crate metadata template
 ├── static/
