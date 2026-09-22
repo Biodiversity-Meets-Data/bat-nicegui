@@ -119,8 +119,8 @@ spec:
             path: /app/scripts/outputs/
             archive:
               none: {}
-              artifactGC:
-                strategy: OnWorkflowCompletion
+            artifactGC:
+              strategy: OnWorkflowCompletion
 
     - name: render-dashboard
       inputs:
