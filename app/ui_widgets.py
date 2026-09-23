@@ -13,6 +13,30 @@ class Color(enum.StrEnum):
     RED = "text-red-600"
 
 
+class IntNumber(ui.number):
+    """A number input restricted to integers that never stays empty.
+
+    If the user clears the field, the default value is restored when the
+    field loses focus, so the widget always holds an integer.
+    """
+
+    def __init__(self, value: int, min: int | None, max: int | None) -> None:
+        super().__init__(
+            value=value, min=min, max=max, step=1, precision=0, format="%d"
+        )
+        self._default = value
+        self.on(type="blur", handler=self._restore_default_if_empty, args=[])
+
+    def _restore_default_if_empty(self) -> None:
+        if self.value is None:
+            self.value = self._default
+
+    @property
+    def int_value(self) -> int:
+        """The entered value as an int (the default if the field is empty)."""
+        return self._default if self.value is None else int(self.value)
+
+
 def required_label(text: str) -> None:
     """Add a label with required asterisk."""
 
@@ -84,6 +108,33 @@ def optional_text_input(
 def readonly_text_input(label: str, value: str = "", hint: str = "") -> ui.input:
     """A non-editable text field, for display of values the user may not change."""
     return _text_input(label, value, None, hint, required=True, readonly=True)
+
+
+def required_int_input(
+    label: str,
+    min: int,
+    max: int,
+    value: int | None = None,
+    hint: str = "",
+) -> IntNumber:
+    """A numeric input widget whose input is mandatory and restricted to
+    integers within lower and upper bounds.
+
+    The widget blocks values outside the bounds and rounds entered decimals to
+    the nearest integer. The given 'value' is the default, restored if the
+    field is left empty.
+    """
+
+    with ui.column().classes("w-full gap-1 mt-3"):
+        required_label(label)
+        number_field = (
+            IntNumber(value=value if value is not None else min, min=min, max=max)
+            .props("outlined")
+            .classes("w-full")
+        )
+        if hint:
+            ui.label(hint).classes("text-xs text-gray-400 mt-1")
+        return number_field
 
 
 def optional_textarea_input(
