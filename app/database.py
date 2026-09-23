@@ -100,6 +100,7 @@ def init_db() -> None:
             name TEXT NOT NULL,
             description TEXT,
             species_name TEXT,
+            species_col_id TEXT,
             ecosystem_type TEXT,
             geometry_type TEXT,
             geometry_wkt TEXT,
@@ -131,6 +132,12 @@ def init_db() -> None:
     # Add species_name column if it doesn't exist (for existing databases)
     try:
         cursor.execute("ALTER TABLE workflows ADD COLUMN species_name TEXT")
+    except sqlite3.OperationalError:
+        pass  # Column already exists
+
+    # Add species_col_id column if it doesn't exist (for existing databases)
+    try:
+        cursor.execute("ALTER TABLE workflows ADD COLUMN species_col_id TEXT")
     except sqlite3.OperationalError:
         pass  # Column already exists
 
@@ -303,6 +310,7 @@ def create_workflow(
     name: str,
     description: str,
     species_name: str | None,
+    species_col_id: str | None,
     ecosystem_type: str,
     geometry_type: str,
     geometry_wkt: str,
@@ -316,9 +324,10 @@ def create_workflow(
             """
             INSERT INTO workflows (
                 workflow_id, user_id, bat_name, name, description, species_name,
+                species_col_id,
                 ecosystem_type, geometry_type,
                 geometry_wkt, parameters, status
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 workflow_id,
@@ -327,6 +336,7 @@ def create_workflow(
                 name,
                 description,
                 species_name,
+                species_col_id,
                 ecosystem_type,
                 geometry_type,
                 geometry_wkt,

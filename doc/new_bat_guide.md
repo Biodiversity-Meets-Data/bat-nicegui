@@ -71,6 +71,10 @@ Every BAT is made of the same four components:
   the API.
 * **Page class** in `bats/<bat_name>.py`. A subclass of the shared base page.
   It builds the BAT-specific input widgets and collects their values.
+* **Species lists** are configured on the registry entry when the BAT needs a
+  species selector. The shared base page loads the selected lists, merges
+  duplicate `colId` values, and displays searchable scientific names with list
+  pills.
 
 * **Workflow templates** in `app/templates/<template-name>/`. Each
   submit-ready BAT must provide its own `workflow.yaml` and
@@ -109,6 +113,70 @@ If a BAT has no template paths configured, it remains visible in the registry
 but submission is rejected with a configuration error. This is the current
 state of CAPTAIN; add its two template files and registry paths before making
 it submit-ready.
+
+### Configuring the shared species selector
+
+The updated species assets in `static/` use records with `colId` and
+`scientificName`. Configure the lists in `bats/registry.py`; do not load JSON
+files directly from an individual BAT page:
+
+```py
+from species import ALL_SELECTABLE_SPECIES_LISTS
+
+Bat(
+    name="terrestrial_sdm",
+    category=EcosystemCategory.TERRESTRIAL,
+    label="Species Distribution Modeling",
+    description="Predict suitable habitats for terrestrial species",
+    icon="pin_drop",
+    species_lists=ALL_SELECTABLE_SPECIES_LISTS,
+)
+```
+
+Use a tuple of selected `SpeciesList` values instead when a BAT should expose
+only a subset. Leave the default empty tuple for BATs that do not accept a
+species. The selector searches scientific names and `colId`, shows all list
+memberships as pills, and keeps both values: `species_name` is the scientific
+name stored in the local database, while `species_col_id` is the Catalogue of
+Life identifier sent as the external workflow's `param-target_species` value.
+
+The currently selectable assets and their directive filters are:
+
+| Checkbox label | Directive key | JSON assets |
+| --- | --- | --- |
+| Invasive Species Regulations | `invasive_species` | `Invasive_Alien_Species_of_Union_Concern.json` |
+| Habitats | `habitat` | `Habitats_Directive_Annex_II.json`, `Habitats_Directive_Annex_IV.json`, `Habitats_Directive_Annex_V.json`, `Habitats_Directive_Characteristic_Species_Annex_I.json` |
+| Bird | `bird` | `Birds_Directive_Annex_I.json`, `Birds_Directive_Annex_II.json`, `Birds_Directive_Annex_III.json` |
+
+`GRIIS_Combined.json`, `Harmonized_Directive_Species_List.json`, and the
+legacy `eu-ias-directive.json` are not selectable through this shared
+selector. A BAT can expose only selected directive lists by configuring a
+tuple explicitly:
+
+```py
+from species import SpeciesList
+
+species_lists=(
+    SpeciesList.IAS_UNION_CONCERN,
+    SpeciesList.HABITATS_ANNEX_IV,
+)
+```
+
+The page's directive controls filter that configured tuple. If a species is
+present in more than one enabled asset, it appears once and receives one pill
+for every matching asset. Pill colors identify the directive family: red for
+Invasive Species Regulations, blue shades for Habitats annexes, and purple
+shades for Bird annexes. The shared selector is rendered by `BasePage`; a BAT
+page should not load these JSON files or build a second species dropdown.
+
+Species assets must contain records in this shape:
+
+```json
+{
+  "colId": "9606",
+  "scientificName": "Homo sapiens"
+}
+```
 
 <br>
 

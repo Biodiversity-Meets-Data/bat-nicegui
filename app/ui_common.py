@@ -310,6 +310,46 @@ def apply_bmd_theme(
             vertical-align: middle;
         }
 
+        .species-pill--ias-union-concern {
+            background: rgba(220, 38, 38, 0.14);
+            color: #b91c1c;
+        }
+
+        .species-pill--habitats-annex-ii {
+            background: rgba(37, 99, 235, 0.16);
+            color: #1d4ed8;
+        }
+
+        .species-pill--habitats-annex-iv {
+            background: rgba(37, 99, 235, 0.28);
+            color: #1e40af;
+        }
+
+        .species-pill--habitats-annex-v {
+            background: rgba(37, 99, 235, 0.42);
+            color: #1e3a8a;
+        }
+
+        .species-pill--habitats-characteristic-annex-i {
+            background: rgba(37, 99, 235, 0.10);
+            color: #2563eb;
+        }
+
+        .species-pill--birds-annex-i {
+            background: rgba(147, 51, 234, 0.16);
+            color: #7e22ce;
+        }
+
+        .species-pill--birds-annex-ii {
+            background: rgba(147, 51, 234, 0.28);
+            color: #6b21a8;
+        }
+
+        .species-pill--birds-annex-iii {
+            background: rgba(147, 51, 234, 0.42);
+            color: #581c87;
+        }
+
         .time-period-slider .q-slider__marker-label {
             font-size: 0.7rem;
             max-width: 70px;

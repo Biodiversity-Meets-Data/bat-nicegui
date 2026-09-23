@@ -230,6 +230,7 @@ erDiagram
         TEXT name
         TEXT description
         TEXT species_name "nullable"
+        TEXT species_col_id "nullable"
         TEXT ecosystem_type
         TEXT geometry_type
         TEXT geometry_wkt
@@ -243,7 +244,9 @@ erDiagram
     }
 ```
 
-`species_name` is nullable because not every BAT requires a species. The
+`species_name` is nullable because not every BAT requires a species.
+`species_col_id` stores the Catalogue of Life identifier sent to the external
+SDM workflow and is also nullable for BATs without species input. The
 `parameters`, `results`, and `error_message` fields store serialized workflow
 data and execution output.
 

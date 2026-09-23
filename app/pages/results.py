@@ -87,9 +87,14 @@ class WorkflowResultsPage:
                     ui.label("Workflow ID").classes("text-xs text-gray-500")
                     ui.label(self.workflow_id[:20] + "...").classes("font-mono text-sm")
                 with ui.column().classes("gap-1"):
-                    ui.label("Species Group").classes("text-xs text-gray-500")
+                    ui.label("Species").classes("text-xs text-gray-500")
                     ui.label(self.workflow.get("species_name") or "-").classes(
                         "font-medium"
+                    )
+                with ui.column().classes("gap-1"):
+                    ui.label("Catalogue of Life ID").classes("text-xs text-gray-500")
+                    ui.label(self.workflow.get("species_col_id") or "-").classes(
+                        "font-mono text-sm"
                     )
                 with ui.column().classes("gap-1"):
                     ui.label("Created").classes("text-xs text-gray-500")
