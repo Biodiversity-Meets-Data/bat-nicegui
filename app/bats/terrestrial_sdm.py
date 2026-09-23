@@ -17,10 +17,6 @@ class TerrestrialSdmParameters(BatSpecificParameters):
 
     directive_types: list[str]
     time_periods: list[str]
-    min_observations: float | None
-    confidence_threshold: float | None
-    include_historical: bool
-    generate_report: bool
 
     def validate_input(self) -> None:
         if not self.directive_types:
@@ -30,12 +26,8 @@ class TerrestrialSdmParameters(BatSpecificParameters):
 
     def to_api_parameters(self) -> dict[str, Any]:
         return {
-            "min_observations": self.min_observations,
-            "confidence_threshold": self.confidence_threshold,
             "time_period": ";".join(self.time_periods),
             "directive_types": self.directive_types,
-            "include_historical": self.include_historical,
-            "generate_report": self.generate_report,
         }
 
 
@@ -95,32 +87,10 @@ class TerrestrialSdmPage(BasePage):
                 for period in self.time_periods
             ]
 
-        ui.label("Additional Parameters").classes(
-            "text-sm font-semibold text-gray-600 mt-4 mb-2"
-        )
-
-        with ui.row().classes("w-full gap-4 mb-4"):
-            self.min_obs = (
-                ui.number("Min Observations", value=10)
-                .props("outlined")
-                .classes("flex-1")
-            )
-            self.confidence = ui.slider(min=0, max=100, value=80).classes("flex-1")
-            ui.label().bind_text_from(
-                self.confidence, "value", lambda v: f"Confidence: {v}%"
-            )
-
-        self.include_historical = ui.checkbox("Include historical data", value=True)
-        self.generate_report = ui.checkbox("Generate PDF report", value=True)
-
     def get_specific_parameters(self) -> TerrestrialSdmParameters:
         return TerrestrialSdmParameters(
             directive_types=self.selected_directives(),
             time_periods=self.selected_time_periods(),
-            min_observations=self.min_obs.value,
-            confidence_threshold=self.confidence.value,
-            include_historical=bool(self.include_historical.value),
-            generate_report=bool(self.generate_report.value),
         )
 
     def selected_directives(self) -> list[str]:
