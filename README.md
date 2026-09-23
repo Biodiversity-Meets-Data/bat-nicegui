@@ -147,6 +147,17 @@ Please see project's [developer guide](doc/dev_guide.md#local-deployment).
 | `KEYCLOAK_REALM` | Keycloak realm name | (empty) |
 | `KEYCLOAK_CLIENT_ID` | Keycloak confidential client ID | (empty) |
 | `KEYCLOAK_CLIENT_SECRET` | Keycloak client secret | (empty) |
+| `AWS_ACCESS_KEY_ID` | AWS/S3 access key for server-side map data access | (empty) |
+| `AWS_SECRET_ACCESS_KEY` | AWS/S3 secret key for server-side map data access | (empty) |
+| `AWS_BUCKET_NAME` | S3 bucket containing countries and Natura2000 data | (empty) |
+| `AWS_REGION` | AWS region for the S3 bucket | `eu-north-1` |
+| `AWS_COUNTRIES_KEY` | S3 object key for the country polygons | `countries/countries.parquet` |
+| `AWS_NATURA_INDEX_KEY` | S3 object key for the Natura2000 search index | `natura2000/index/sites.parquet` |
+| `AWS_NATURA_GEOMETRY_PREFIX` | S3 prefix containing selected Natura2000 geometries | `natura2000/geometries` |
+
+AWS credentials are used only by the backend and are never sent to browser
+clients. `DOMAIN` and `ACME_EMAIL` are additionally required when using the
+production Traefik overlay; see the production deployment instructions above.
 
 <br>
 <br>
