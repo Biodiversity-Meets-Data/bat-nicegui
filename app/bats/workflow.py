@@ -47,6 +47,7 @@ class WorkflowPayload:
     description: str
     bat_name: str
     species_name: str | None
+    species_col_id: str | None
     ecosystem_type: EcosystemCategory
     geometry: MapGeometry
     bat_specific: BatSpecificParameters
@@ -58,6 +59,7 @@ class WorkflowPayload:
             "description": self.description,
             "bat_name": self.bat_name,
             "species_name": self.species_name or "",
+            "species_col_id": self.species_col_id or "",
             "ecosystem_type": self.ecosystem_type.slug,  # enum -> "terrestrial"
             "geometry_type": self.geometry.type,
             "geometry_wkt": self.geometry.wkt,
@@ -73,6 +75,7 @@ def build_workflow_payload(
     bat_specific_parameters: BatSpecificParameters,
     geometry: MapGeometry | None,
     species_name: str | None = None,
+    species_col_id: str | None = None,
     require_species: bool = True,
 ) -> WorkflowPayload:
     """Validate the common workflow inputs and return a new WorkflowPayload.
@@ -86,7 +89,7 @@ def build_workflow_payload(
         raise WorkflowValidationError("Please enter a workflow name")
     if geometry is None:
         raise WorkflowValidationError("Please draw an area on the map")
-    if require_species and not species_name:
+    if require_species and (not species_name or not species_col_id):
         raise WorkflowValidationError("Please select a species")
     bat_specific_parameters.validate_input()
 
@@ -95,6 +98,7 @@ def build_workflow_payload(
         description=description,
         bat_name=bat_name,
         species_name=species_name,
+        species_col_id=species_col_id,
         ecosystem_type=ecosystem_type,
         geometry=geometry,
         bat_specific=bat_specific_parameters,

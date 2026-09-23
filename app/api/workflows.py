@@ -50,6 +50,7 @@ async def api_submit_workflow(
         "workflow_name": workflow.name,
         "description": workflow.description or "",
         "species_name": workflow.species_name,
+        "species_col_id": workflow.species_col_id,
         "ecosystem_type": workflow.ecosystem_type,
         "geometry_type": workflow.geometry_type,
         "geometry_wkt": workflow.geometry_wkt,
@@ -66,8 +67,8 @@ async def api_submit_workflow(
         data["webhook_url"] = WORKFLOW_WEBHOOK_URL_TEMPLATE
     data["dry_run"] = str(WORKFLOW_DRY_RUN).lower()
     data["force"] = str(WORKFLOW_FORCE).lower()
-    if workflow.species_name:
-        data["param-target_species"] = workflow.species_name
+    if workflow.species_col_id:
+        data["param-target_species"] = workflow.species_col_id
     data["param-climate_periods"] = time_period
     data["param-aoi_wkt"] = workflow.geometry_wkt
 
@@ -130,6 +131,7 @@ async def api_submit_workflow(
     print(f"Name: {workflow.name}")
     print(f"Description: {workflow.description}")
     print(f"Species Name: {workflow.species_name}")
+    print(f"Species COL ID: {workflow.species_col_id}")
     print(f"Ecosystem Type: {workflow.ecosystem_type}")
     print(f"Geometry Type: {workflow.geometry_type}")
     print(f"Geometry WKT: {workflow.geometry_wkt}")
@@ -143,6 +145,7 @@ async def api_submit_workflow(
         name=workflow.name,
         description=workflow.description,
         species_name=workflow.species_name,
+        species_col_id=workflow.species_col_id,
         ecosystem_type=workflow.ecosystem_type,
         geometry_type=workflow.geometry_type,
         geometry_wkt=workflow.geometry_wkt,

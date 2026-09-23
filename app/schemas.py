@@ -10,6 +10,7 @@ class WorkflowSubmit(BaseModel):
     description: str
     bat_name: str
     species_name: str | None = None
+    species_col_id: str | None = None
     ecosystem_type: str
     geometry_type: str
     geometry_wkt: str

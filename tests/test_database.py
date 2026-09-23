@@ -5,9 +5,7 @@ import sqlite3
 import database
 
 
-def test_init_db_adds_bat_name_to_existing_workflows_table(
-    tmp_path, monkeypatch
-) -> None:
+def test_init_db_migrates_existing_workflows_table(tmp_path, monkeypatch) -> None:
     db_path = tmp_path / "bmd.db"
     connection = sqlite3.connect(db_path)
     connection.execute(
@@ -39,6 +37,7 @@ def test_init_db_adds_bat_name_to_existing_workflows_table(
 
     connection = sqlite3.connect(db_path)
     columns = {row[1] for row in connection.execute("PRAGMA table_info(workflows)")}
-    connection.close()
-
     assert "bat_name" in columns
+    assert "species_name" in columns
+    assert "species_col_id" in columns
+    connection.close()

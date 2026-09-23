@@ -5,6 +5,7 @@ from enum import Enum
 from pathlib import Path
 
 from bats.map_widget import MapSelectionMode
+from species import ALL_SELECTABLE_SPECIES_LISTS, SpeciesList
 
 # Directory holding the long-form BAT descriptions markdown files.
 BAT_ABOUT_DIR = Path(__file__).parent / "about"
@@ -53,6 +54,7 @@ class Bat:
     # Paths are relative to app/templates and are resolved server-side.
     workflow_yaml_path: str | None = None
     rocrate_path: str | None = None
+    species_lists: tuple[SpeciesList, ...] = ()
     # Map selection methods available on the BAT page.
     map_selection_modes: frozenset[MapSelectionMode] = frozenset(
         {
@@ -94,6 +96,7 @@ BAT_REGISTRY: tuple[Bat, ...] = (
         icon="pin_drop",
         workflow_yaml_path="terrestrial-sdm/workflow.yaml",
         rocrate_path="terrestrial-sdm/ro-crate-metadata.json",
+        species_lists=ALL_SELECTABLE_SPECIES_LISTS,
     ),
     Bat(
         name="terrestrial_captain",
@@ -110,6 +113,7 @@ BAT_REGISTRY: tuple[Bat, ...] = (
         icon="water_drop",
         workflow_yaml_path="freshwater-sdm/workflow.yaml",
         rocrate_path="freshwater-sdm/ro-crate-metadata.json",
+        species_lists=ALL_SELECTABLE_SPECIES_LISTS,
     ),
 )
 

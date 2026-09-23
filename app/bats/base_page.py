@@ -21,6 +21,11 @@ from nicegui import Client, ui
 
 from bats.map_widget import MapGeometry, MapWidget
 from bats.registry import Bat
+from species import (
+    SpeciesOption,
+    load_species_options,
+    species_lists_for_directives,
+)
 from bats.workflow import (
     BatSpecificParameters,
     WorkflowValidationError,
@@ -70,6 +75,8 @@ class BasePage(ABC):
                 with ui.card().classes("bmd-card p-6 flex-1 min-w-80"):
                     # Add shared and BAT-specific user inputs.
                     self.add_shared_parameters()
+                    self.add_species_directive_parameters()
+                    self.add_species_selector()
                     self.add_specific_parameters()
 
                     # Add button to submit workflow.
@@ -129,6 +136,53 @@ class BasePage(ABC):
         else:
             self.copy_wkt_button.disable()
 
+    def add_species_directive_parameters(self) -> None:
+        """Add optional directive controls before the shared species selector."""
+
+    def add_species_selector(self) -> None:
+        """Add the shared species selector when the BAT opts into species."""
+        self.species_select = None
+        self._species_by_col_id: dict[str, SpeciesOption] = {}
+        if not self.BAT.species_lists:
+            return
+
+        with ui.column().classes("w-full gap-1 mt-4"):
+            required_label("Species List")
+            self.species_select = (
+                ui.select(
+                    options={},
+                    value=None,
+                )
+                .props("outlined use-input input-debounce=0 options-html clearable")
+                .classes("w-full")
+            )
+        self.species_select.on_value_change(self.update_species_display)
+        self.update_species_options(())
+
+    def update_species_options(self, directives: tuple[str, ...]) -> None:
+        """Refresh species options from the currently selected directives."""
+        if self.species_select is None:
+            return
+        list_ids = species_lists_for_directives(directives, self.BAT.species_lists)
+        options = load_species_options(list_ids)
+        self._species_by_col_id = {option.col_id: option for option in options}
+        self.species_select.options = {
+            option.col_id: option.html_label for option in options
+        }
+        if self.species_select.value not in self.species_select.options:
+            self.species_select.value = None
+        self.species_select.update()
+
+    def update_species_display(self, _: object | None = None) -> None:
+        """Show the scientific name after a species option is selected."""
+        if self.species_select is None:
+            return
+        selected = self._species_by_col_id.get(str(self.species_select.value))
+        self.species_select.props(
+            f"display-value={json.dumps(selected.scientific_name if selected else '')}"
+        )
+        self.species_select.update()
+
     async def copy_geometry_wkt(self) -> None:
         """Copy the selected analysis-area WKT to the browser clipboard."""
         geometry = self.map.geometry
@@ -153,11 +207,22 @@ class BasePage(ABC):
 
     def species_name(self) -> str | None:
         """Selected species, for BATs with a species input; `None` otherwise."""
-        return None
+        option = self._selected_species()
+        return option.scientific_name if option else None
+
+    def species_col_id(self) -> str | None:
+        """Selected Catalogue of Life identifier, if this BAT has a species."""
+        option = self._selected_species()
+        return option.col_id if option else None
+
+    def _selected_species(self) -> SpeciesOption | None:
+        if self.species_select is None or self.species_select.value is None:
+            return None
+        return self._species_by_col_id.get(str(self.species_select.value))
 
     def requires_species(self) -> bool:
         """Whether the user must select a species for this BAT."""
-        return False
+        return bool(self.BAT.species_lists)
 
     async def on_submit(self) -> None:
         """Validate the user inputs, then submit the workflow."""
@@ -170,6 +235,7 @@ class BasePage(ABC):
                 bat_specific_parameters=self.get_specific_parameters(),
                 geometry=self.map.geometry,
                 species_name=self.species_name(),
+                species_col_id=self.species_col_id(),
                 require_species=self.requires_species(),
             )
         except WorkflowValidationError as exc:

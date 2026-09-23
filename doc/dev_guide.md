@@ -171,6 +171,7 @@ Schemas (tables) stored in the application's SQLite database.
 | `name`           | TEXT      | Workflow name                                                  |
 | `description`    | TEXT      | Workflow description                                           |
 | `species_name`   | TEXT      | Selected species (scientific name)                             |
+| `species_col_id` | TEXT      | Selected Catalogue of Life identifier (nullable)               |
 | `ecosystem_type` | TEXT      | Ecosystem type (terrestrial, freshwater)                       |
 | `geometry_type`  | TEXT      | rectangle or polygon                                           |
 | `geometry_wkt`   | TEXT      | WKT polygon/rectangle                                          |
@@ -219,7 +220,7 @@ bat-nicegui/
 │           └── ro-crate-metadata.json  # RO-Crate metadata template
 ├── static/
 │   ├── logo.png               # BMD logo
-│   └── eu-ias-directive.json  # EU IAS directive data
+│   └── Invasive_Alien_Species_of_Union_Concern.json  # Updated species list
 ├── tests/
 │   ├── conftest.py            # Puts app/ on sys.path for imports
 │   └── test_registry.py       # BAT registry tests
