@@ -126,7 +126,7 @@ from species import ALL_SELECTABLE_SPECIES_LISTS
 Bat(
     name="terrestrial_sdm",
     category=EcosystemCategory.TERRESTRIAL,
-    label="Species Distribution Modeling",
+    label="Species Distribution Modelling",
     description="Predict suitable habitats for terrestrial species",
     icon="pin_drop",
     species_lists=ALL_SELECTABLE_SPECIES_LISTS,
@@ -376,10 +376,14 @@ BAT_REGISTRY: tuple[Bat, ...] = (
             Key order is part of the wire/DB contract and must stay stable.
             """
             ...
+
+        def to_workflow_parameters(self) -> dict[str, str]:
+            """Return the values to set as Argo workflow parameters."""
+            ...
     ```
 
    The `FreshwaterConnectivityParameters` class must implement the following
-   two methods:
+   methods:
 
    * **`validate_input`:** a method that validates all BAT-specific
      parameters. If a check fails, a `WorkflowValidationError` should be
@@ -387,8 +391,16 @@ BAT_REGISTRY: tuple[Bat, ...] = (
      method simply returns without raising.
 
    * **`to_api_parameters`:** a method that serializes the BAT-specific
-     parameters to a `dict`. This `dict` is what gets POSTed to the workflow
-     submission API and stored in the database.
+     parameters to a `dict`. This `dict` is stored in the database, but is not
+     sent to ARGO.
+
+   * **`to_workflow_parameters`:** a method that returns the values to send
+     to ARGO, as a `dict[str, str]`. Each key must be the name of a parameter
+     declared under `spec.arguments.parameters` in the BAT's `workflow.yaml`,
+     and is sent to the workflow API as `param-<key>`. Values must already be
+     strings (e.g. join lists with `;`). The analysis area (`aoi_wkt`) and
+     the species (`target_species`) are added automatically and must not be
+     included.
 
 <br>
 
