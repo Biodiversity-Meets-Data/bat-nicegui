@@ -9,6 +9,7 @@ words:
   - aread
   - ASGI
   - authlib
+  - autouse
   - bitshifted
   - CHELSA
   - circlemarker
@@ -16,17 +17,23 @@ words:
   - conftest
   - dataclass
   - Dataclasses
+  - dataspace
   - datatree
   - docstrings
   - dotenv
+  - EPSG
   - fastapi
+  - Finalizer
+  - frozenset
   - GBIF
+  - GRIIS
   - healthcheck
   - httpx
   - itsdangerous
   - jinja
   - letsencrypt
   - Lngs
+  - Natura
   - nicegui
   - orcid
   - passlib
@@ -40,6 +47,8 @@ words:
   - PYTHONUNBUFFERED
   - rocrate
   - rocratefile
+  - Rscript
+  - SITECODE
   - softprops
   - Starlette
   - stdlib

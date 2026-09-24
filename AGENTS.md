@@ -123,8 +123,9 @@ path is to copy an existing BAT page and adapt it:
 1. Register the BAT in `bats/registry.py` (`BAT_REGISTRY`).
 2. In `bats/<name>.py`, define a `BatSpecificParameters` subclass — a
    `@dataclass(frozen=True, slots=True, kw_only=True)` holding the BAT's typed
-   parameters — that validates them and serializes them to the API `parameters`
-   dict.
+   parameters — that validates them, serializes them to the API `parameters`
+   dict (stored in the database), and returns the values to send to Argo as
+   workflow parameters (keys = parameter names in the BAT's `workflow.yaml`).
 3. In the same module, define a `BasePage` subclass: set its `BAT` class
    attribute and implement the abstract methods (build the BAT-specific input
    widgets; collect them into the arguments object). Override the species hooks
