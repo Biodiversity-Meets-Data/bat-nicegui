@@ -10,12 +10,15 @@ from config import (
     WORKFLOW_API_AUTH_HEADER,
     WORKFLOW_API_AUTH_SCHEME,
     WORKFLOW_API_KEY,
+    WORKFLOW_DRY_RUN,
+    WORKFLOW_FORCE,
+    WORKFLOW_WEBHOOK_URL_TEMPLATE,
 )
+from schemas import WorkflowSubmit
 
 
-def build_rocrate_zip(bat_name: str, context: dict[str, str]) -> bytes:
+def build_rocrate_zip(bat_name: str) -> bytes:
     """Package the configured static templates for one BAT."""
-    _ = context
     try:
         bat = get_bat_by_name(bat_name)
     except KeyError as exc:
@@ -74,3 +77,30 @@ def build_workflow_api_headers() -> dict[str, str]:
         else:
             headers[WORKFLOW_API_AUTH_HEADER] = WORKFLOW_API_KEY
     return headers
+
+
+def build_workflow_api_form_data(workflow: WorkflowSubmit) -> dict[str, str]:
+    """Build the 'form fields' data sent to the workflow API with the RO-Crate
+    ZIP.
+
+    Fields prefixed with 'param-' set the Argo workflow parameter of the same
+    name (without the prefix) in the BAT's workflow template.
+    """
+    data: dict[str, str] = {
+        "dry_run": str(WORKFLOW_DRY_RUN).lower(),
+        "force": str(WORKFLOW_FORCE).lower(),
+        "param-aoi_wkt": workflow.geometry_wkt,
+    }
+    # Add BAT-specific parameters.
+    if workflow.workflow_parameters is not None:
+        for name, value in workflow.workflow_parameters.items():
+            data[f"param-{name}"] = value
+    else:
+        # Fixed mapping, for BATs that don't supply their own parameters.
+        data["param-climate_periods"] = workflow.parameters.get("time_period", "")
+
+    if WORKFLOW_WEBHOOK_URL_TEMPLATE:
+        data["webhook_url"] = WORKFLOW_WEBHOOK_URL_TEMPLATE
+    if workflow.species_col_id:
+        data["param-target_species"] = workflow.species_col_id
+    return data

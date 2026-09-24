@@ -15,6 +15,7 @@ class WorkflowSubmit(BaseModel):
     geometry_type: str
     geometry_wkt: str
     parameters: dict[str, Any]
+    workflow_parameters: dict[str, str] | None = None
 
 
 class WorkflowWebhook(BaseModel):

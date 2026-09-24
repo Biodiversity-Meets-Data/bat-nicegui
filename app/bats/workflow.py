@@ -38,6 +38,14 @@ class BatSpecificParameters(ABC):
         Key order is part of the wire/DB contract and must stay stable.
         """
 
+    def to_workflow_parameters(self) -> dict[str, str] | None:
+        """Convert the BAT-specific parameters to Argo workflow parameters.
+
+        Keys must match the parameter names declared in the BAT's workflow
+        template. Returns 'None' for BATs without specific parameters.
+        """
+        return None
+
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class WorkflowPayload:
@@ -64,6 +72,7 @@ class WorkflowPayload:
             "geometry_type": self.geometry.type,
             "geometry_wkt": self.geometry.wkt,
             "parameters": self.bat_specific.to_api_parameters(),
+            "workflow_parameters": self.bat_specific.to_workflow_parameters(),
         }
 
 
@@ -81,8 +90,8 @@ def build_workflow_payload(
     """Validate the common workflow inputs and return a new WorkflowPayload.
 
     Raises a WorkflowValidationError if a user input is missing or incorrect.
-    A BAT without a species input passes ``require_species=False`` to opt out of
-    the species requirement; the wire still carries an empty ``species_name``.
+    A BAT without a species input passes `require_species=False` to opt out of
+    the species requirement.
     """
     # Validate inputs in the order they appear on the form.
     if not name:

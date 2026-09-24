@@ -30,6 +30,9 @@ class TerrestrialSdmParameters(BatSpecificParameters):
             "directive_types": self.directive_types,
         }
 
+    def to_workflow_parameters(self) -> dict[str, str]:
+        return {"climate_periods": ";".join(self.time_periods)}
+
 
 class TerrestrialSdmPage(BasePage):
     """Terrestrial SDM create-workflow page."""

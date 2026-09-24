@@ -44,6 +44,16 @@ class TerrestrialCaptainParameters(BatSpecificParameters):
             "generate_report": self.generate_report,
         }
 
+    def to_workflow_parameters(self) -> dict[str, str]:
+        # Enum member names are used rather than their display labels, so that
+        # the values passed to the workflow are stable identifiers.
+        return {
+            "analysis_type": self.analysis_type.name.lower(),
+            "species_set": self.species_set.name.lower(),
+            "time_steps": str(self.time_steps),
+            "generate_report": str(self.generate_report).lower(),
+        }
+
 
 class TerrestrialCaptainPage(BasePage):
     """CAPTAIN create-workflow page."""

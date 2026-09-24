@@ -9,13 +9,7 @@ from fastapi.security import HTTPAuthorizationCredentials
 from starlette.background import BackgroundTask
 
 from auth_utils import optional_security, security, verify_token
-from config import (
-    WORKFLOW_API_AUTH_HEADER,
-    WORKFLOW_API_URL,
-    WORKFLOW_DRY_RUN,
-    WORKFLOW_FORCE,
-    WORKFLOW_WEBHOOK_URL_TEMPLATE,
-)
+from config import WORKFLOW_API_AUTH_HEADER, WORKFLOW_API_URL
 from database import (
     create_workflow,
     delete_workflow,
@@ -24,7 +18,11 @@ from database import (
     update_workflow_status,
 )
 from schemas import WorkflowSubmit, WorkflowWebhook
-from workflow_utils import build_rocrate_zip, build_workflow_api_headers
+from workflow_utils import (
+    build_rocrate_zip,
+    build_workflow_api_form_data,
+    build_workflow_api_headers,
+)
 
 router = APIRouter()
 
@@ -38,39 +36,12 @@ async def api_submit_workflow(
     if not user_id:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 
-    parameters = workflow.parameters or {}
-    time_period = parameters.get("time_period", "")
-    directive_types = parameters.get("directive_types", [])
-    if isinstance(directive_types, list):
-        directive_types = ";".join([str(value) for value in directive_types])
-    else:
-        directive_types = str(directive_types)
-
-    rocrate_context = {
-        "workflow_name": workflow.name,
-        "description": workflow.description or "",
-        "species_name": workflow.species_name,
-        "species_col_id": workflow.species_col_id,
-        "ecosystem_type": workflow.ecosystem_type,
-        "geometry_type": workflow.geometry_type,
-        "geometry_wkt": workflow.geometry_wkt,
-        "time_period": time_period,
-        "directive_types": directive_types,
-    }
     try:
-        rocrate_zip = build_rocrate_zip(workflow.bat_name, rocrate_context)
+        rocrate_zip = build_rocrate_zip(workflow.bat_name)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
-    data = {}
-    if WORKFLOW_WEBHOOK_URL_TEMPLATE:
-        data["webhook_url"] = WORKFLOW_WEBHOOK_URL_TEMPLATE
-    data["dry_run"] = str(WORKFLOW_DRY_RUN).lower()
-    data["force"] = str(WORKFLOW_FORCE).lower()
-    if workflow.species_col_id:
-        data["param-target_species"] = workflow.species_col_id
-    data["param-climate_periods"] = time_period
-    data["param-aoi_wkt"] = workflow.geometry_wkt
+    data = build_workflow_api_form_data(workflow)
 
     headers = build_workflow_api_headers()
     safe_headers = dict(headers)
@@ -136,6 +107,7 @@ async def api_submit_workflow(
     print(f"Geometry Type: {workflow.geometry_type}")
     print(f"Geometry WKT: {workflow.geometry_wkt}")
     print(f"Parameters: {workflow.parameters}")
+    print(f"Workflow parameters: {workflow.workflow_parameters}")
     print("=" * 60)
 
     create_workflow(
