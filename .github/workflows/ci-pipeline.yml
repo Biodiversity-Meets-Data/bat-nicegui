@@ -65,11 +65,32 @@ jobs:
         run: uv sync --frozen
       - name: Run tests
         run: uv run --no-sync pytest
-  
+
+  argo-lint:
+    name: Lint Argo workflow templates
+    runs-on: ubuntu-latest
+    env:
+      ARGO_VERSION: v4.0.4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Install Argo CLI
+        run: |
+          set -euo pipefail
+          curl -sSfL -o argo.gz \
+            "https://github.com/argoproj/argo-workflows/releases/download/${ARGO_VERSION}/argo-linux-amd64.gz"
+          gunzip argo.gz
+          chmod +x argo
+          sudo mv argo /usr/local/bin/argo
+          argo version
+      - name: Lint workflow templates
+        # --offline: lint the files without connecting to an Argo server.
+        run: argo lint --offline app/templates/*/workflow.yaml
+
   versioning:
     name: Automatic Semantic Versioning
     runs-on: ubuntu-latest
-    needs: [static-checks, unit-tests]
+    needs: [static-checks, unit-tests, argo-lint]
     permissions:
       contents: write # required to push the semver tag.
     outputs:
@@ -160,7 +181,7 @@ jobs:
   custom-step:
     name: Custom Action Job
     runs-on: ubuntu-latest
-    needs: [static-checks, unit-tests]
+    needs: [static-checks, unit-tests, argo-lint]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
