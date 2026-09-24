@@ -104,6 +104,8 @@ BAT_REGISTRY: tuple[Bat, ...] = (
         label="CAPTAIN",
         description="Prioritize conservation areas",
         icon="hub",
+        workflow_yaml_path="terrestrial-captain/workflow.yaml",
+        rocrate_path="terrestrial-captain/ro-crate-metadata.json",
     ),
     Bat(
         name="freshwater_sdm",

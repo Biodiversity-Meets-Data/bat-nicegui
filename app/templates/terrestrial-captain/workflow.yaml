@@ -1,0 +1,139 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: terrestrial-captain-
+spec:
+  # Workflow parameters, set from the values entered in the CAPTAIN frontend.
+  # The names must match the "param-*" fields sent by the frontend. The
+  # CAPTAIN-lite demo script does not use them yet: it runs on the example
+  # data bundled in the container image.
+  arguments:
+    parameters:
+      - name: aoi_wkt
+        description: Area of interest as a WKT geometry in EPSG:4326.
+        value: "POLYGON ((8.745117 49.21042, 12.788086 49.21042, 12.788086 50.847573, 8.745117 50.847573, 8.745117 49.21042))"
+      - name: analysis_type
+        description: "Type of analysis: species_richness or ecosystem_service."
+        value: "species_richness"
+      - name: species_set
+        description: "Set of species to analyse: demo, habitats_directive, birds_directive or custom."
+        value: "habitats_directive"
+      - name: time_steps
+        description: Number of years (time steps) in the simulation, between 1 and 100.
+        value: "10"
+      - name: generate_report
+        description: "Whether to generate a PDF report: true or false."
+        value: "true"
+
+  artifactGC:
+    forceFinalizerRemoval: true
+  podGC:
+    strategy: OnWorkflowSuccess
+
+  entrypoint: main-workflow
+
+  templates:
+    - name: main-workflow
+      steps:
+        - - name: retrieve-data
+            template: retrieve-data
+            arguments:
+              parameters:
+                - name: species_set
+                  value: "{{workflow.parameters.species_set}}"
+                - name: aoi_wkt
+                  value: "{{workflow.parameters.aoi_wkt}}"
+        - - name: run-captain
+            template: run-captain
+            arguments:
+              artifacts:  # Input artifact produced by the previous step.
+                - name: captain-input-data
+                  from: "{{steps.retrieve-data.outputs.artifacts.captain-input-data}}"
+        - - name: render-dashboard
+            template: render-dashboard
+            arguments:
+              artifacts:
+                - name: captain-results
+                  from: "{{steps.run-captain.outputs.artifacts.captain-results}}"
+
+    # Simulated data retrieval: the example data is already bundled in the
+    # container image, so this step only exports it as an artifact for the
+    # next step.
+    - name: retrieve-data
+      inputs:
+        parameters:
+          - name: species_set
+          - name: aoi_wkt
+      container:
+        image: "rengler/captain-lite:latest"
+        command: ["sh", "-c"]
+        args:
+          - |
+            set -eu
+            echo "Retrieving data for species set: {{inputs.parameters.species_set}}"
+            echo "Area of interest: {{inputs.parameters.aoi_wkt}}"
+            echo "Using the example data bundled in the container image:"
+            ls -R /app/test_data
+      outputs:
+        artifacts:
+          - name: captain-input-data
+            path: /app/test_data
+            archive:
+              none: {}
+            artifactGC:
+              strategy: OnWorkflowCompletion
+
+    - name: run-captain
+      inputs:
+        artifacts:
+          # Mounted where the script reads its input data, replacing the
+          # data bundled in the image.
+          - name: captain-input-data
+            path: /app/test_data
+      container:
+        # The image must be available from a container registry. Its
+        # entrypoint runs the CAPTAIN-lite script, which takes no arguments.
+        image: "rengler/captain-lite:latest"
+      outputs:
+        artifacts:
+          - name: captain-results
+            path: /app/output
+            archive:
+              none: {}  # Store the output as-is without archiving (zipping).
+            artifactGC:
+              strategy: OnWorkflowCompletion
+
+    # Placeholder dashboard: a single HTML page that shows the images produced
+    # by the analysis, next to copies of the images themselves.
+    - name: render-dashboard
+      inputs:
+        artifacts:
+          - name: captain-results
+            path: /app/captain_results
+      container:
+        image: "rengler/captain-lite:latest"
+        command: ["sh", "-c"]
+        args:
+          - |
+            set -eu
+            mkdir -p /app/dashboard
+            cp /app/captain_results/* /app/dashboard/
+            cd /app/dashboard
+            {
+              echo '<!doctype html>'
+              echo '<html><head><meta charset="utf-8"><title>CAPTAIN results</title></head><body>'
+              echo '<h1>CAPTAIN results</h1>'
+              for file in *.png *.gif; do
+                [ -e "$file" ] || continue
+                echo "<h2>$file</h2><img src=\"$file\" alt=\"$file\" style=\"max-width: 100%\">"
+              done
+              echo '</body></html>'
+            } > index.html
+            echo "Dashboard rendered with the following files:"
+            ls /app/dashboard
+      outputs:
+        artifacts:
+          - name: dashboard-results
+            path: /app/dashboard
+            archive:
+              none: {}
