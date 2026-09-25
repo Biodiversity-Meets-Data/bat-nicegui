@@ -64,20 +64,21 @@ class UserWorkflowsPage:
     def add_workflow_table(self) -> None:
         """Build the table card: column headers plus one row per workflow."""
 
-        with ui.card().classes("bmd-card p-6 w-full"):
-            with ui.row().classes(
-                "w-full min-w-max items-center py-3 border-b-2 border-gray-200 gap-4 font-semibold text-gray-600"
-            ):
-                ui.label("Workflow ID").classes("w-64 shrink-0")
-                ui.label("Name").classes("flex-1 min-w-48")
-                ui.label("Ecosystem").classes("w-28")
-                ui.label("Status").classes("w-28")
-                ui.label("Created").classes("w-36")
-                ui.label("Ended").classes("w-36")
-                ui.label("Actions").classes("w-32")
+        with ui.card().classes("bmd-card p-6 w-full overflow-hidden"):
+            with ui.column().classes("w-full overflow-x-auto"):
+                with ui.row().classes(
+                    "w-full min-w-max items-center py-3 border-b-2 border-gray-200 gap-4 font-semibold text-gray-600"
+                ):
+                    ui.label("Workflow ID").classes("w-64 shrink-0")
+                    ui.label("Name").classes("w-48 shrink-0")
+                    ui.label("Ecosystem").classes("w-28 shrink-0")
+                    ui.label("Status").classes("w-28 shrink-0")
+                    ui.label("Created").classes("w-36 shrink-0")
+                    ui.label("Ended").classes("w-36 shrink-0")
+                    ui.label("Actions").classes("w-32 shrink-0")
 
-            for wf in self.workflows:
-                self.add_workflow_row(wf)
+                for wf in self.workflows:
+                    self.add_workflow_row(wf)
 
     def add_workflow_row(self, wf: dict[str, Any]) -> None:
         """Build a single workflow row: id, metadata, status, and actions."""
@@ -97,7 +98,9 @@ class UserWorkflowsPage:
                 )
 
             # Add workflow details field.
-            ui.label(wf["name"]).classes("font-semibold flex-1 min-w-48")
+            ui.label(wf["name"]).classes(
+                "font-semibold w-48 shrink-0 min-w-0 whitespace-normal break-words"
+            )
             ecosystem = (wf.get("ecosystem_type") or "unknown").lower()
             ecosystem_color = (
                 "green"
