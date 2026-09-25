@@ -75,7 +75,9 @@ class UserWorkflowsPage:
                     ui.label("Status").classes("w-28 shrink-0")
                     ui.label("Created").classes("w-36 shrink-0")
                     ui.label("Ended").classes("w-36 shrink-0")
-                    ui.label("Actions").classes("w-32 shrink-0")
+                    ui.label("Actions").classes(
+                        "w-32 shrink-0 sticky right-0 z-10 bg-white"
+                    )
 
                 for wf in self.workflows:
                     self.add_workflow_row(wf)
@@ -110,7 +112,7 @@ class UserWorkflowsPage:
             ui.badge(ecosystem.upper()).props(f"color={ecosystem_color}").classes(
                 "w-28"
             )
-            status = wf["status"]
+            status = str(wf.get("status") or "unknown").lower()
             color = (
                 "green"
                 if status == "completed"
@@ -131,8 +133,10 @@ class UserWorkflowsPage:
                 wf["completed_at"][:16] if wf.get("completed_at") else "-"
             ).classes("w-36 text-sm text-gray-500")
 
-            with ui.row().classes("w-32 shrink-0 items-center gap-2"):
-                if status == "completed":
+            with ui.row().classes(
+                "w-32 shrink-0 items-center justify-end gap-2 sticky right-0 z-10 bg-white"
+            ):
+                if status in {"completed", "succeeded"}:
                     ui.button(
                         "View",
                         on_click=lambda wid=wf["workflow_id"]: ui.navigate.to(
