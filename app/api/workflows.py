@@ -40,7 +40,7 @@ async def _extract_and_record_artifacts(workflow_id: str) -> None:
 
     try:
         await extract_workflow_artifacts(workflow_id)
-    except (WorkflowArtifactError, OSError) as exc:
+    except Exception as exc:
         print(f"Workflow artifact extraction failed for {workflow_id}: {exc}")
         update_workflow_artifact_status(workflow_id, "failed", str(exc))
     else:
@@ -163,14 +163,15 @@ async def workflow_webhook(
     print(f"WEBHOOK RECEIVED for workflow {workflow_id}")
     print(f"Status: {webhook_data.status}")
 
-    if webhook_data.status == "Succeeded":
+    webhook_status = webhook_data.status.lower()
+    if webhook_status in {"succeeded", "success", "completed"}:
         update_workflow_status(
             workflow_id,
             "completed",
         )
         update_workflow_artifact_status(workflow_id, "pending")
         background_tasks.add_task(_extract_and_record_artifacts, workflow_id)
-    elif webhook_data.status == "Failed":
+    elif webhook_status in {"failed", "failure", "error"}:
         update_workflow_status(workflow_id, "failed", error=webhook_data.error_message)
 
     return {"status": "webhook processed"}
