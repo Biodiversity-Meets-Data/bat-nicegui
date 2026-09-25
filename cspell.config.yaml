@@ -11,6 +11,8 @@ words:
   - authlib
   - autouse
   - bitshifted
+  - certificatesresolvers
+  - certresolver
   - CHELSA
   - circlemarker
   - classmethod
@@ -22,6 +24,7 @@ words:
   - docstrings
   - dotenv
   - EPSG
+  - exposedbydefault
   - fastapi
   - Finalizer
   - frozenset
@@ -33,6 +36,7 @@ words:
   - jinja
   - letsencrypt
   - Lngs
+  - myresolver
   - Natura
   - nicegui
   - orcid
@@ -53,9 +57,11 @@ words:
   - Starlette
   - stdlib
   - testpaths
+  - tlschallenge
   - urllib
   - userinfo
   - uvicorn
   - VCPUs
+  - websecure
 ignoreWords: []
 import: []
