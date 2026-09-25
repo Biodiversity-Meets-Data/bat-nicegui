@@ -105,6 +105,7 @@ def init_db() -> None:
             geometry_type TEXT,
             geometry_wkt TEXT,
             parameters TEXT,
+            parameter_metadata TEXT,
             status TEXT DEFAULT 'submitted',
             results TEXT,
             error_message TEXT,
@@ -138,6 +139,12 @@ def init_db() -> None:
     # Add species_col_id column if it doesn't exist (for existing databases)
     try:
         cursor.execute("ALTER TABLE workflows ADD COLUMN species_col_id TEXT")
+    except sqlite3.OperationalError:
+        pass  # Column already exists
+
+    # Add parameter_metadata column if it doesn't exist (for existing databases)
+    try:
+        cursor.execute("ALTER TABLE workflows ADD COLUMN parameter_metadata TEXT")
     except sqlite3.OperationalError:
         pass  # Column already exists
 
@@ -315,6 +322,7 @@ def create_workflow(
     geometry_type: str,
     geometry_wkt: str,
     parameters: str,
+    parameter_metadata: str,
     status: str = "submitted",
 ) -> str:
     """Create a new workflow."""
@@ -326,8 +334,8 @@ def create_workflow(
                 workflow_id, user_id, bat_name, name, description, species_name,
                 species_col_id,
                 ecosystem_type, geometry_type,
-                geometry_wkt, parameters, status
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                geometry_wkt, parameters, parameter_metadata, status
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 workflow_id,
@@ -341,6 +349,7 @@ def create_workflow(
                 geometry_type,
                 geometry_wkt,
                 parameters,
+                parameter_metadata,
                 status,
             ),
         )

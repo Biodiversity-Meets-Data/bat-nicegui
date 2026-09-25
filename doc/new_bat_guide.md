@@ -126,7 +126,7 @@ from species import ALL_SELECTABLE_SPECIES_LISTS
 Bat(
     name="terrestrial_sdm",
     category=EcosystemCategory.TERRESTRIAL,
-    label="Species Distribution Modeling",
+    label="Species Distribution Modelling",
     description="Predict suitable habitats for terrestrial species",
     icon="pin_drop",
     species_lists=ALL_SELECTABLE_SPECIES_LISTS,
@@ -370,25 +370,38 @@ BAT_REGISTRY: tuple[Bat, ...] = (
             if not self.directive_types:
                 raise WorkflowValidationError("Please choose an EU directive")
 
-        def to_api_parameters(self) -> dict[str, Any]:
-            """Serialize to the "parameters" dict POSTed to /api/workflows/submit.
+        def to_workflow_parameters(self) -> dict[str, str]:
+            """Return exact values for parameters declared in workflow.yaml."""
+            ...
 
-            Key order is part of the wire/DB contract and must stay stable.
-            """
+        def to_parameter_metadata(self) -> dict[str, Any]:
+            """Return UI/BAT values that are not sent to Argo."""
             ...
     ```
 
    The `FreshwaterConnectivityParameters` class must implement the following
-   two methods:
+   methods:
 
    * **`validate_input`:** a method that validates all BAT-specific
      parameters. If a check fails, a `WorkflowValidationError` should be
      raised, with a message intended for the user. If all checks pass, the
      method simply returns without raising.
 
-   * **`to_api_parameters`:** a method that serializes the BAT-specific
-     parameters to a `dict`. This `dict` is what gets POSTed to the workflow
-     submission API and stored in the database.
+   * **`to_workflow_parameters`:** a method that returns the values to send
+     declared under `spec.arguments.parameters` in the BAT's `workflow.yaml`,
+     and is sent to the workflow API as `param-<key>`. Values must already be
+     strings (e.g. join lists with `;`). The analysis area (`aoi_wkt`) and
+     species (`target_species`) are added automatically by the shared payload.
+
+   * **`to_parameter_metadata`:** a method that returns UI/BAT values that are
+     useful for history but are not declared in the workflow YAML, such as
+     directive selections. This metadata is stored separately and is not sent
+     to Argo.
+
+   There is no generic BAT-parameter mapping in the API layer. Each BAT owns
+   any conversion between its UI values and the exact YAML parameter names.
+   The API validates the resulting parameter keys against the selected BAT's
+   workflow template before submission.
 
 <br>
 

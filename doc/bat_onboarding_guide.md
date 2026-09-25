@@ -19,8 +19,8 @@ A BAT is composed of the following elements:
   is run via the
   [ARGO workflow engine](https://argo-workflows.readthedocs.io/en/latest/quick-start).
 * ⚙️ **Job configuration files**: in order to communicate inputs from the
-  frontend to the backend each submit-ready BAT must define two template
-  files: `ro-crate-metadata.json` and `workflow.yaml`.
+  frontend to the backend, a BAT must define two template files:
+  `ro-crate-metadata.json` and `workflow.yaml`.
 * 📚 **Documentation**: explanations for the end user about what the BAT does,
   what its input arguments are, and how to interpret its output.
 
@@ -73,22 +73,18 @@ Instead, analyses are submitted to a compute backend via the
 
 * ✨ URL of workflow engine web-interface: <http://134.94.199.13/workflows>
 
-Once a user submits the input form of a BAT, the `bat-nicegui` frontend creates
-a so-called [**RO-crate**](https://www.researchobject.org/ro-crate) based on
-the user input. This is basically a `.zip` that contains 2 files:
+Once a user submits the input form of a BAT, the `bat-nicegui` app creates
+a so-called [**RO-crate**](https://www.researchobject.org/ro-crate) for the
+BAT. This is basically a `.zip` that contains the BAT's 2 template files:
 
-* **`ro-crate-metadata.json`**: stores a summary of the input argument values
-  entered by the user, and to be used in the BAT run. Also stores other
-  metadata about the BAT.
+* **`ro-crate-metadata.json`**: metadata describing the BAT's workflow: its
+  name, description, author and license, as well as the list of its input
+  parameters (name, type and description of each) and outputs. It describes
+  the inputs, but does not contain the values entered by the user.
 
 * **`workflow.yaml`**: config file defining the jobs to be run by the ARGO
   workflow manager. In other words, a file that indicates what are the
   different steps to run. Each step runs in a separate Docker container.
-
-  The template pair is selected from the server-side BAT registry using the
-  submitted `bat_name`. The files are packaged unchanged into the RO-Crate;
-  runtime values are sent separately as workflow API parameters. The workflow
-  API then applies those `param-*` values when submitting the Argo workflow.
 
   **Artifacts** can be defined as outputs to preserve of each step, and
   these are then available to the subsequent steps of the workflow. E.g.,
@@ -100,6 +96,11 @@ the user input. This is basically a `.zip` that contains 2 files:
   The `workflow.yaml` file follows the
   [ARGO workflow](https://argoproj.github.io/workflows) specifications.
 
+Both files are selected from the BAT registry using the name of the BAT, and
+are packaged unmodified into the RO-Crate: the same files are sent for every
+run of a BAT. The values entered by the user are sent separately, as `param-*`
+fields of the request to the workflow API.
+
 For available workflow-related Kubernetes secrets (for example GBIF
 credentials), see the [Argo Workflow Secrets Catalog](./argo-secrets-catalog.md).
 
@@ -109,22 +110,106 @@ which generates the `.zip` RO-Crate.
 
 #### How arguments are passed from frontend (niceGUI) to backend
 
-1. User enters their input via fields defined in the BAT frontend (i.e. each
+1. A user enters their input via fields defined in the BAT frontend (each
    BAT has its own webpage in the BMD SAP - single access point - application).
-   * Reminder: BAT frontend use the niceGUI python framework and are hosted
-     in [this project](https://github.com/Biodiversity-Meets-Data/bat-nicegui).
 
-2. The [bat-nicegui](https://github.com/Biodiversity-Meets-Data/bat-nicegui)
-   app sends the BAT registry name (`bat_name`) together with the workflow
-   inputs. The backend resolves the BAT's registered template paths and creates
-   an RO-Crate ZIP containing the selected static files.
+   Reminder: BAT frontends use the niceGUI python framework and are hosted
+   in [this project](https://github.com/Biodiversity-Meets-Data/bat-nicegui).
 
-3. The workflow API sends the user values as `param-*` form fields alongside
-   the RO-Crate ZIP. The selected `workflow.yaml` must define matching Argo
-   parameter names and use them in its container arguments.
+2. When the user submits the form, the BAT webpage sends the user input as a
+   JSON request to the `/api/workflows/submit` endpoint of the
+   [bat-nicegui](https://github.com/Biodiversity-Meets-Data/bat-nicegui)
+   app itself. The JSON contains the BAT registry name (`bat_name`), the
+   values common to all BATs (e.g. `geometry_wkt`, `species_col_id`), and the
+   canonical `parameters` dictionary. Its keys and string values are the exact
+   Argo parameter names and values sent to the workflow API and stored in the
+   database. A separate optional `parameter_metadata` dictionary can preserve
+   UI values that are useful for history but are not Argo parameters.
 
-4. A new run of the BAT is initiated by passing the selected `workflow.yaml`
-   file to the ARGO workflow manager.
+3. The submit endpoint uses `bat_name` to look up the BAT's template files
+   (`workflow.yaml` and `ro-crate-metadata.json`) in the BAT registry, and
+   packages them into an RO-Crate ZIP. **The template files are packaged
+   unchanged**: no values are inserted into them at this stage.
+
+4. The submit endpoint then sends a second request to the **workflow API**, a
+   separate service that submits workflows to ARGO. This request is a
+   multipart form (the same format as an HTML form with a file upload)
+   containing the following fields:
+
+   | Field              | Content                                        |
+   |--------------------|------------------------------------------------|
+   | `rocratefile`      | The RO-Crate ZIP file.                         |
+   | `webhook_url`      | URL that ARGO calls when the run finishes.     |
+   | `dry_run`, `force` | Settings of the workflow API.                  |
+   | `param-<name>`     | Value of the ARGO workflow parameter `<name>`. |
+
+   Example of `param-*` fields, for the terrestrial SDM BAT:
+
+   ```text
+   param-target_species  = 456G3
+   param-climate_periods = 1981-2010;2071-2100
+   param-aoi_wkt         = POLYGON ((8.74 49.21, 12.78 49.21, ...))
+   ```
+
+   The `param-` prefix is a convention of the workflow API: it separates the
+   workflow input values from the fields that configure the workflow API
+   itself.
+
+   All `param-*` fields come from the canonical `parameters` dictionary. The
+   shared workflow payload adds `aoi_wkt` and, when a species is selected,
+   `target_species`; BAT-specific values come from the BAT's
+   `to_workflow_parameters` method. Each key is sent as `param-<key>`, so it
+   must match an Argo parameter name in that BAT's `workflow.yaml`.
+
+   The optional `parameter_metadata` dictionary is stored in the database for
+   UI/BAT context but is not sent to Argo.
+
+5. The workflow API removes the `param-` prefix from each field and uses the
+   rest as an ARGO parameter name. For each field, it replaces the default
+   `value` of the parameter with that name under `spec.arguments.parameters`
+   in `workflow.yaml`. It then submits the workflow to ARGO (equivalent to
+   `argo submit workflow.yaml -p aoi_wkt="POLYGON (...)"`).
+
+   ```yaml
+   spec:
+     arguments:
+       parameters:
+         - name: aoi_wkt            # set by the field "param-aoi_wkt"
+           value: "POLYGON (...)"   # default value, replaced by the user value
+   ```
+
+   The parameter names in `workflow.yaml` must therefore match the names of
+   the `param-*` fields exactly. The submit API validates the submitted keys
+   against the selected BAT's top-level `spec.arguments.parameters` before
+   contacting the workflow API.
+
+6. ARGO runs the workflow. The `{{ }}` placeholders in `workflow.yaml` are
+   ARGO template expressions (not Jinja), and ARGO resolves them when it
+   starts each step:
+
+   * `{{workflow.parameters.<name>}}` is the value of a workflow parameter
+     (set in the previous step). It is typically used in the main template to
+     pass a value to a step as one of its inputs.
+   * `{{inputs.parameters.<name>}}` is the value of an input of the current
+     step. It is typically used to build the arguments of the step's
+     container, e.g. `--aoi_wkt={{inputs.parameters.aoi_wkt}}`.
+   * `{{steps.<step>.outputs.artifacts.<name>}}` refers to the output files
+     of an earlier step, and is only resolved once that step has finished.
+
+Summary of the whole chain:
+
+```text
+BAT webpage --▶ JSON --▶ bat-nicegui /api/workflows/submit
+                          │  builds RO-Crate ZIP (templates unchanged)
+                          │  + param-* form fields
+                          ▼
+                      workflow API --▶ sets spec.arguments values,
+                                       submits the workflow to ARGO
+                                          │
+                                          ▼
+                                        ARGO: resolves {{ }} as each
+                                        step starts, runs the containers
+```
 
 </br>
 </br>

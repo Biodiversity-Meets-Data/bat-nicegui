@@ -1,8 +1,6 @@
 """Freshwater SDM create workflow page."""
 
 from dataclasses import dataclass
-from typing import Any
-
 from nicegui import ui
 
 from bats.base_page import BasePage
@@ -29,15 +27,11 @@ class FreshwaterSdmParameters(BatSpecificParameters):
         if not self.time_period:
             raise WorkflowValidationError("Please select a time period")
 
-    def to_api_parameters(self) -> dict[str, Any]:
-        return {
-            #      "min_observations": self.min_observations,
-            #      "confidence_threshold": self.confidence_threshold,
-            "time_period": self.time_period,
-            "directive_types": self.directive_types,
-            #   "include_historical": self.include_historical,
-            #   "generate_report": self.generate_report,
-        }
+    def to_workflow_parameters(self) -> dict[str, str]:
+        return {"climate_period": self.time_period}
+
+    def to_parameter_metadata(self) -> dict[str, object]:
+        return {"directive_types": self.directive_types}
 
 
 class FreshwaterSdmPage(BasePage):

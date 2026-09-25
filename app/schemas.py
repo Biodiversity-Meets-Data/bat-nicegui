@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, StrictStr
 
 
 class WorkflowSubmit(BaseModel):
@@ -14,7 +14,8 @@ class WorkflowSubmit(BaseModel):
     ecosystem_type: str
     geometry_type: str
     geometry_wkt: str
-    parameters: dict[str, Any]
+    parameters: dict[str, StrictStr]
+    parameter_metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class WorkflowWebhook(BaseModel):

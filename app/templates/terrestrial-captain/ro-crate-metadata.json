@@ -1,0 +1,151 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.1/context"
+  ],
+  "@graph": [
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "about": {
+        "@id": "./"
+      },
+      "conformsTo": [
+        {
+          "@id": "https://w3id.org/ro/crate/1.1"
+        },
+        {
+          "@id": "https://w3id.org/workflowhub/workflow-ro-crate/1.0"
+        }
+      ]
+    },
+    {
+      "@id": "./",
+      "@type": "Dataset",
+      "name": "CAPTAIN conservation planning example workflow",
+      "description": "An Argo-based workflow that runs a CAPTAIN-lite demo analysis on the BMD infrastructure. The analysis uses example data bundled in the container image, and produces maps and plots of species richness (present and future), extinction risk, disturbance, and protected area coverage through time.",
+      "author": {
+        "@id": "https://orcid.org/0009-0001-7090-6196"
+      },
+      "conformsTo": [
+        {
+          "@id": "https://w3id.org/workflowhub/workflow-ro-crate/1.0"
+        }
+      ],
+      "dateCreated": "2026-02-18T08:41:38.126Z",
+      "hasPart": [
+        {
+          "@id": "workflow.yaml"
+        }
+      ],
+      "keywords": [
+        "CAPTAIN",
+        "Conservation planning",
+        "Workflow",
+        "BMD",
+        "Biodiversity Meets Data"
+      ],
+      "license": {
+        "@id": "https://spdx.org/licenses/CC-BY-SA-4.0"
+      },
+      "mainEntity": {
+        "@id": "workflow.yaml"
+      }
+    },
+    {
+      "@id": "https://orcid.org/0009-0001-7090-6196",
+      "@type": "Person",
+      "name": "Robin Engler",
+      "url": "https://orcid.org/0009-0001-7090-6196"
+    },
+    {
+      "@id": "workflow.yaml",
+      "@type": [
+        "File",
+        "ComputationalWorkflow",
+        "SoftwareSourceCode"
+      ],
+      "name": "workflow.yaml",
+      "description": "Argo workflow definition with a (simulated) data retrieval step, a step that runs the CAPTAIN-lite analysis script on the retrieved data, and a (placeholder) step that renders the results as an HTML dashboard.",
+      "encodingFormat": "text/yaml",
+      "programmingLanguage": {
+        "@id": "https://argoproj.github.io/workflows"
+      },
+      "input": [
+        {
+          "@id": "#aoi_wkt"
+        },
+        {
+          "@id": "#analysis_type"
+        },
+        {
+          "@id": "#species_set"
+        },
+        {
+          "@id": "#time_steps"
+        },
+        {
+          "@id": "#generate_report"
+        }
+      ],
+      "output": [
+        {
+          "@id": "#dashboard-results"
+        }
+      ]
+    },
+    {
+      "@id": "https://argoproj.github.io/workflows",
+      "@type": "ComputerLanguage",
+      "name": "Argo",
+      "url": "https://argoproj.github.io/workflows"
+    },
+    {
+      "@id": "#aoi_wkt",
+      "@type": "FormalParameter",
+      "additionalType": "Text",
+      "name": "aoi_wkt",
+      "description": "Area of interest as a WKT geometry in EPSG:4326. Not used yet by the analysis.",
+      "valueRequired": "true"
+    },
+    {
+      "@id": "#analysis_type",
+      "@type": "FormalParameter",
+      "additionalType": "Text",
+      "name": "analysis_type",
+      "description": "Type of analysis: species_richness or ecosystem_service. Not used yet by the analysis.",
+      "valueRequired": "true"
+    },
+    {
+      "@id": "#species_set",
+      "@type": "FormalParameter",
+      "additionalType": "Text",
+      "name": "species_set",
+      "description": "Set of species to analyse: demo, habitats_directive, birds_directive or custom. Not used yet by the analysis.",
+      "valueRequired": "true"
+    },
+    {
+      "@id": "#time_steps",
+      "@type": "FormalParameter",
+      "additionalType": "Integer",
+      "name": "time_steps",
+      "description": "Number of years (time steps) in the simulation, between 1 and 100. Not used yet by the analysis.",
+      "valueRequired": "true"
+    },
+    {
+      "@id": "#generate_report",
+      "@type": "FormalParameter",
+      "additionalType": "Boolean",
+      "name": "generate_report",
+      "description": "Whether to generate a PDF report: true or false. Not used yet by the analysis.",
+      "valueRequired": "true"
+    },
+    {
+      "@id": "#dashboard-results",
+      "@type": "FormalParameter",
+      "additionalType": "File",
+      "name": "dashboard-results",
+      "description": "Workflow output directory containing the maps (PNG) and animations (GIF) produced by the CAPTAIN-lite analysis, and an HTML dashboard (index.html) that displays them.",
+      "valueRequired": "false"
+    }
+  ]
+}

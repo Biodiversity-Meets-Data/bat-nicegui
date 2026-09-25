@@ -33,16 +33,18 @@ environment. All instructions in this guide assume that you are using `uv`.
 
 ### Local deployment
 
-The application can be run with the following commands, and becomes
-available locally on [localhost:8000](http://localhost:8000).
+1. Create a copy of the `.env.sample` environment config file and renamed it
+   to `.env`.
+2. Change/set the required environment variables in your `.env` file.
+3. The application can now be run with the following commands, and becomes
+   available locally on [localhost:8000](http://localhost:8000).
 
 ```sh
 # Install dependencies - also creates a .venv automatically if needed.
 uv sync
 
 # Start the application - available on http://localhost:8000
-export DATABASE_PATH="./data/bmd.db"
-uv run -- uvicorn main:fastapi_app --reload --app-dir app
+uv run --env-file .env -- uvicorn main:fastapi_app --reload --app-dir app
 ```
 
 ### Dependencies management
@@ -175,7 +177,8 @@ Schemas (tables) stored in the application's SQLite database.
 | `ecosystem_type` | TEXT      | Ecosystem type (terrestrial, freshwater)                       |
 | `geometry_type`  | TEXT      | rectangle or polygon                                           |
 | `geometry_wkt`   | TEXT      | WKT polygon/rectangle                                          |
-| `parameters`     | TEXT      | JSON object of parameters (time_period, directive_types, etc.) |
+| `parameters`     | TEXT      | JSON object of exact Argo/YAML workflow parameters              |
+| `parameter_metadata` | TEXT   | JSON object of UI/BAT metadata not sent to Argo (nullable)     |
 | `status`         | TEXT      | submitted, running, completed, failed                          |
 | `results`        | TEXT      | JSON results (when completed)                                  |
 | `error_message`  | TEXT      | Error message (when failed)                                    |

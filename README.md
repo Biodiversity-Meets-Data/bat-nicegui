@@ -237,29 +237,36 @@ erDiagram
     WORKFLOWS {
         TEXT workflow_id PK
         TEXT user_id FK
-        TEXT bat_name
+        TEXT bat_name "nullable for legacy records"
         TEXT name
-        TEXT description
+        TEXT description "nullable"
         TEXT species_name "nullable"
         TEXT species_col_id "nullable"
-        TEXT ecosystem_type
-        TEXT geometry_type
-        TEXT geometry_wkt
-        TEXT parameters
-        TEXT status
-        TEXT results
-        TEXT error_message
+        TEXT ecosystem_type "nullable"
+        TEXT geometry_type "nullable"
+        TEXT geometry_wkt "nullable"
+        TEXT parameters "nullable JSON"
+        TEXT parameter_metadata "nullable"
+        TEXT status "default submitted"
+        TEXT results "nullable"
+        TEXT error_message "nullable"
         TIMESTAMP created_at
         TIMESTAMP updated_at
-        TIMESTAMP completed_at
+        TIMESTAMP completed_at "nullable"
     }
 ```
 
-`species_name` is nullable because not every BAT requires a species.
+`bat_name` is nullable only for workflows created before BAT-specific template
+selection was introduced; new submissions must provide it. `species_name` is
+nullable because not every BAT requires a species.
 `species_col_id` stores the Catalogue of Life identifier sent to the external
-SDM workflow and is also nullable for BATs without species input. The
-`parameters`, `results`, and `error_message` fields store serialized workflow
-data and execution output.
+SDM workflow and is also nullable for BATs without species input. `parameters`
+stores the exact string-valued Argo parameters declared by the BAT's workflow
+YAML, while `parameter_metadata` stores UI/BAT values that are not Argo
+parameters, such as terrestrial directive selections. Both are serialized as
+JSON. Existing SQLite databases receive newly introduced columns through the
+startup migration in `app/database.py`; legacy values are preserved.
+The `results` and `error_message` fields store execution output.
 
 <br>
 <br>
