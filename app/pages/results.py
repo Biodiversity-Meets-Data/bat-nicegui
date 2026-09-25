@@ -3,12 +3,15 @@
 import ast
 from typing import Any
 
+import httpx
 from fastapi.responses import RedirectResponse
 from nicegui import app, ui
 
+from config import LOCAL_API_BASE_URL
 from database import get_workflow_by_id
 from ui_common import apply_bmd_theme, check_auth
 from ui_widgets import card_header, page_title
+from workflow_artifacts import StoredWorkflowArtifacts, load_workflow_artifacts
 
 
 class WorkflowResultsPage:
@@ -21,11 +24,16 @@ class WorkflowResultsPage:
     ROUTE = "/results/{workflow_id}"
 
     def __init__(
-        self, workflow_id: str, workflow: dict[str, Any], results: Any
+        self,
+        workflow_id: str,
+        workflow: dict[str, Any],
+        results: Any,
+        artifacts: StoredWorkflowArtifacts,
     ) -> None:
         self.workflow_id = workflow_id
         self.workflow = workflow
         self.results = results
+        self.artifacts = artifacts
         # Presentation detail: the download URL carries the auth token so the
         # browser can fetch the protected endpoint directly.
         self.download_url = f"/api/workflows/{workflow_id}/download"
@@ -44,6 +52,9 @@ class WorkflowResultsPage:
 
             with ui.column().classes("w-full max-w-6xl mx-auto p-6 gap-6"):
                 self.add_workflow_details_card()
+                self.add_rocrate_card()
+                self.add_logs_card()
+                self.add_artifact_status_card()
 
                 if isinstance(self.results, dict) and "summary" in self.results:
                     self.add_summary_card()
@@ -51,7 +62,7 @@ class WorkflowResultsPage:
                     with ui.row().classes("w-full gap-6 flex-wrap lg:flex-nowrap"):
                         self.add_top_species_card()
                         self.add_env_variables_card()
-                else:
+                elif not self.artifacts.metadata:
                     self.add_raw_results_card()
 
                 ui.button(
@@ -105,7 +116,158 @@ class WorkflowResultsPage:
                     ).classes("font-medium")
                 with ui.column().classes("gap-1"):
                     ui.label("Status").classes("text-xs text-gray-500")
-                    ui.badge("COMPLETED").props("color=green")
+                    status = str(self.workflow.get("status") or "unknown").upper()
+                    ui.badge(status).props("color=green")
+
+    @staticmethod
+    def _metadata_entities(metadata: dict[str, Any]) -> dict[str, dict[str, Any]]:
+        """Index RO-Crate graph entities by identifier."""
+
+        graph = metadata.get("@graph", [])
+        if not isinstance(graph, list):
+            return {}
+        return {
+            entity["@id"]: entity
+            for entity in graph
+            if isinstance(entity, dict) and isinstance(entity.get("@id"), str)
+        }
+
+    def add_rocrate_card(self) -> None:
+        """Display provenance and output information from RO-Crate metadata."""
+
+        metadata = self.artifacts.metadata
+        if not metadata:
+            return
+
+        entities = self._metadata_entities(metadata)
+        root = entities.get("./", {})
+        with ui.card().classes("bmd-card p-6 w-full"):
+            card_header("Workflow Provenance")
+            if root.get("description"):
+                ui.label(str(root["description"])).classes("text-gray-600 mb-4")
+            with ui.row().classes("gap-8 flex-wrap"):
+                self._add_metadata_value("Author", root.get("author"), entities)
+                self._add_metadata_value("License", root.get("license"), entities)
+                self._add_metadata_value("Created", root.get("dateCreated"))
+                self._add_metadata_value("Published", root.get("datePublished"))
+                self._add_metadata_value("Modified", root.get("dateModified"))
+
+            keywords = root.get("keywords", [])
+            if isinstance(keywords, list) and keywords:
+                ui.label("Keywords").classes("text-xs text-gray-500 mt-4")
+                with ui.row().classes("gap-2 flex-wrap"):
+                    for keyword in keywords:
+                        ui.badge(str(keyword)).props("color=teal")
+
+            conforms_to = root.get("conformsTo", [])
+            if isinstance(conforms_to, list) and conforms_to:
+                ui.label("Conforms to").classes("text-xs text-gray-500 mt-4")
+                with ui.column().classes("gap-1"):
+                    for item in conforms_to:
+                        identifier = self._metadata_identifier(item)
+                        if identifier:
+                            ui.label(identifier).classes("font-mono text-xs")
+
+            parts = root.get("hasPart", [])
+            if isinstance(parts, list) and parts:
+                ui.label("Workflow outputs").classes("text-xs text-gray-500 mt-4")
+                with ui.column().classes("w-full gap-1"):
+                    for part in parts:
+                        identifier = self._metadata_identifier(part)
+                        entity = entities.get(identifier or "", {})
+                        output_name = str(entity.get("name") or identifier or "Unknown")
+                        output_type = str(entity.get("@type") or "File")
+                        ui.label(f"{output_name} ({output_type})").classes(
+                            "font-mono text-xs break-all"
+                        )
+
+    @staticmethod
+    def _metadata_identifier(value: Any) -> str | None:
+        """Read an RO-Crate identifier from a string or reference object."""
+
+        if isinstance(value, str):
+            return value
+        if isinstance(value, dict) and isinstance(value.get("@id"), str):
+            return str(value["@id"])
+        return None
+
+    def _add_metadata_value(
+        self,
+        label: str,
+        value: Any,
+        entities: dict[str, dict[str, Any]] | None = None,
+    ) -> None:
+        """Render one compact RO-Crate metadata field."""
+
+        if entities is not None:
+            identifier = self._metadata_identifier(value)
+            if identifier and identifier in entities:
+                entity = entities[identifier]
+                value = entity.get("name") or identifier
+            else:
+                value = identifier
+        if value is None:
+            return
+        with ui.column().classes("gap-1"):
+            ui.label(label).classes("text-xs text-gray-500")
+            ui.label(str(value)).classes("text-sm break-all")
+
+    def add_logs_card(self) -> None:
+        """Display each persisted workflow-step log in an expandable panel."""
+
+        if not self.artifacts.logs:
+            return
+        with ui.card().classes("bmd-card p-6 w-full"):
+            card_header("Workflow Logs")
+            for log in self.artifacts.logs:
+                with ui.expansion(log.name, icon="article").classes("w-full"):
+                    try:
+                        content = log.path.read_text(encoding="utf-8", errors="replace")
+                    except OSError as exc:
+                        content = f"Unable to read log: {exc}"
+                    ui.code(content).classes("w-full max-h-96 overflow-auto")
+
+    def add_artifact_status_card(self) -> None:
+        """Display extraction progress and offer a retry when extraction failed."""
+
+        if self.artifacts.metadata or self.artifacts.logs:
+            return
+        artifact_status = self.workflow.get("artifact_status") or "pending"
+        if artifact_status == "ready":
+            return
+        with ui.card().classes("bmd-card p-6 w-full"):
+            card_header("Workflow files")
+            if artifact_status == "failed":
+                ui.label(
+                    self.workflow.get("artifact_error")
+                    or "The workflow files could not be prepared."
+                ).classes("text-red-600")
+                ui.button("Retry", on_click=self.retry_artifact_extraction).props(
+                    "icon=refresh"
+                ).classes("bmd-btn mt-3")
+            else:
+                ui.label("Preparing workflow metadata and logs...").classes(
+                    "text-gray-500"
+                )
+
+    async def retry_artifact_extraction(self) -> None:
+        """Queue extraction again and refresh the results page."""
+
+        token = app.storage.user.get("token")
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    f"{LOCAL_API_BASE_URL}/api/workflows/{self.workflow_id}/artifacts/retry",
+                    headers={"Authorization": f"Bearer {token}"},
+                )
+            if response.status_code >= 300:
+                ui.notify(f"Retry failed: {response.text}", type="negative")
+                return
+        except httpx.HTTPError as exc:
+            ui.notify(f"Retry failed: {exc}", type="negative")
+            return
+        ui.notify("Workflow files are being prepared", type="positive")
+        ui.navigate.to(f"/results/{self.workflow_id}")
 
     def add_summary_card(self) -> None:
         """Build the summary card (species / occurrences / analysis area)."""
@@ -258,8 +420,13 @@ class WorkflowResultsPage:
             except Exception:
                 results = {"raw": workflow["results"]}
 
+            try:
+                artifacts = load_workflow_artifacts(workflow_id)
+            except (OSError, ValueError, TypeError):
+                artifacts = StoredWorkflowArtifacts(None, ())
+
             # Build the page by creating a new instance of the class.
-            WorkflowResultsPage(workflow_id, workflow, results)
+            WorkflowResultsPage(workflow_id, workflow, results, artifacts)
             return None
 
 

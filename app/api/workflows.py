@@ -4,7 +4,7 @@ import json
 from typing import Any
 
 import httpx
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from fastapi.security import HTTPAuthorizationCredentials
 from starlette.background import BackgroundTask
@@ -16,6 +16,7 @@ from database import (
     delete_workflow,
     get_user_workflows,
     get_workflow_by_id,
+    update_workflow_artifact_status,
     update_workflow_status,
 )
 from schemas import WorkflowSubmit, WorkflowWebhook
@@ -25,8 +26,25 @@ from workflow_utils import (
     build_workflow_api_headers,
     validate_workflow_parameters,
 )
+from workflow_artifacts import (
+    WorkflowArtifactError,
+    delete_workflow_artifacts,
+    extract_workflow_artifacts,
+)
 
 router = APIRouter()
+
+
+async def _extract_and_record_artifacts(workflow_id: str) -> None:
+    """Extract lightweight artifacts and record the result for the UI."""
+
+    try:
+        await extract_workflow_artifacts(workflow_id)
+    except (WorkflowArtifactError, OSError) as exc:
+        print(f"Workflow artifact extraction failed for {workflow_id}: {exc}")
+        update_workflow_artifact_status(workflow_id, "failed", str(exc))
+    else:
+        update_workflow_artifact_status(workflow_id, "ready")
 
 
 @router.post("/api/workflows/submit")
@@ -137,7 +155,9 @@ async def api_submit_workflow(
 
 @router.post("/api/workflows/webhook/{workflow_id}")
 async def workflow_webhook(
-    workflow_id: str, webhook_data: WorkflowWebhook
+    workflow_id: str,
+    webhook_data: WorkflowWebhook,
+    background_tasks: BackgroundTasks,
 ) -> dict[str, str]:
     """Webhook endpoint called by Argo Workflow when job completes."""
     print(f"WEBHOOK RECEIVED for workflow {workflow_id}")
@@ -148,10 +168,33 @@ async def workflow_webhook(
             workflow_id,
             "completed",
         )
+        update_workflow_artifact_status(workflow_id, "pending")
+        background_tasks.add_task(_extract_and_record_artifacts, workflow_id)
     elif webhook_data.status == "Failed":
         update_workflow_status(workflow_id, "failed", error=webhook_data.error_message)
 
     return {"status": "webhook processed"}
+
+
+@router.post("/api/workflows/{workflow_id}/artifacts/retry")
+async def retry_workflow_artifacts(
+    workflow_id: str,
+    background_tasks: BackgroundTasks,
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+) -> dict[str, str]:
+    """Queue another lightweight artifact extraction attempt."""
+
+    user_id = verify_token(credentials.credentials)
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+    workflow = get_workflow_by_id(workflow_id)
+    if not workflow or workflow["user_id"] != user_id:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+
+    update_workflow_artifact_status(workflow_id, "pending")
+    background_tasks.add_task(_extract_and_record_artifacts, workflow_id)
+    return {"status": "queued", "workflow_id": workflow_id}
 
 
 @router.get("/api/workflows")
@@ -240,4 +283,8 @@ async def api_delete_workflow(
         raise HTTPException(status_code=404, detail="Workflow not found")
 
     delete_workflow(workflow_id)
+    try:
+        delete_workflow_artifacts(workflow_id)
+    except (OSError, WorkflowArtifactError) as exc:
+        print(f"Workflow artifact cleanup failed for {workflow_id}: {exc}")
     return {"status": "deleted", "workflow_id": workflow_id}

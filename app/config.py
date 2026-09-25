@@ -32,6 +32,13 @@ WORKFLOW_WEBHOOK_URL_TEMPLATE = getenv_str(
 )
 WORKFLOW_DRY_RUN = getenv_bool("WORKFLOW_DRY_RUN")
 WORKFLOW_FORCE = getenv_bool("WORKFLOW_FORCE")
+WORKFLOW_ARTIFACTS_DIR = Path(
+    getenv_str("WORKFLOW_ARTIFACTS_DIR", "/app/data/workflow-artifacts")
+)
+WORKFLOW_ARTIFACT_MAX_BYTES = int(
+    getenv_str("WORKFLOW_ARTIFACT_MAX_BYTES", str(2 * 1024 * 1024 * 1024))
+)
+WORKFLOW_ARTIFACT_CONCURRENCY = int(getenv_str("WORKFLOW_ARTIFACT_CONCURRENCY", "2"))
 
 # Keycloak authentication.
 KEYCLOAK_SERVER_URL = getenv_str("KEYCLOAK_SERVER_URL")

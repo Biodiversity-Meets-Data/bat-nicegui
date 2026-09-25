@@ -109,6 +109,9 @@ def init_db() -> None:
             status TEXT DEFAULT 'submitted',
             results TEXT,
             error_message TEXT,
+            artifact_status TEXT DEFAULT 'pending',
+            artifact_extracted_at TIMESTAMP,
+            artifact_error TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             completed_at TIMESTAMP,
@@ -153,6 +156,17 @@ def init_db() -> None:
         cursor.execute("ALTER TABLE workflows ADD COLUMN geometry_wkt TEXT")
     except sqlite3.OperationalError:
         pass  # Column already exists
+
+    # Add workflow artifact extraction fields if they don't exist
+    for column_definition in (
+        "artifact_status TEXT DEFAULT 'pending'",
+        "artifact_extracted_at TIMESTAMP",
+        "artifact_error TEXT",
+    ):
+        try:
+            cursor.execute(f"ALTER TABLE workflows ADD COLUMN {column_definition}")
+        except sqlite3.OperationalError:
+            pass  # Column already exists
 
     # Create indexes for better query performance
     cursor.execute(
@@ -411,6 +425,32 @@ def update_workflow_status(
     query = f"UPDATE workflows SET {', '.join(update_fields)} WHERE workflow_id = ?"
     with get_cursor() as cursor:
         cursor.execute(query, params)
+
+
+def update_workflow_artifact_status(
+    workflow_id: str,
+    status: str,
+    error: str | None = None,
+) -> None:
+    """Update the extraction status for lightweight workflow artifacts."""
+
+    extracted_at = datetime.now(timezone.utc).isoformat() if status == "ready" else None
+    with get_cursor() as cursor:
+        cursor.execute(
+            """
+            UPDATE workflows
+            SET artifact_status = ?, artifact_extracted_at = ?, artifact_error = ?,
+                updated_at = ?
+            WHERE workflow_id = ?
+            """,
+            (
+                status,
+                extracted_at,
+                error,
+                datetime.now(timezone.utc).isoformat(),
+                workflow_id,
+            ),
+        )
 
 
 def delete_workflow(workflow_id: str) -> bool:
