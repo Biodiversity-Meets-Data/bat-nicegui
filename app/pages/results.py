@@ -1,6 +1,7 @@
 """Workflow results page."""
 
 import ast
+from datetime import datetime, timezone
 from typing import Any
 
 import httpx
@@ -9,6 +10,7 @@ from nicegui import app, ui
 
 from config import LOCAL_API_BASE_URL
 from database import get_workflow_by_id
+from bats.map_widget import add_readonly_aoi_map
 from ui_common import apply_bmd_theme, check_auth
 from ui_widgets import card_header, page_title
 from workflow_artifacts import StoredWorkflowArtifacts, load_workflow_artifacts
@@ -34,6 +36,11 @@ class WorkflowResultsPage:
         self.workflow = workflow
         self.results = results
         self.artifacts = artifacts
+        self.artifact_section: Any = None
+        self.artifact_status_label: Any = None
+        self.artifact_action_button: Any = None
+        self.artifact_spinner: Any = None
+        self.artifact_poll_timer: Any = None
         # Presentation detail: the download URL carries the auth token so the
         # browser can fetch the protected endpoint directly.
         self.download_url = f"/api/workflows/{workflow_id}/download"
@@ -52,9 +59,9 @@ class WorkflowResultsPage:
 
             with ui.column().classes("w-full max-w-6xl mx-auto p-6 gap-6"):
                 self.add_workflow_details_card()
-                self.add_rocrate_card()
-                self.add_logs_card()
-                self.add_artifact_status_card()
+                with ui.column().classes("w-full gap-6") as artifact_section:
+                    self.artifact_section = artifact_section
+                    self.render_artifact_sections()
 
                 if isinstance(self.results, dict) and "summary" in self.results:
                     self.add_summary_card()
@@ -62,9 +69,6 @@ class WorkflowResultsPage:
                     with ui.row().classes("w-full gap-6 flex-wrap lg:flex-nowrap"):
                         self.add_top_species_card()
                         self.add_env_variables_card()
-                elif not self.artifacts.metadata:
-                    self.add_raw_results_card()
-
                 ui.button(
                     "<- Back to Workflows",
                     on_click=lambda: ui.navigate.to("/workflows"),
@@ -89,35 +93,91 @@ class WorkflowResultsPage:
             )
 
     def add_workflow_details_card(self) -> None:
-        """Build the workflow-details card (id, species, created, status)."""
+        """Build the generic workflow-details card."""
 
         with ui.card().classes("bmd-card p-6 w-full"):
             card_header("Workflow Details")
-            with ui.row().classes("gap-8 flex-wrap"):
-                with ui.column().classes("gap-1"):
-                    ui.label("Workflow ID").classes("text-xs text-gray-500")
-                    ui.label(self.workflow_id[:20] + "...").classes("font-mono text-sm")
-                with ui.column().classes("gap-1"):
-                    ui.label("Species").classes("text-xs text-gray-500")
-                    ui.label(self.workflow.get("species_name") or "-").classes(
-                        "font-medium"
-                    )
-                with ui.column().classes("gap-1"):
-                    ui.label("Catalogue of Life ID").classes("text-xs text-gray-500")
-                    ui.label(self.workflow.get("species_col_id") or "-").classes(
-                        "font-mono text-sm"
-                    )
-                with ui.column().classes("gap-1"):
-                    ui.label("Created").classes("text-xs text-gray-500")
-                    ui.label(
-                        self.workflow["created_at"][:19]
-                        if self.workflow["created_at"]
-                        else "N/A"
-                    ).classes("font-medium")
-                with ui.column().classes("gap-1"):
-                    ui.label("Status").classes("text-xs text-gray-500")
-                    status = str(self.workflow.get("status") or "unknown").upper()
-                    ui.badge(status).props("color=green")
+            with ui.row().classes("w-full items-start gap-6 flex-wrap lg:flex-nowrap"):
+                with ui.column().classes("flex-1 min-w-0 gap-4"):
+                    with ui.row().classes("gap-8 flex-wrap"):
+                        with ui.column().classes("gap-1"):
+                            ui.label("Workflow ID").classes("text-xs text-gray-500")
+                            ui.label(self.workflow_id).classes(
+                                "font-mono text-sm break-all"
+                            )
+                        with ui.column().classes("gap-1"):
+                            ui.label("BAT").classes("text-xs text-gray-500")
+                            ui.label(self.workflow.get("bat_name") or "-").classes(
+                                "font-medium"
+                            )
+                        with ui.column().classes("gap-1"):
+                            ui.label("Realm").classes("text-xs text-gray-500")
+                            ui.label(
+                                self.workflow.get("ecosystem_type") or "-"
+                            ).classes("font-medium")
+                        with ui.column().classes("gap-1"):
+                            ui.label("Created").classes("text-xs text-gray-500")
+                            ui.label(
+                                self.workflow["created_at"][:19]
+                                if self.workflow["created_at"]
+                                else "N/A"
+                            ).classes("font-medium")
+                        with ui.column().classes("gap-1"):
+                            ui.label("Completed").classes("text-xs text-gray-500")
+                            ui.label(
+                                self.workflow["completed_at"][:19]
+                                if self.workflow.get("completed_at")
+                                else "-"
+                            ).classes("font-medium")
+                        with ui.column().classes("gap-1"):
+                            ui.label("Duration").classes("text-xs text-gray-500")
+                            ui.label(self._workflow_duration()).classes(
+                                "font-mono font-medium"
+                            )
+                        with ui.column().classes("gap-1"):
+                            ui.label("Status").classes("text-xs text-gray-500")
+                            status = str(
+                                self.workflow.get("status") or "unknown"
+                            ).upper()
+                            status_color = (
+                                "green"
+                                if status in {"COMPLETED", "SUCCEEDED"}
+                                else "red"
+                                if status in {"FAILED", "ERROR"}
+                                else "blue"
+                            )
+                            ui.badge(status).props(f"color={status_color}")
+                    if self.workflow.get("description"):
+                        ui.label("Description").classes("text-xs text-gray-500")
+                        ui.label(str(self.workflow["description"])).classes(
+                            "text-gray-700 whitespace-pre-wrap"
+                        )
+                with ui.column().classes("w-full lg:w-80 lg:shrink-0 gap-2"):
+                    ui.label("Area of Interest").classes("text-xs text-gray-500")
+                    add_readonly_aoi_map(self.workflow.get("geometry_wkt"))
+
+    def _workflow_duration(self) -> str:
+        """Format the completed workflow duration as days, hours, minutes, seconds."""
+
+        created_at = self.workflow.get("created_at")
+        completed_at = self.workflow.get("completed_at")
+        if not created_at or not completed_at:
+            return "-"
+        try:
+            start = datetime.fromisoformat(str(created_at).replace("Z", "+00:00"))
+            end = datetime.fromisoformat(str(completed_at).replace("Z", "+00:00"))
+            if start.tzinfo is None:
+                start = start.replace(tzinfo=timezone.utc)
+            if end.tzinfo is None:
+                end = end.replace(tzinfo=timezone.utc)
+            total_seconds = max(0, int((end - start).total_seconds()))
+        except ValueError:
+            return "-"
+
+        days, remainder = divmod(total_seconds, 24 * 60 * 60)
+        hours, remainder = divmod(remainder, 60 * 60)
+        minutes, seconds = divmod(remainder, 60)
+        return f"{days:02d}:{hours:02d}:{minutes:02d}:{seconds:02d}"
 
     @staticmethod
     def _metadata_entities(metadata: dict[str, Any]) -> dict[str, dict[str, Any]]:
@@ -151,6 +211,11 @@ class WorkflowResultsPage:
                 self._add_metadata_value("Created", root.get("dateCreated"))
                 self._add_metadata_value("Published", root.get("datePublished"))
                 self._add_metadata_value("Modified", root.get("dateModified"))
+                doi = self._metadata_doi(root.get("author"), entities)
+                if doi:
+                    with ui.column().classes("gap-1"):
+                        ui.label("Cite as").classes("text-xs text-gray-500")
+                        ui.link(doi, doi).classes("text-sm break-all")
 
             keywords = root.get("keywords", [])
             if isinstance(keywords, list) and keywords:
@@ -171,7 +236,7 @@ class WorkflowResultsPage:
             parts = root.get("hasPart", [])
             if isinstance(parts, list) and parts:
                 ui.label("Workflow outputs").classes("text-xs text-gray-500 mt-4")
-                with ui.column().classes("w-full gap-1"):
+                with ui.column().classes("w-full max-h-64 overflow-y-auto gap-1 pr-2"):
                     for part in parts:
                         identifier = self._metadata_identifier(part)
                         entity = entities.get(identifier or "", {})
@@ -181,6 +246,17 @@ class WorkflowResultsPage:
                             "font-mono text-xs break-all"
                         )
 
+    def render_artifact_sections(self) -> None:
+        """Render the current artifact state inside the reactive section."""
+
+        if self.artifact_section is None:
+            return
+        self.artifact_section.clear()
+        with self.artifact_section:
+            self.add_rocrate_card()
+            self.add_logs_card()
+            self.add_artifact_status_card()
+
     @staticmethod
     def _metadata_identifier(value: Any) -> str | None:
         """Read an RO-Crate identifier from a string or reference object."""
@@ -189,6 +265,25 @@ class WorkflowResultsPage:
             return value
         if isinstance(value, dict) and isinstance(value.get("@id"), str):
             return str(value["@id"])
+        return None
+
+    @classmethod
+    def _metadata_doi(
+        cls, value: Any, entities: dict[str, dict[str, Any]]
+    ) -> str | None:
+        """Find a DOI in an RO-Crate author reference."""
+
+        identifier = cls._metadata_identifier(value)
+        candidates: list[str] = []
+        if identifier:
+            candidates.append(identifier)
+            author_entity = entities.get(identifier, {})
+            same_as = cls._metadata_identifier(author_entity.get("sameAs"))
+            if same_as:
+                candidates.append(same_as)
+        for candidate in candidates:
+            if candidate.startswith("https://doi.org/"):
+                return candidate
         return None
 
     def _add_metadata_value(
@@ -225,7 +320,9 @@ class WorkflowResultsPage:
                         content = log.path.read_text(encoding="utf-8", errors="replace")
                     except OSError as exc:
                         content = f"Unable to read log: {exc}"
-                    ui.code(content).classes("w-full max-h-96 overflow-auto")
+                    ui.code(content).classes(
+                        "w-full max-h-96 overflow-auto bg-black text-white p-4 rounded font-mono"
+                    ).style("background-color: #000; color: #fff")
 
     def add_artifact_status_card(self) -> None:
         """Display extraction progress and offer a retry when extraction failed."""
@@ -237,19 +334,28 @@ class WorkflowResultsPage:
             return
         with ui.card().classes("bmd-card p-6 w-full"):
             card_header("Workflow files")
-            if artifact_status == "failed":
-                ui.label(
-                    self.workflow.get("artifact_error")
-                    or "The workflow files could not be prepared."
-                ).classes("text-red-600")
-            else:
-                ui.label("Preparing workflow metadata and logs...").classes(
-                    "text-gray-500"
+            with ui.row().classes("items-center gap-2"):
+                self.artifact_spinner = ui.spinner(
+                    "dots", size="1.5em", color="primary"
                 )
-            ui.button(
-                "Retry" if artifact_status == "failed" else "Prepare files now",
-                on_click=self.retry_artifact_extraction,
-            ).props("icon=refresh").classes("bmd-btn mt-3")
+                self.artifact_spinner.set_visibility(False)
+                if artifact_status == "failed":
+                    self.artifact_status_label = ui.label(
+                        self.workflow.get("artifact_error")
+                        or "The workflow files could not be prepared."
+                    ).classes("text-red-600")
+                else:
+                    self.artifact_status_label = ui.label(
+                        "Preparing workflow metadata and logs..."
+                    ).classes("text-gray-500")
+            self.artifact_action_button = (
+                ui.button(
+                    "Retry" if artifact_status == "failed" else "Prepare files now",
+                    on_click=self.retry_artifact_extraction,
+                )
+                .props("icon=refresh")
+                .classes("bmd-btn mt-3")
+            )
 
     async def retry_artifact_extraction(self) -> None:
         """Queue extraction again and refresh the results page."""
@@ -267,8 +373,47 @@ class WorkflowResultsPage:
         except httpx.HTTPError as exc:
             ui.notify(f"Retry failed: {exc}", type="negative")
             return
+        if self.artifact_status_label is not None:
+            self.artifact_status_label.set_text(
+                "Preparing workflow metadata and logs..."
+            )
+        if self.artifact_spinner is not None:
+            self.artifact_spinner.set_visibility(True)
+        if self.artifact_action_button is not None:
+            self.artifact_action_button.disable()
+        if self.artifact_poll_timer is None or not self.artifact_poll_timer.active:
+            self.artifact_poll_timer = ui.timer(
+                2.0, self.poll_artifact_status, immediate=False
+            )
         ui.notify("Workflow files are being prepared", type="positive")
-        ui.navigate.to(f"/results/{self.workflow_id}")
+
+    async def poll_artifact_status(self) -> None:
+        """Refresh the artifact section when background extraction completes."""
+
+        workflow = get_workflow_by_id(self.workflow_id)
+        if not workflow:
+            if self.artifact_poll_timer is not None:
+                self.artifact_poll_timer.cancel()
+            return
+
+        artifact_status = workflow.get("artifact_status") or "pending"
+        if artifact_status not in {"ready", "failed"}:
+            return
+
+        if self.artifact_poll_timer is not None:
+            self.artifact_poll_timer.cancel()
+        self.workflow = workflow
+        try:
+            self.artifacts = load_workflow_artifacts(self.workflow_id)
+        except (OSError, ValueError, TypeError):
+            self.artifacts = StoredWorkflowArtifacts(None, ())
+        self.render_artifact_sections()
+        if artifact_status == "ready":
+            ui.notify("Workflow metadata and logs are ready", type="positive")
+        else:
+            ui.notify(
+                "Workflow metadata and logs could not be prepared", type="negative"
+            )
 
     def add_summary_card(self) -> None:
         """Build the summary card (species / occurrences / analysis area)."""
@@ -371,13 +516,6 @@ class WorkflowResultsPage:
                         value=var_data["contribution_pct"] / 100,
                         show_value=False,
                     ).classes("w-full").props("color=teal size=10px")
-
-    def add_raw_results_card(self) -> None:
-        """Build the fallback card shown when results lack a summary."""
-
-        with ui.card().classes("bmd-card p-6 w-full"):
-            card_header("Raw Results")
-            ui.code(str(self.results)).classes("w-full")
 
     # ---------------------- Page Route registration ------------------------ #
 

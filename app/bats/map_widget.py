@@ -5,11 +5,13 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from enum import StrEnum
 import json
-from typing import Any
+from typing import Any, cast
 from uuid import uuid4
 
 from nicegui import ui
 from nicegui.events import GenericEventArguments
+from shapely.geometry import mapping  # type: ignore[import-untyped]
+from shapely.wkt import loads  # type: ignore[import-untyped]
 
 from bats.map_data import MapDataError, MapFeature, get_map_data_store
 from ui_widgets import card_header
@@ -36,6 +38,41 @@ class MapSelectionMode(StrEnum):
 class MapGeometry:
     type: str
     wkt: str
+
+
+def wkt_to_geojson(geometry_wkt: str) -> dict[str, Any]:
+    """Convert a workflow WKT geometry into a Leaflet-compatible object."""
+    geometry = loads(geometry_wkt)
+    return cast(dict[str, Any], mapping(geometry))
+
+
+def add_readonly_aoi_map(geometry_wkt: str | None) -> None:
+    """Add a fixed-size, non-editable map preview for a workflow AOI."""
+    if not geometry_wkt:
+        ui.label("No area of interest available.").classes("text-sm text-gray-500")
+        return
+
+    try:
+        geojson = wkt_to_geojson(geometry_wkt)
+    except (TypeError, ValueError):
+        ui.label("Area of interest unavailable.").classes("text-sm text-gray-500")
+        return
+
+    map_id = f"bmd-aoi-map-{uuid4().hex}"
+    ui.html(
+        f'<div id="{map_id}" style="height: 190px; width: 100%;"></div>',
+        sanitize=False,
+    ).classes("w-full overflow-hidden rounded")
+
+    def initialize() -> None:
+        ui.run_javascript(
+            READONLY_AOI_MAP_INIT_JS.replace("__MAP_ID__", json.dumps(map_id)).replace(
+                "__GEOJSON__", json.dumps(geojson)
+            ),
+            timeout=5.0,
+        )
+
+    ui.timer(0.1, initialize, once=True)
 
 
 class MapWidget:
@@ -355,5 +392,45 @@ MAP_INIT_JS = """
         };
         setTimeout(() => tryInit(50), 0);
         return true;
+    })();
+"""
+
+
+READONLY_AOI_MAP_INIT_JS = """
+    (() => {
+        const mapId = __MAP_ID__;
+        const geometry = __GEOJSON__;
+        const tryInit = (retries) => {
+            const mapElement = document.getElementById(mapId);
+            if (!mapElement || !window.L || !window.L.map) {
+                if (retries > 0) return setTimeout(() => tryInit(retries - 1), 100);
+                return;
+            }
+            const map = L.map(mapId, {
+                dragging: false,
+                scrollWheelZoom: false,
+                doubleClickZoom: false,
+                boxZoom: false,
+                keyboard: false,
+                touchZoom: false,
+                zoomControl: true,
+                attributionControl: true
+            });
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            const layer = L.geoJSON(geometry, {
+                style: {
+                    color: '#0077B6',
+                    weight: 2,
+                    fillColor: '#2ECC71',
+                    fillOpacity: 0.3
+                }
+            }).addTo(map);
+            const bounds = layer.getBounds();
+            if (bounds.isValid()) map.fitBounds(bounds, { padding: [18, 18] });
+            setTimeout(() => map.invalidateSize(), 50);
+        };
+        tryInit(50);
     })();
 """
