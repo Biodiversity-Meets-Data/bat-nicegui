@@ -242,13 +242,14 @@ class WorkflowResultsPage:
                     self.workflow.get("artifact_error")
                     or "The workflow files could not be prepared."
                 ).classes("text-red-600")
-                ui.button("Retry", on_click=self.retry_artifact_extraction).props(
-                    "icon=refresh"
-                ).classes("bmd-btn mt-3")
             else:
                 ui.label("Preparing workflow metadata and logs...").classes(
                     "text-gray-500"
                 )
+            ui.button(
+                "Retry" if artifact_status == "failed" else "Prepare files now",
+                on_click=self.retry_artifact_extraction,
+            ).props("icon=refresh").classes("bmd-btn mt-3")
 
     async def retry_artifact_extraction(self) -> None:
         """Queue extraction again and refresh the results page."""
