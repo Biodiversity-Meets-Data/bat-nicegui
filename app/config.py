@@ -23,9 +23,7 @@ WORKFLOW_API_URL = getenv_str(
 LOCAL_API_BASE_URL = getenv_str("LOCAL_API_BASE_URL", "http://localhost:8080")
 
 # Workflow submission API.
-WORKFLOW_API_KEY = getenv_str(
-    "WORKFLOW_API_KEY", "EpQaNpHS.EDed81RKaUno5Idj1AJgK2rLR7ieCb0h"
-)
+WORKFLOW_API_KEY = getenv_str("WORKFLOW_API_KEY")
 WORKFLOW_API_AUTH_HEADER = getenv_str("WORKFLOW_API_AUTH_HEADER", "Authorization")
 WORKFLOW_API_AUTH_SCHEME = getenv_str("WORKFLOW_API_AUTH_SCHEME", "Bearer")
 WORKFLOW_WEBHOOK_URL_TEMPLATE = getenv_str(
