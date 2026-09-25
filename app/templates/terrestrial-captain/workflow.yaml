@@ -77,7 +77,7 @@ spec:
       outputs:
         artifacts:
           - name: captain-input-data
-            path: /app/test_data
+            path: /app/test_data/
             archive:
               none: {}
             artifactGC:
@@ -89,7 +89,7 @@ spec:
           # Mounted where the script reads its input data, replacing the
           # data bundled in the image.
           - name: captain-input-data
-            path: /app/test_data
+            path: /app/test_data/
       container:
         # The image must be available from a container registry. Its
         # entrypoint runs the CAPTAIN-lite script, which takes no arguments.
@@ -97,7 +97,7 @@ spec:
       outputs:
         artifacts:
           - name: captain-results
-            path: /app/output
+            path: /app/output/
             archive:
               none: {}  # Store the output as-is without archiving (zipping).
             artifactGC:
@@ -109,7 +109,7 @@ spec:
       inputs:
         artifacts:
           - name: captain-results
-            path: /app/captain_results
+            path: /app/captain_results/
       container:
         image: "rengler/captain-lite:latest"
         command: ["sh", "-c"]
@@ -134,6 +134,6 @@ spec:
       outputs:
         artifacts:
           - name: dashboard-results
-            path: /app/dashboard
+            path: /app/dashboard/
             archive:
               none: {}
