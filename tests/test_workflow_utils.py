@@ -10,6 +10,7 @@ from bats.registry import Bat, EcosystemCategory
 from workflow_utils import (
     _resolve_template_path,
     build_rocrate_zip,
+    build_workflow_api_headers,
     declared_workflow_parameters,
     validate_workflow_parameters,
 )
@@ -65,6 +66,14 @@ def test_build_rocrate_zip_rejects_unknown_bat() -> None:
 def test_template_path_cannot_escape_template_root() -> None:
     with pytest.raises(ValueError, match="inside app/templates"):
         _resolve_template_path("../database.py")
+
+
+def test_api_key_header_without_auth_scheme(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(workflow_utils, "WORKFLOW_API_KEY", "test-key")
+    monkeypatch.setattr(workflow_utils, "WORKFLOW_API_AUTH_HEADER", "Api-Key")
+    monkeypatch.setattr(workflow_utils, "WORKFLOW_API_AUTH_SCHEME", "")
+
+    assert build_workflow_api_headers() == {"Api-Key": "test-key"}
 
 
 def test_yaml_declares_terrestrial_sdm_parameters() -> None:
