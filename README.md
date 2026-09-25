@@ -137,9 +137,9 @@ Please see project's [developer guide](doc/dev_guide.md#local-deployment).
 | `DATABASE_PATH` | SQLite database file path | `/app/data/bmd.db` |
 | `LOCAL_API_BASE_URL` | Public base URL for this app, used by auth redirects | `http://localhost:8080` |
 | `WORKFLOW_API_URL` | External workflow submission endpoint | `http://workflow-api:8002/api/v1/workflows` |
-| `WORKFLOW_API_KEY` | API key for workflow API | configured in Compose |
-| `WORKFLOW_API_AUTH_HEADER` | Header used for workflow API authentication | `Api-Key` in Compose, `Authorization` in Python default |
-| `WORKFLOW_API_AUTH_SCHEME` | Optional auth scheme prefix, e.g. `Bearer` | empty in Compose, `Bearer` in Python default |
+| `WORKFLOW_API_KEY` | API key for workflow API | (empty) — must be set |
+| `WORKFLOW_API_AUTH_HEADER` | Header used for workflow API authentication | `Api-Key` |
+| `WORKFLOW_API_AUTH_SCHEME` | Optional auth scheme prefix, e.g. `Bearer` | (empty) |
 | `WORKFLOW_WEBHOOK_URL_TEMPLATE` | Webhook URL template (supports `{workflow_id}`) | `http://bmd-bat-app:8080/api/workflows/webhook/{workflow_id}` |
 | `WORKFLOW_DRY_RUN` | Validate only (true/false) | `false` |
 | `WORKFLOW_FORCE` | Force re-execution (true/false) | `false` |

@@ -3,6 +3,7 @@ BMD - Biodiversity Meets Data
 Composition root for FastAPI + NiceGUI application.
 """
 
+import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
@@ -11,15 +12,22 @@ from nicegui import app, ui
 from starlette.middleware.sessions import SessionMiddleware
 
 from api import register_api_routes
-from config import SECRET_KEY
+from config import SECRET_KEY, WORKFLOW_API_KEY
 from database import init_db
 from pages import register_ui_pages
+
+logger = logging.getLogger("uvicorn.error")
 
 
 @asynccontextmanager
 async def lifespan(fastapi: FastAPI) -> AsyncGenerator[None]:
     _ = fastapi
     init_db()
+    if not WORKFLOW_API_KEY:
+        logger.warning(
+            "WORKFLOW_API_KEY is not set: workflow submissions will be sent "
+            "without authentication and will likely be rejected."
+        )
     yield
 
 
