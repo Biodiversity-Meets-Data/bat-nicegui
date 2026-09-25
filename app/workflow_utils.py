@@ -1,8 +1,11 @@
 """Helpers for workflow API integration and RO-Crate packaging."""
 
+from functools import lru_cache
 import tempfile
 import zipfile
 from pathlib import Path
+
+import yaml
 
 from bats.registry import get_bat_by_name
 from config import (
@@ -89,18 +92,53 @@ def build_workflow_api_form_data(workflow: WorkflowSubmit) -> dict[str, str]:
     data: dict[str, str] = {
         "dry_run": str(WORKFLOW_DRY_RUN).lower(),
         "force": str(WORKFLOW_FORCE).lower(),
-        "param-aoi_wkt": workflow.geometry_wkt,
     }
-    # Add BAT-specific parameters.
-    if workflow.workflow_parameters is not None:
-        for name, value in workflow.workflow_parameters.items():
-            data[f"param-{name}"] = value
-    else:
-        # Fixed mapping, for BATs that don't supply their own parameters.
-        data["param-climate_periods"] = workflow.parameters.get("time_period", "")
+    for name, value in workflow.parameters.items():
+        data[f"param-{name}"] = value
 
     if WORKFLOW_WEBHOOK_URL_TEMPLATE:
         data["webhook_url"] = WORKFLOW_WEBHOOK_URL_TEMPLATE
-    if workflow.species_col_id:
-        data["param-target_species"] = workflow.species_col_id
     return data
+
+
+@lru_cache(maxsize=None)
+def declared_workflow_parameters(bat_name: str) -> frozenset[str]:
+    """Read the top-level Argo parameter names declared by a BAT template."""
+    try:
+        bat = get_bat_by_name(bat_name)
+    except KeyError as exc:
+        raise ValueError(f"Unknown BAT: {bat_name}") from exc
+    if not bat.workflow_yaml_path:
+        raise ValueError(f"No workflow template configured for BAT: {bat_name}")
+
+    workflow_path = _resolve_template_path(bat.workflow_yaml_path)
+    try:
+        document = yaml.safe_load(workflow_path.read_text(encoding="utf-8"))
+    except yaml.YAMLError as exc:
+        raise ValueError(f"Invalid workflow YAML for BAT: {bat_name}") from exc
+
+    parameter_definitions = (
+        document.get("spec", {}).get("arguments", {}).get("parameters", [])
+        if isinstance(document, dict)
+        else []
+    )
+    if not isinstance(parameter_definitions, list):
+        raise ValueError(f"Workflow YAML has invalid parameters for BAT: {bat_name}")
+
+    names = {
+        item["name"]
+        for item in parameter_definitions
+        if isinstance(item, dict) and isinstance(item.get("name"), str)
+    }
+    if not names:
+        raise ValueError(f"Workflow YAML declares no parameters for BAT: {bat_name}")
+    return frozenset(names)
+
+
+def validate_workflow_parameters(bat_name: str, parameters: dict[str, str]) -> None:
+    """Reject submitted parameters that are absent from the BAT YAML."""
+    declared = declared_workflow_parameters(bat_name)
+    unknown = sorted(set(parameters) - declared)
+    if unknown:
+        names = ", ".join(unknown)
+        raise ValueError(f"Unknown workflow parameter(s) for {bat_name}: {names}")

@@ -40,4 +40,5 @@ def test_init_db_migrates_existing_workflows_table(tmp_path, monkeypatch) -> Non
     assert "bat_name" in columns
     assert "species_name" in columns
     assert "species_col_id" in columns
+    assert "parameter_metadata" in columns
     connection.close()

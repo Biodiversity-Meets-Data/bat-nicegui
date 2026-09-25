@@ -5,8 +5,6 @@ BATs, so that they don't need updating when a BAT's parameters change.
 """
 
 from dataclasses import dataclass
-from typing import Any
-
 import pytest
 
 import workflow_utils
@@ -40,31 +38,13 @@ def workflow_api_settings(monkeypatch: pytest.MonkeyPatch) -> None:
 class OwnWorkflowParameters(BatSpecificParameters):
     """Parameters of a BAT that supplies its own workflow parameters."""
 
-    workflow_parameters: dict[str, str]
+    parameters: dict[str, str]
 
     def validate_input(self) -> None:
         pass
-
-    def to_api_parameters(self) -> dict[str, Any]:
-        return {}
 
     def to_workflow_parameters(self) -> dict[str, str]:
-        return self.workflow_parameters
-
-
-@dataclass(frozen=True, slots=True, kw_only=True)
-class DefaultWorkflowParameters(BatSpecificParameters):
-    """Parameters of a BAT that keeps the default (no workflow parameters of
-    its own), and so relies on the fixed time period mapping.
-    """
-
-    time_period: str
-
-    def validate_input(self) -> None:
-        pass
-
-    def to_api_parameters(self) -> dict[str, Any]:
-        return {"time_period": self.time_period}
+        return self.parameters
 
 
 def submitted(
@@ -87,10 +67,10 @@ def submitted(
     return WorkflowSubmit(**payload.to_api_dict())
 
 
-def test_workflow_parameters_are_sent_with_param_prefix() -> None:
+def test_yaml_parameters_are_sent_with_param_prefix() -> None:
     workflow = submitted(
         OwnWorkflowParameters(
-            workflow_parameters={"time_steps": "10", "analysis_type": "richness"}
+            parameters={"time_steps": "10", "analysis_type": "richness"}
         )
     )
 
@@ -100,24 +80,14 @@ def test_workflow_parameters_are_sent_with_param_prefix() -> None:
     }
 
 
-def test_empty_workflow_parameters_add_no_fields() -> None:
-    workflow = submitted(OwnWorkflowParameters(workflow_parameters={}))
+def test_empty_workflow_parameters_add_no_bat_specific_fields() -> None:
+    workflow = submitted(OwnWorkflowParameters(parameters={}))
 
     assert build_workflow_api_form_data(workflow) == COMMON_FIELDS
 
 
-def test_default_workflow_parameters_use_fixed_time_period_mapping() -> None:
-    workflow = submitted(DefaultWorkflowParameters(time_period="1981-2010"))
-
-    assert build_workflow_api_form_data(workflow) == COMMON_FIELDS | {
-        "param-climate_periods": "1981-2010",
-    }
-
-
 def test_selected_species_is_sent_as_target_species() -> None:
-    workflow = submitted(
-        OwnWorkflowParameters(workflow_parameters={}), species_col_id="456G3"
-    )
+    workflow = submitted(OwnWorkflowParameters(parameters={}), species_col_id="456G3")
 
     assert build_workflow_api_form_data(workflow) == COMMON_FIELDS | {
         "param-target_species": "456G3",
@@ -128,6 +98,6 @@ def test_no_webhook_url_when_template_is_empty(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(workflow_utils, "WORKFLOW_WEBHOOK_URL_TEMPLATE", "")
-    workflow = submitted(OwnWorkflowParameters(workflow_parameters={}))
+    workflow = submitted(OwnWorkflowParameters(parameters={}))
 
     assert "webhook_url" not in build_workflow_api_form_data(workflow)

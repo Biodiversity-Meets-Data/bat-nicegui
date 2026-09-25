@@ -2,8 +2,6 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
-
 from nicegui import ui
 
 from bats.base_page import BasePage
@@ -35,14 +33,6 @@ class TerrestrialCaptainParameters(BatSpecificParameters):
 
     def validate_input(self) -> None:
         """CAPTAIN has no additional required inputs to validate."""
-
-    def to_api_parameters(self) -> dict[str, Any]:
-        return {
-            "analysis_type": self.analysis_type.value,
-            "species_set": self.species_set.value,
-            "time_steps": self.time_steps,
-            "generate_report": self.generate_report,
-        }
 
     def to_workflow_parameters(self) -> dict[str, str]:
         # Enum member names are used rather than their display labels, so that

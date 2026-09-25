@@ -1,5 +1,6 @@
 """Workflow API routes."""
 
+import json
 from typing import Any
 
 import httpx
@@ -22,6 +23,7 @@ from workflow_utils import (
     build_rocrate_zip,
     build_workflow_api_form_data,
     build_workflow_api_headers,
+    validate_workflow_parameters,
 )
 
 router = APIRouter()
@@ -38,6 +40,7 @@ async def api_submit_workflow(
 
     try:
         rocrate_zip = build_rocrate_zip(workflow.bat_name)
+        validate_workflow_parameters(workflow.bat_name, workflow.parameters)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
@@ -107,7 +110,7 @@ async def api_submit_workflow(
     print(f"Geometry Type: {workflow.geometry_type}")
     print(f"Geometry WKT: {workflow.geometry_wkt}")
     print(f"Parameters: {workflow.parameters}")
-    print(f"Workflow parameters: {workflow.workflow_parameters}")
+    print(f"Parameter metadata: {workflow.parameter_metadata}")
     print("=" * 60)
 
     create_workflow(
@@ -121,7 +124,8 @@ async def api_submit_workflow(
         ecosystem_type=workflow.ecosystem_type,
         geometry_type=workflow.geometry_type,
         geometry_wkt=workflow.geometry_wkt,
-        parameters=str(workflow.parameters),
+        parameters=json.dumps(workflow.parameters),
+        parameter_metadata=json.dumps(workflow.parameter_metadata),
         status=response_payload.get("status", "submitted"),
     )
 

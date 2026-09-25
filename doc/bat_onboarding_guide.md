@@ -120,9 +120,11 @@ which generates the `.zip` RO-Crate.
    JSON request to the `/api/workflows/submit` endpoint of the
    [bat-nicegui](https://github.com/Biodiversity-Meets-Data/bat-nicegui)
    app itself. The JSON contains the BAT registry name (`bat_name`), the
-   values common to all BATs (e.g. `geometry_wkt`, `species_col_id`), and two
-   dicts with the BAT-specific values: `parameters` (stored in the database)
-   and `workflow_parameters` (sent to ARGO, see step 4).
+   values common to all BATs (e.g. `geometry_wkt`, `species_col_id`), and the
+   canonical `parameters` dictionary. Its keys and string values are the exact
+   Argo parameter names and values sent to the workflow API and stored in the
+   database. A separate optional `parameter_metadata` dictionary can preserve
+   UI values that are useful for history but are not Argo parameters.
 
 3. The submit endpoint uses `bat_name` to look up the BAT's template files
    (`workflow.yaml` and `ro-crate-metadata.json`) in the BAT registry, and
@@ -153,18 +155,14 @@ which generates the `.zip` RO-Crate.
    workflow input values from the fields that configure the workflow API
    itself.
 
-   The `param-*` fields come from two sources:
+   All `param-*` fields come from the canonical `parameters` dictionary. The
+   shared workflow payload adds `aoi_wkt` and, when a species is selected,
+   `target_species`; BAT-specific values come from the BAT's
+   `to_workflow_parameters` method. Each key is sent as `param-<key>`, so it
+   must match an Argo parameter name in that BAT's `workflow.yaml`.
 
-   * **Values common to all BATs**, added by the submit endpoint:
-     `param-aoi_wkt` (always) and `param-target_species` (only when the user
-     selected a species). A BAT's `workflow.yaml` must use exactly these
-     names for these values.
-   * **BAT-specific values**, supplied by the BAT through its
-     `to_workflow_parameters` method: each key is sent as `param-<key>`, so
-     each key must match an ARGO parameter name in the BAT's `workflow.yaml`.
-
-   A BAT also has a separate `parameters` dict (from `to_api_parameters`),
-   which is stored in the database but not sent to ARGO.
+   The optional `parameter_metadata` dictionary is stored in the database for
+   UI/BAT context but is not sent to Argo.
 
 5. The workflow API removes the `param-` prefix from each field and uses the
    rest as an ARGO parameter name. For each field, it replaces the default
@@ -181,7 +179,9 @@ which generates the `.zip` RO-Crate.
    ```
 
    The parameter names in `workflow.yaml` must therefore match the names of
-   the `param-*` fields exactly.
+   the `param-*` fields exactly. The submit API validates the submitted keys
+   against the selected BAT's top-level `spec.arguments.parameters` before
+   contacting the workflow API.
 
 6. ARGO runs the workflow. The `{{ }}` placeholders in `workflow.yaml` are
    ARGO template expressions (not Jinja), and ARGO resolves them when it

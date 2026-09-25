@@ -1,8 +1,6 @@
 """Terrestrial SDM create workflow page."""
 
 from dataclasses import dataclass
-from typing import Any
-
 from nicegui import ui
 
 from bats.base_page import BasePage
@@ -24,14 +22,11 @@ class TerrestrialSdmParameters(BatSpecificParameters):
         if not self.time_periods:
             raise WorkflowValidationError("Please select a time period")
 
-    def to_api_parameters(self) -> dict[str, Any]:
-        return {
-            "time_period": ";".join(self.time_periods),
-            "directive_types": self.directive_types,
-        }
-
     def to_workflow_parameters(self) -> dict[str, str]:
         return {"climate_periods": ";".join(self.time_periods)}
+
+    def to_parameter_metadata(self) -> dict[str, object]:
+        return {"directive_types": self.directive_types}
 
 
 class TerrestrialSdmPage(BasePage):

@@ -177,7 +177,8 @@ Schemas (tables) stored in the application's SQLite database.
 | `ecosystem_type` | TEXT      | Ecosystem type (terrestrial, freshwater)                       |
 | `geometry_type`  | TEXT      | rectangle or polygon                                           |
 | `geometry_wkt`   | TEXT      | WKT polygon/rectangle                                          |
-| `parameters`     | TEXT      | JSON object of parameters (time_period, directive_types, etc.) |
+| `parameters`     | TEXT      | JSON object of exact Argo/YAML workflow parameters              |
+| `parameter_metadata` | TEXT   | JSON object of UI/BAT metadata not sent to Argo (nullable)     |
 | `status`         | TEXT      | submitted, running, completed, failed                          |
 | `results`        | TEXT      | JSON results (when completed)                                  |
 | `error_message`  | TEXT      | Error message (when failed)                                    |

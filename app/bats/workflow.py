@@ -32,19 +32,12 @@ class BatSpecificParameters(ABC):
         """
 
     @abstractmethod
-    def to_api_parameters(self) -> dict[str, Any]:
-        """Serialize to the "parameters" dict POSTed to /api/workflows/submit.
+    def to_workflow_parameters(self) -> dict[str, str]:
+        """Serialize parameters using names declared in the BAT YAML."""
 
-        Key order is part of the wire/DB contract and must stay stable.
-        """
-
-    def to_workflow_parameters(self) -> dict[str, str] | None:
-        """Convert the BAT-specific parameters to Argo workflow parameters.
-
-        Keys must match the parameter names declared in the BAT's workflow
-        template. Returns 'None' for BATs without specific parameters.
-        """
-        return None
+    def to_parameter_metadata(self) -> dict[str, Any]:
+        """Serialize UI values that are not workflow parameters."""
+        return {}
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -62,6 +55,10 @@ class WorkflowPayload:
 
     def to_api_dict(self) -> dict[str, Any]:
         """Serialize to the JSON shape expected by /api/workflows/submit."""
+        parameters = dict(self.bat_specific.to_workflow_parameters())
+        parameters["aoi_wkt"] = self.geometry.wkt
+        if self.species_col_id:
+            parameters["target_species"] = self.species_col_id
         return {
             "name": self.name,
             "description": self.description,
@@ -71,8 +68,8 @@ class WorkflowPayload:
             "ecosystem_type": self.ecosystem_type.slug,  # enum -> "terrestrial"
             "geometry_type": self.geometry.type,
             "geometry_wkt": self.geometry.wkt,
-            "parameters": self.bat_specific.to_api_parameters(),
-            "workflow_parameters": self.bat_specific.to_workflow_parameters(),
+            "parameters": parameters,
+            "parameter_metadata": self.bat_specific.to_parameter_metadata(),
         }
 
 
