@@ -143,6 +143,9 @@ Please see project's [developer guide](doc/dev_guide.md#local-deployment).
 | `WORKFLOW_WEBHOOK_URL_TEMPLATE` | Webhook URL template (supports `{workflow_id}`) | `http://bmd-bat-app:8080/api/workflows/webhook/{workflow_id}` |
 | `WORKFLOW_DRY_RUN` | Validate only (true/false) | `false` |
 | `WORKFLOW_FORCE` | Force re-execution (true/false) | `false` |
+| `WORKFLOW_ARTIFACTS_DIR` | Persistent directory for extracted RO-Crate metadata and workflow logs | `/app/data/workflow-artifacts` |
+| `WORKFLOW_ARTIFACT_MAX_BYTES` | Maximum temporary workflow ZIP size processed for metadata/log extraction | `2147483648` (2 GiB) |
+| `WORKFLOW_ARTIFACT_CONCURRENCY` | Maximum concurrent artifact extractions per app worker | `2` |
 | `KEYCLOAK_SERVER_URL` | Base URL of the Keycloak instance | (empty) |
 | `KEYCLOAK_REALM` | Keycloak realm name | (empty) |
 | `KEYCLOAK_CLIENT_ID` | Keycloak confidential client ID | (empty) |
