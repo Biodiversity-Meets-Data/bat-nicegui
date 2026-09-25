@@ -231,7 +231,9 @@ class WorkflowResultsPage:
                     for item in conforms_to:
                         identifier = self._metadata_identifier(item)
                         if identifier:
-                            ui.label(identifier).classes("font-mono text-xs")
+                            ui.link(identifier, identifier).props(
+                                "target=_blank"
+                            ).classes("font-mono text-xs break-all")
 
             parts = root.get("hasPart", [])
             if isinstance(parts, list) and parts:
