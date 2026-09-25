@@ -25,7 +25,7 @@ LOCAL_API_BASE_URL = getenv_str("LOCAL_API_BASE_URL", "http://localhost:8080")
 # Workflow submission API.
 WORKFLOW_API_KEY = getenv_str("WORKFLOW_API_KEY")
 WORKFLOW_API_AUTH_HEADER = getenv_str("WORKFLOW_API_AUTH_HEADER", "Authorization")
-WORKFLOW_API_AUTH_SCHEME = getenv_str("WORKFLOW_API_AUTH_SCHEME", "Bearer")
+WORKFLOW_API_AUTH_SCHEME = os.getenv("WORKFLOW_API_AUTH_SCHEME", "Bearer")
 WORKFLOW_WEBHOOK_URL_TEMPLATE = getenv_str(
     "WORKFLOW_WEBHOOK_URL_TEMPLATE",
     "http://bmd-bat-app:8080/api/workflows/webhook/{workflow_id}",
