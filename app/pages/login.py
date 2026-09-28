@@ -28,6 +28,8 @@ def login_page() -> None:
                 ui.button(
                     "Sign in with SSO",
                     on_click=lambda: ui.navigate.to("/api/auth/login"),
-                ).props("icon=login").classes("w-full bmd-btn text-lg py-3")
+                ).props("icon=login").classes(
+                    "w-full bmd-btn bmd-btn-primary text-lg py-3"
+                )
 
     return None

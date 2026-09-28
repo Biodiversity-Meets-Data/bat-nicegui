@@ -59,7 +59,7 @@ class UserWorkflowsPage:
             ui.button(
                 "+ New Workflow",
                 on_click=lambda: ui.navigate.to("/select-workflow"),
-            ).classes("bmd-btn mt-4")
+            ).classes("bmd-btn bmd-btn-primary mt-4")
 
     def add_workflow_table(self) -> None:
         """Build the table card: column headers plus one row per workflow."""

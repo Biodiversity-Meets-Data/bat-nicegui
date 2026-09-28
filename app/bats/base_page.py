@@ -81,7 +81,7 @@ class BasePage(ABC):
 
                     # Add button to submit workflow.
                     ui.button("Submit Workflow", on_click=self.on_submit).classes(
-                        "w-full bmd-btn text-lg py-3 mt-6"
+                        "w-full bmd-btn bmd-btn-primary text-lg py-3 mt-6"
                     ).props("icon=send")
 
                 # Add "Analysis Area" selection widget.

@@ -19,7 +19,9 @@ def render_bat_card(bat: Bat) -> None:
     async def show_about() -> None:
         with ui.dialog() as dialog, ui.card().classes("p-6 max-w-2xl"):
             ui.markdown(bat.about_md)
-            ui.button("Close", on_click=dialog.close).classes("bmd-btn mt-4")
+            ui.button("Close", on_click=dialog.close).classes(
+                "bmd-btn bmd-btn-secondary mt-4"
+            )
         dialog.open()
 
     card = ui.card().classes("bat-card p-4")
