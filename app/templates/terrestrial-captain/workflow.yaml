@@ -128,7 +128,7 @@ spec:
                 echo "<h2>$file</h2><img src=\"$file\" alt=\"$file\" style=\"max-width: 100%\">"
               done
               echo '</body></html>'
-            } > index.html
+            } > dashboard.html
             echo "Dashboard rendered with the following files:"
             ls /app/dashboard
       outputs:
