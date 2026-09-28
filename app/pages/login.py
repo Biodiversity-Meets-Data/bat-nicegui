@@ -12,7 +12,9 @@ def login_page() -> None:
 
     with ui.column().classes("w-full min-h-screen items-center p-8 overflow-visible"):
         with ui.column().classes("items-center gap-4 mt-10 mb-10 overflow-visible"):
-            ui.label("BMD").classes("text-7xl font-bold leading-none text-green-600")
+            ui.image("/static/logo.png").props(
+                'alt="Biodiversity Meets Data logo"'
+            ).classes("w-72 sm:w-80 max-w-full h-auto object-contain")
             ui.label("Biodiversity Analysis Tools").classes(
                 "text-3xl font-semibold tracking-wide text-gray-700"
             )

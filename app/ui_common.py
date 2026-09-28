@@ -41,8 +41,9 @@ def add_header(header: PageHeader = PageHeader.BASE) -> None:
                 .classes("gap-0 cursor-pointer")
                 .on("click", lambda: ui.navigate.to("/workflows"))
             ):
-                ui.label("BMD").classes("bmd-logo-text")
-                ui.label("Biodiversity Meets Data").classes("bmd-subtitle")
+                ui.image("/static/bmd_small.svg").props('alt="BMD logo"').classes(
+                    "bmd-header-logo w-24 h-auto"
+                )
 
         with ui.row().classes("gap-3 items-center"):
             ui.link("Workflows", "/workflows").classes(
@@ -77,17 +78,21 @@ def add_footer() -> None:
     with ui.footer().classes(
         "w-full justify-center items-center py-3 bg-transparent text-xs text-gray-500",
     ):
-        ui.html(
-            """
-            <span>
-                © <a href="https://bmd-project.eu" target="_blank" class="font-medium text-emerald-700 hover:underline">BMD</a> 2025.
-                Built with 💚 at
-                <a href="https://www.ufz.de" target="_blank" class="font-medium text-emerald-700 hover:underline">Helmholtz‑UFZ</a>
-                for biodiversity research.
-            </span>
-            """,
-            sanitize=False,
-        )
+        with ui.row().classes("items-center justify-center gap-3 flex-wrap"):
+            ui.html(
+                '<img src="/static/eu.svg" alt="European Union logo" '
+                'style="display:block;width:78px;height:69px;object-fit:contain;" />',
+                sanitize=False,
+            )
+            ui.html(
+                """
+                <span>
+                    © <a href="https://bmd-project.eu" target="_blank" class="font-medium text-emerald-700 hover:underline">BMD</a> 2026.
+                    Built with 💚 for biodiversity research.
+                </span>
+                """,
+                sanitize=False,
+            )
 
 
 def add_feedback_widget() -> None:
@@ -291,6 +296,10 @@ def apply_bmd_theme(
             font-size: 0.85rem;
             color: rgba(255, 255, 255, 0.9);
             letter-spacing: 0.5px;
+        }
+
+        .bmd-header-logo {
+            filter: brightness(0) invert(1);
         }
 
         #map {
