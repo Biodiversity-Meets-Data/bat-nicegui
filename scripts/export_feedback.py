@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Export stored user feedback to a CSV file."""
-"""
+"""Export stored user feedback to a CSV file.
+
 Run with:
 uv run python scripts/export_feedback.py --output feedback.csv
 
@@ -10,7 +10,6 @@ uv run python scripts/export_feedback.py \
   --database /path/to/bmd.db \
   --output feedback.csv
 """
-
 
 import argparse
 import csv
