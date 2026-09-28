@@ -77,6 +77,31 @@ def init_db() -> None:
         )
     """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS user_feedback (
+            feedback_id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            email TEXT NOT NULL,
+            page TEXT NOT NULL,
+            message TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+        )
+    """)
+
+    # Add email to existing feedback tables and backfill it from users.
+    try:
+        cursor.execute("ALTER TABLE user_feedback ADD COLUMN email TEXT")
+    except sqlite3.OperationalError:
+        pass  # Column already exists
+    cursor.execute(
+        """
+        UPDATE user_feedback
+        SET email = (SELECT email FROM users WHERE users.user_id = user_feedback.user_id)
+        WHERE email IS NULL
+        """
+    )
+
     # Add orcid column if it doesn't exist (for existing databases)
     try:
         cursor.execute("ALTER TABLE users ADD COLUMN orcid TEXT")
@@ -317,11 +342,46 @@ def delete_user(user_id: str) -> bool:
     """Delete a user and all their workflows."""
 
     with get_cursor() as cursor:
+        cursor.execute("DELETE FROM user_feedback WHERE user_id = ?", (user_id,))
         # Delete the user's workflows first.
         cursor.execute("DELETE FROM workflows WHERE user_id = ?", (user_id,))
         # Delete the user.
         cursor.execute("DELETE FROM users WHERE user_id = ?", (user_id,))
         return cursor.rowcount > 0
+
+
+def create_feedback(user_id: str, page: str, message: str) -> str:
+    """Store feedback submitted by an authenticated user."""
+
+    normalized_page = page.strip()
+    normalized_message = message.strip()
+    if not normalized_page:
+        raise ValueError("Feedback page is required")
+    if not normalized_message:
+        raise ValueError("Feedback message is required")
+    if len(normalized_message) > 2000:
+        raise ValueError("Feedback message must be 2000 characters or fewer")
+
+    feedback_id = str(uuid.uuid4())
+    with get_cursor() as cursor:
+        cursor.execute("SELECT email FROM users WHERE user_id = ?", (user_id,))
+        user = cursor.fetchone()
+        if user is None:
+            raise UserNotFoundError(user_id)
+        cursor.execute(
+            """
+            INSERT INTO user_feedback (feedback_id, user_id, email, page, message)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (
+                feedback_id,
+                user_id,
+                str(user["email"]),
+                normalized_page,
+                normalized_message,
+            ),
+        )
+    return feedback_id
 
 
 def create_workflow(

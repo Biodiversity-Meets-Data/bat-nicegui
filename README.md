@@ -225,6 +225,7 @@ belongs to one user through `workflows.user_id`.
 ```mermaid
 erDiagram
     USERS ||--o{ WORKFLOWS : submits
+    USERS ||--o{ USER_FEEDBACK : sends
 
     USERS {
         TEXT user_id PK
@@ -257,6 +258,15 @@ erDiagram
         TIMESTAMP updated_at
         TIMESTAMP completed_at "nullable"
     }
+
+    USER_FEEDBACK {
+        TEXT feedback_id PK
+        TEXT user_id FK
+        TEXT email "captured at submission"
+        TEXT page
+        TEXT message
+        TIMESTAMP created_at
+    }
 ```
 
 `bat_name` is nullable only for workflows created before BAT-specific template
@@ -270,6 +280,16 @@ parameters, such as terrestrial directive selections. Both are serialized as
 JSON. Existing SQLite databases receive newly introduced columns through the
 startup migration in `app/database.py`; legacy values are preserved.
 The `results` and `error_message` fields store execution output.
+
+Feedback can be exported for review without exposing the database directly:
+
+```bash
+uv run python scripts/export_feedback.py --output feedback.csv
+```
+
+The script reads `DATABASE_PATH` by default and exports feedback ID, user ID,
+email, page, message, and submission time. Use `--database` to override the
+database path.
 
 <br>
 <br>
