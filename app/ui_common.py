@@ -2,9 +2,10 @@
 
 import enum
 
-from nicegui import app, ui
+from nicegui import app, context, ui
 
 from auth_utils import verify_token
+from database import DatabaseError, create_feedback
 
 
 class PageHeader(enum.Enum):
@@ -89,6 +90,71 @@ def add_footer() -> None:
         )
 
 
+def add_feedback_widget() -> None:
+    """Add the authenticated user's fixed feedback control."""
+    user_id = app.storage.user.get("user_id")
+    if not isinstance(user_id, str) or not user_id:
+        return
+
+    page = context.client.request.url.path
+
+    with ui.element("div").classes(
+        "fixed bottom-5 left-6 sm:bottom-7 sm:left-10 z-[1000]"
+    ):
+        with (
+            ui.chip("Feedback", icon="chat_bubble_outline", color=None)
+            .classes(
+                "feedback-launcher cursor-pointer px-3 py-2 sm:px-4 text-sm sm:text-base"
+            )
+            .style(
+                "background: linear-gradient(135deg, #2ECC71 0%, #1A9F53 100%) "
+                "!important; color: #FFFFFF !important;"
+            )
+        ):
+            with (
+                ui.menu()
+                .props("anchor=top left self=bottom left")
+                .classes("p-0") as menu
+            ):
+                with ui.card().classes(
+                    "feedback-card w-80 max-w-[calc(100vw-2rem)] p-5 gap-3"
+                ):
+                    ui.label("Send feedback").classes("text-lg font-semibold")
+                    ui.label(
+                        "Tell us what worked well or what we can improve on this page."
+                    ).classes("text-sm text-gray-500")
+                    feedback_input = (
+                        ui.textarea(
+                            label="Your feedback for this page",
+                            placeholder="Write your feedback here...",
+                        )
+                        .props("outlined maxlength=2000 counter")
+                        .classes("w-full")
+                    )
+
+                    def submit_feedback() -> None:
+                        try:
+                            create_feedback(
+                                user_id=user_id,
+                                page=page,
+                                message=str(feedback_input.value or ""),
+                            )
+                        except ValueError as exc:
+                            ui.notify(str(exc), type="negative")
+                        except DatabaseError:
+                            ui.notify(
+                                "Feedback could not be sent. Please try again.",
+                                type="negative",
+                            )
+                        else:
+                            feedback_input.set_value("")
+                            menu.close()
+                            ui.notify("Feedback sent", type="positive")
+
+                    with ui.row().classes("w-full justify-end gap-2"):
+                        ui.button("Send", on_click=submit_feedback).classes("bmd-btn")
+
+
 def apply_bmd_theme(
     header: PageHeader = PageHeader.BASE, public_auth: bool = False
 ) -> None:
@@ -145,21 +211,22 @@ def apply_bmd_theme(
         }
 
         .bmd-btn {
-            background: linear-gradient(135deg, #2ECC71 0%, #1A9F53 100%);
-            color: white;
-            border: none;
+            background: #FFFFFF !important;
+            color: #0077B6 !important;
+            border: 1px solid rgba(0, 119, 182, 0.24);
             border-radius: 12px;
             padding: 12px 24px;
             font-weight: 600;
             font-family: 'Outfit', sans-serif;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+            box-shadow: 0 4px 15px rgba(26, 58, 42, 0.12);
         }
 
         .bmd-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+            border-color: rgba(0, 119, 182, 0.42);
+            box-shadow: 0 6px 20px rgba(26, 58, 42, 0.18);
         }
 
         .bmd-btn-secondary {
@@ -173,6 +240,40 @@ def apply_bmd_theme(
 
         .bmd-btn-danger:hover {
             box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+
+        .feedback-launcher.q-chip {
+            background-color: #1A9F53 !important;
+            background-image: linear-gradient(135deg, #2ECC71 0%, #1A9F53 100%) !important;
+            color: #FFFFFF !important;
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            box-shadow: 0 10px 30px rgba(26, 58, 42, 0.2),
+                        0 2px 8px rgba(46, 204, 113, 0.2);
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            transition: transform 0.2s ease, box-shadow 0.2s ease,
+                        border-color 0.2s ease;
+        }
+
+        .feedback-launcher.q-chip:hover {
+            background-color: #1A9F53 !important;
+            background-image: linear-gradient(135deg, #35D77A 0%, #168D4A 100%) !important;
+            border-color: rgba(255, 255, 255, 0.42);
+            box-shadow: 0 14px 34px rgba(26, 58, 42, 0.24),
+                        0 4px 12px rgba(46, 204, 113, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .feedback-launcher.q-chip .q-icon,
+        .feedback-launcher.q-chip .q-chip__content {
+            color: #FFFFFF !important;
+        }
+
+        .feedback-card {
+            background: rgba(255, 255, 255, 0.98) !important;
+            border: 1px solid rgba(23, 162, 184, 0.16);
+            border-radius: 18px;
+            box-shadow: 0 18px 50px rgba(26, 58, 42, 0.2);
         }
 
         .bmd-logo-text {
@@ -390,6 +491,10 @@ def apply_bmd_theme(
 
     # Add a footer to the page.
     add_footer()
+
+    # Feedback is intentionally omitted from public pages such as login.
+    if not public_auth:
+        add_feedback_widget()
 
 
 async def do_logout() -> None:
