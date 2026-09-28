@@ -99,13 +99,12 @@ def add_feedback_widget() -> None:
     page = context.client.request.url.path
 
     with ui.element("div").classes(
-        "fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-[1000]"
+        "fixed bottom-5 left-6 sm:bottom-7 sm:left-10 z-[1000]"
     ):
         with (
-            ui.button("Feedback", icon="chat_bubble_outline")
-            .props("unelevated")
+            ui.chip("Feedback", icon="chat_bubble_outline", color=None)
             .classes(
-                "feedback-launcher rounded-full px-4 py-3 sm:px-5 text-sm sm:text-base"
+                "feedback-launcher cursor-pointer px-3 py-2 sm:px-4 text-sm sm:text-base"
             )
             .style(
                 "background: linear-gradient(135deg, #2ECC71 0%, #1A9F53 100%) "
@@ -243,7 +242,7 @@ def apply_bmd_theme(
             box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
         }
 
-        .feedback-launcher.q-btn {
+        .feedback-launcher.q-chip {
             background-color: #1A9F53 !important;
             background-image: linear-gradient(135deg, #2ECC71 0%, #1A9F53 100%) !important;
             color: #FFFFFF !important;
@@ -256,7 +255,7 @@ def apply_bmd_theme(
                         border-color 0.2s ease;
         }
 
-        .feedback-launcher.q-btn:hover {
+        .feedback-launcher.q-chip:hover {
             background-color: #1A9F53 !important;
             background-image: linear-gradient(135deg, #35D77A 0%, #168D4A 100%) !important;
             border-color: rgba(255, 255, 255, 0.42);
@@ -265,8 +264,8 @@ def apply_bmd_theme(
             transform: translateY(-2px);
         }
 
-        .feedback-launcher.q-btn .q-icon,
-        .feedback-launcher.q-btn .q-btn__content {
+        .feedback-launcher.q-chip .q-icon,
+        .feedback-launcher.q-chip .q-chip__content {
             color: #FFFFFF !important;
         }
 
