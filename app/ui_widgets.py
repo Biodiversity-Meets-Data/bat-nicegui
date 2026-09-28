@@ -56,9 +56,8 @@ def optional_label(text: str) -> None:
 def page_title(text: str) -> None:
     """Add a page heading styled with the BMD theme gradient."""
 
-    ui.label(text).classes("text-3xl font-bold").style(
-        "background: linear-gradient(135deg, #2ECC71, #0077B6); "
-        "-webkit-background-clip: text; -webkit-text-fill-color: transparent;"
+    ui.label(text).classes(
+        "text-3xl sm:text-4xl font-semibold tracking-tight text-[#0F2F2A]"
     )
 
 

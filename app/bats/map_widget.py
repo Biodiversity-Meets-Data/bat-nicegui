@@ -315,10 +315,10 @@ MAP_INIT_JS = """
                         polygon: {
                             allowIntersection: false,
                             showArea: true,
-                            shapeOptions: { color: '#2ECC71', fillColor: '#2ECC71', fillOpacity: 0.3 }
+                            shapeOptions: { color: '#20A683', fillColor: '#20A683', fillOpacity: 0.3 }
                         },
                         rectangle: {
-                            shapeOptions: { color: '#17A2B8', fillColor: '#17A2B8', fillOpacity: 0.3 }
+                            shapeOptions: { color: '#0D969C', fillColor: '#0D969C', fillOpacity: 0.3 }
                         },
                         circle: false, circlemarker: false, marker: false, polyline: false
                     },
@@ -381,7 +381,7 @@ MAP_INIT_JS = """
                 if (!state) return;
                 state.drawnItems.clearLayers();
                 const layer = L.geoJSON(geojson, {
-                    style: { color: '#0077B6', fillColor: '#2ECC71', fillOpacity: 0.3 }
+                    style: { color: '#0D969C', fillColor: '#20A683', fillOpacity: 0.3 }
                 });
                 state.drawnItems.addLayer(layer);
                 const bounds = layer.getBounds();
@@ -421,9 +421,9 @@ READONLY_AOI_MAP_INIT_JS = """
             }).addTo(map);
             const layer = L.geoJSON(geometry, {
                 style: {
-                    color: '#0077B6',
+                    color: '#0D969C',
                     weight: 2,
-                    fillColor: '#2ECC71',
+                    fillColor: '#20A683',
                     fillOpacity: 0.3
                 }
             }).addTo(map);
