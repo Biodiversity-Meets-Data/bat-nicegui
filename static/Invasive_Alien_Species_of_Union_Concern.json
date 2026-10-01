@@ -1,482 +1,602 @@
 [
   {
     "colId": "8PMQ",
-    "scientificName": "Acacia mearnsii"
+    "scientificName": "Acacia mearnsii",
+    "realm": "terrestrial"
   },
   {
     "colId": "64BRL",
-    "scientificName": "Acacia saligna"
+    "scientificName": "Acacia saligna",
+    "realm": "terrestrial"
   },
   {
     "colId": "9KHM",
-    "scientificName": "Acridotheres cristatellus"
+    "scientificName": "Acridotheres cristatellus",
+    "realm": "terrestrial"
   },
   {
     "colId": "9KHT",
-    "scientificName": "Acridotheres tristis"
+    "scientificName": "Acridotheres tristis",
+    "realm": "terrestrial"
   },
   {
     "colId": "BCBF",
-    "scientificName": "Ailanthus altissima"
+    "scientificName": "Ailanthus altissima",
+    "realm": "terrestrial"
   },
   {
     "colId": "C5KM",
-    "scientificName": "Alopochen aegyptiaca"
+    "scientificName": "Alopochen aegyptiaca",
+    "realm": "terrestrial"
   },
   {
     "colId": "C9JF",
-    "scientificName": "Alternanthera philoxeroides"
+    "scientificName": "Alternanthera philoxeroides",
+    "realm": "terrestrial"
   },
   {
     "colId": "CQKD",
-    "scientificName": "Ameiurus melas"
+    "scientificName": "Ameiurus melas",
+    "realm": "freshwater"
   },
   {
     "colId": "DV7W",
-    "scientificName": "Andropogon virginicus"
+    "scientificName": "Andropogon virginicus",
+    "realm": "terrestrial"
   },
   {
     "colId": "GZPC",
-    "scientificName": "Arthurdendyus triangulatus"
+    "scientificName": "Arthurdendyus triangulatus",
+    "realm": "terrestrial"
   },
   {
     "colId": "H6QS",
-    "scientificName": "Asclepias syriaca"
+    "scientificName": "Asclepias syriaca",
+    "realm": "terrestrial"
   },
   {
     "colId": "HRG7",
-    "scientificName": "Asterias amurensis"
+    "scientificName": "Asterias amurensis",
+    "realm": "marine"
   },
   {
     "colId": "K49Z",
-    "scientificName": "Axis axis"
+    "scientificName": "Axis axis",
+    "realm": "terrestrial"
   },
   {
     "colId": "K79D",
-    "scientificName": "Baccharis halimifolia"
+    "scientificName": "Baccharis halimifolia",
+    "realm": "terrestrial"
   },
   {
     "colId": "LVHK",
-    "scientificName": "Bipalium kewense"
+    "scientificName": "Bipalium kewense",
+    "realm": "terrestrial"
   },
   {
     "colId": "CLBDW",
-    "scientificName": "Brachyponera chinensis"
+    "scientificName": "Brachyponera chinensis",
+    "realm": "terrestrial"
   },
   {
     "colId": "68QX8",
-    "scientificName": "Broussonetia papyrifera"
+    "scientificName": "Broussonetia papyrifera",
+    "realm": "terrestrial"
   },
   {
     "colId": "P482",
-    "scientificName": "Cabomba caroliniana"
+    "scientificName": "Cabomba caroliniana",
+    "realm": "freshwater"
   },
   {
     "colId": "PW5V",
-    "scientificName": "Callosciurus erythraeus"
+    "scientificName": "Callosciurus erythraeus",
+    "realm": "terrestrial"
   },
   {
     "colId": "PW5W",
-    "scientificName": "Callosciurus finlaysonii"
+    "scientificName": "Callosciurus finlaysonii",
+    "realm": "terrestrial"
   },
   {
     "colId": "R5RW",
-    "scientificName": "Cardiospermum grandiflorum"
+    "scientificName": "Cardiospermum grandiflorum",
+    "realm": "terrestrial"
   },
   {
     "colId": "RQPV",
-    "scientificName": "Castor canadensis"
+    "scientificName": "Castor canadensis",
+    "realm": "terrestrial"
   },
   {
     "colId": "S5KP",
-    "scientificName": "Cenchrus setaceus"
+    "scientificName": "Cenchrus setaceus",
+    "realm": "terrestrial"
   },
   {
     "colId": "T56N",
-    "scientificName": "Cervus nippon"
+    "scientificName": "Cervus nippon",
+    "realm": "terrestrial"
   },
   {
     "colId": "TM2L",
-    "scientificName": "Channa argus"
+    "scientificName": "Channa argus",
+    "realm": "freshwater"
   },
   {
     "colId": "7S739",
-    "scientificName": "Cherax destructor"
+    "scientificName": "Cherax destructor",
+    "realm": "freshwater"
   },
   {
     "colId": "VFND",
-    "scientificName": "Cipangopaludina chinensis"
+    "scientificName": "Cipangopaludina chinensis",
+    "realm": "freshwater"
   },
   {
     "colId": "YHTW",
-    "scientificName": "Cortaderia jubata"
+    "scientificName": "Cortaderia jubata",
+    "realm": "terrestrial"
   },
   {
     "colId": "YNJJ",
-    "scientificName": "Corvus splendens"
+    "scientificName": "Corvus splendens",
+    "realm": "terrestrial"
   },
   {
     "colId": "6BBL4",
-    "scientificName": "Crassula helmsii"
+    "scientificName": "Crassula helmsii",
+    "realm": "terrestrial"
   },
   {
     "colId": "34FHY",
-    "scientificName": "Delairea odorata"
+    "scientificName": "Delairea odorata",
+    "realm": "terrestrial"
   },
   {
     "colId": "38V2Q",
-    "scientificName": "Ehrharta calycina"
+    "scientificName": "Ehrharta calycina",
+    "realm": "terrestrial"
   },
   {
     "colId": "39C89",
-    "scientificName": "Elodea nuttallii"
+    "scientificName": "Elodea nuttallii",
+    "realm": "freshwater"
   },
   {
     "colId": "3B3LX",
-    "scientificName": "Eriocheir sinensis"
+    "scientificName": "Eriocheir sinensis",
+    "realm": "freshwater"
   },
   {
     "colId": "7TVR8",
-    "scientificName": "Faxonius immunis"
+    "scientificName": "Faxonius immunis",
+    "realm": "freshwater"
   },
   {
     "colId": "7TVTB",
-    "scientificName": "Faxonius rusticus"
+    "scientificName": "Faxonius rusticus",
+    "realm": "freshwater"
   },
   {
     "colId": "6K3GC",
-    "scientificName": "Fundulus heteroclitus"
+    "scientificName": "Fundulus heteroclitus",
+    "realm": "freshwater"
   },
   {
     "colId": "6K97T",
-    "scientificName": "Gambusia affinis"
+    "scientificName": "Gambusia affinis",
+    "realm": "freshwater"
   },
   {
     "colId": "3F7VR",
-    "scientificName": "Gambusia holbrooki"
+    "scientificName": "Gambusia holbrooki",
+    "realm": "freshwater"
   },
   {
     "colId": "3HMCZ",
-    "scientificName": "Gunnera tinctoria"
+    "scientificName": "Gunnera tinctoria",
+    "realm": "terrestrial"
   },
   {
     "colId": "3HR9B",
-    "scientificName": "Gymnocoronis spilanthoides"
+    "scientificName": "Gymnocoronis spilanthoides",
+    "realm": "freshwater"
   },
   {
     "colId": "6KY8Y",
-    "scientificName": "Hakea sericea"
+    "scientificName": "Hakea sericea",
+    "realm": "terrestrial"
   },
   {
     "colId": "6LS3M",
-    "scientificName": "Heracleum mantegazzianum"
+    "scientificName": "Heracleum mantegazzianum",
+    "realm": "terrestrial"
   },
   {
     "colId": "3KXFD",
-    "scientificName": "Heracleum persicum"
+    "scientificName": "Heracleum persicum",
+    "realm": "terrestrial"
   },
   {
     "colId": "3KXGJ",
-    "scientificName": "Heracleum sosnowskyi"
+    "scientificName": "Heracleum sosnowskyi",
+    "realm": "terrestrial"
   },
   {
     "colId": "3L2WG",
-    "scientificName": "Herpestes javanicus"
+    "scientificName": "Herpestes javanicus",
+    "realm": "terrestrial"
   },
   {
     "colId": "6MFNV",
-    "scientificName": "Humulus scandens"
+    "scientificName": "Humulus scandens",
+    "realm": "terrestrial"
   },
   {
     "colId": "6MJYZ",
-    "scientificName": "Hydrocotyle ranunculoides"
+    "scientificName": "Hydrocotyle ranunculoides",
+    "realm": "freshwater"
   },
   {
     "colId": "3PJSV",
-    "scientificName": "Impatiens glandulifera"
+    "scientificName": "Impatiens glandulifera",
+    "realm": "terrestrial"
   },
   {
     "colId": "3RBY6",
-    "scientificName": "Koenigia polystachya"
+    "scientificName": "Koenigia polystachya",
+    "realm": "terrestrial"
   },
   {
     "colId": "3RVTM",
-    "scientificName": "Lagarosiphon major"
+    "scientificName": "Lagarosiphon major",
+    "realm": "freshwater"
   },
   {
     "colId": "3S4VP",
-    "scientificName": "Lampropeltis getula"
+    "scientificName": "Lampropeltis getula",
+    "realm": "terrestrial"
   },
   {
     "colId": "3TG2F",
-    "scientificName": "Lepomis gibbosus"
+    "scientificName": "Lepomis gibbosus",
+    "realm": "freshwater"
   },
   {
     "colId": "723GG",
-    "scientificName": "Lespedeza cuneata"
+    "scientificName": "Lespedeza cuneata",
+    "realm": "terrestrial"
   },
   {
     "colId": "6QDBQ",
-    "scientificName": "Limnoperna fortunei"
+    "scientificName": "Limnoperna fortunei",
+    "realm": "freshwater"
   },
   {
     "colId": "3VHPT",
-    "scientificName": "Lithobates catesbeianus"
+    "scientificName": "Lithobates catesbeianus",
+    "realm": "terrestrial"
   },
   {
     "colId": "3WDB2",
-    "scientificName": "Ludwigia grandiflora"
+    "scientificName": "Ludwigia grandiflora",
+    "realm": "freshwater"
   },
   {
     "colId": "3WDCZ",
-    "scientificName": "Ludwigia peploides"
+    "scientificName": "Ludwigia peploides",
+    "realm": "freshwater"
   },
   {
     "colId": "3WQ7S",
-    "scientificName": "Lygodium japonicum"
+    "scientificName": "Lygodium japonicum",
+    "realm": "terrestrial"
   },
   {
     "colId": "3WTZ6",
-    "scientificName": "Lysichiton americanus"
+    "scientificName": "Lysichiton americanus",
+    "realm": "terrestrial"
   },
   {
     "colId": "3Y6ZH",
-    "scientificName": "Marisa cornuarietis"
+    "scientificName": "Marisa cornuarietis",
+    "realm": "freshwater"
   },
   {
     "colId": "43794",
-    "scientificName": "Microstegium vimineum"
+    "scientificName": "Microstegium vimineum",
+    "realm": "terrestrial"
   },
   {
     "colId": "43NK4",
-    "scientificName": "Misgurnus anguillicaudatus"
+    "scientificName": "Misgurnus anguillicaudatus",
+    "realm": "freshwater"
   },
   {
     "colId": "43NK6",
-    "scientificName": "Misgurnus bipartitus"
+    "scientificName": "Misgurnus bipartitus",
+    "realm": "freshwater"
   },
   {
     "colId": "6RRD2",
-    "scientificName": "Morone americana"
+    "scientificName": "Morone americana",
+    "realm": "marine"
   },
   {
     "colId": "44JYJ",
-    "scientificName": "Mulinia lateralis"
+    "scientificName": "Mulinia lateralis",
+    "realm": "marine"
   },
   {
     "colId": "44KXR",
-    "scientificName": "Muntiacus reevesi"
+    "scientificName": "Muntiacus reevesi",
+    "realm": "terrestrial"
   },
   {
     "colId": "6RRQT",
-    "scientificName": "Myocastor coypus"
+    "scientificName": "Myocastor coypus",
+    "realm": "terrestrial"
   },
   {
     "colId": "458YG",
-    "scientificName": "Myriophyllum aquaticum"
+    "scientificName": "Myriophyllum aquaticum",
+    "realm": "freshwater"
   },
   {
     "colId": "458ZB",
-    "scientificName": "Myriophyllum heterophyllum"
+    "scientificName": "Myriophyllum heterophyllum",
+    "realm": "freshwater"
   },
   {
     "colId": "45NFP",
-    "scientificName": "Nanozostera japonica"
+    "scientificName": "Nanozostera japonica",
+    "realm": "marine"
   },
   {
     "colId": "45STB",
-    "scientificName": "Nasua nasua"
+    "scientificName": "Nasua nasua",
+    "realm": "terrestrial"
   },
   {
     "colId": "R6M2J",
-    "scientificName": "Neogale vison"
+    "scientificName": "Neogale vison",
+    "realm": "terrestrial"
   },
   {
     "colId": "4859P",
-    "scientificName": "Nyctereutes procyonoides"
+    "scientificName": "Nyctereutes procyonoides",
+    "realm": "terrestrial"
   },
   {
     "colId": "488VG",
-    "scientificName": "Obama nungara"
+    "scientificName": "Obama nungara",
+    "realm": "terrestrial"
   },
   {
     "colId": "49JSC",
-    "scientificName": "Ondatra zibethicus"
+    "scientificName": "Ondatra zibethicus",
+    "realm": "terrestrial"
   },
   {
     "colId": "7W5YK",
-    "scientificName": "Orconectes limosus"
+    "scientificName": "Orconectes limosus",
+    "realm": "freshwater"
   },
   {
     "colId": "7W62B",
-    "scientificName": "Orconectes virilis"
+    "scientificName": "Orconectes virilis",
+    "realm": "freshwater"
   },
   {
     "colId": "4BMPH",
-    "scientificName": "Oxyura jamaicensis"
+    "scientificName": "Oxyura jamaicensis",
+    "realm": "terrestrial"
   },
   {
     "colId": "7W7FR",
-    "scientificName": "Pacifastacus leniusculus"
+    "scientificName": "Pacifastacus leniusculus",
+    "realm": "freshwater"
   },
   {
     "colId": "764TB",
-    "scientificName": "Parthenium hysterophorus"
+    "scientificName": "Parthenium hysterophorus",
+    "realm": "terrestrial"
   },
   {
     "colId": "6V3SC",
-    "scientificName": "Perccottus glenii"
+    "scientificName": "Perccottus glenii",
+    "realm": "freshwater"
   },
   {
     "colId": "4F9VX",
-    "scientificName": "Persicaria perfoliata"
+    "scientificName": "Persicaria perfoliata",
+    "realm": "terrestrial"
   },
   {
     "colId": "4J9VH",
-    "scientificName": "Pistia stratiotes"
+    "scientificName": "Pistia stratiotes",
+    "realm": "freshwater"
   },
   {
     "colId": "78248",
-    "scientificName": "Platydemus manokwari"
+    "scientificName": "Platydemus manokwari",
+    "realm": "terrestrial"
   },
   {
     "colId": "783MS",
-    "scientificName": "Plotosus lineatus"
+    "scientificName": "Plotosus lineatus",
+    "realm": "freshwater"
   },
   {
     "colId": "4LTW6",
-    "scientificName": "Pontederia crassipes"
+    "scientificName": "Pontederia crassipes",
+    "realm": "freshwater"
   },
   {
     "colId": "7WLRT",
-    "scientificName": "Procambarus clarkii"
+    "scientificName": "Procambarus clarkii",
+    "realm": "freshwater"
   },
   {
     "colId": "4MPXY",
-    "scientificName": "Procyon lotor"
+    "scientificName": "Procyon lotor",
+    "realm": "terrestrial"
   },
   {
     "colId": "4MW74",
-    "scientificName": "Prosopis juliflora"
+    "scientificName": "Prosopis juliflora",
+    "realm": "terrestrial"
   },
   {
     "colId": "4P9F3",
-    "scientificName": "Pseudorasbora parva"
+    "scientificName": "Pseudorasbora parva",
+    "realm": "freshwater"
   },
   {
     "colId": "4QMM8",
-    "scientificName": "Pycnonotus cafer"
+    "scientificName": "Pycnonotus cafer",
+    "realm": "terrestrial"
   },
   {
     "colId": "4QMMP",
-    "scientificName": "Pycnonotus jocosus"
+    "scientificName": "Pycnonotus jocosus",
+    "realm": "terrestrial"
   },
   {
     "colId": "793ZB",
-    "scientificName": "Reynoutria japonica"
+    "scientificName": "Reynoutria japonica",
+    "realm": "terrestrial"
   },
   {
     "colId": "6WRZD",
-    "scientificName": "Reynoutria sachalinensis"
+    "scientificName": "Reynoutria sachalinensis",
+    "realm": "terrestrial"
   },
   {
     "colId": "4RV9L",
-    "scientificName": "Reynoutria × bohemica"
+    "scientificName": "Reynoutria × bohemica",
+    "realm": "terrestrial"
   },
   {
     "colId": "SKQNZ",
-    "scientificName": "Rugulopteryx okamurae"
+    "scientificName": "Rugulopteryx okamurae",
+    "realm": "marine"
   },
   {
     "colId": "79GLB",
-    "scientificName": "Salvinia × molesta"
+    "scientificName": "Salvinia × molesta",
+    "realm": "freshwater"
   },
   {
     "colId": "4VNCY",
-    "scientificName": "Sciurus (Sciurus) carolinensis"
+    "scientificName": "Sciurus (Sciurus) carolinensis",
+    "realm": "terrestrial"
   },
   {
     "colId": "4VNDM",
-    "scientificName": "Sciurus (Sciurus) niger"
+    "scientificName": "Sciurus (Sciurus) niger",
+    "realm": "terrestrial"
   },
   {
     "colId": "4Y6DX",
-    "scientificName": "Solenopsis geminata"
+    "scientificName": "Solenopsis geminata",
+    "realm": "terrestrial"
   },
   {
     "colId": "6Z4TF",
-    "scientificName": "Solenopsis invicta"
+    "scientificName": "Solenopsis invicta",
+    "realm": "terrestrial"
   },
   {
     "colId": "4Y6H3",
-    "scientificName": "Solenopsis richteri"
+    "scientificName": "Solenopsis richteri",
+    "realm": "terrestrial"
   },
   {
     "colId": "54MTB",
-    "scientificName": "Tamias (Eutamias) sibiricus"
+    "scientificName": "Tamias (Eutamias) sibiricus",
+    "realm": "terrestrial"
   },
   {
     "colId": "56LQB",
-    "scientificName": "Threskiornis aethiopicus"
+    "scientificName": "Threskiornis aethiopicus",
+    "realm": "terrestrial"
   },
   {
     "colId": "C8JV7",
-    "scientificName": "Trachemys scripta"
+    "scientificName": "Trachemys scripta",
+    "realm": "freshwater"
   },
   {
     "colId": "7CP2C",
-    "scientificName": "Triadica sebifera"
+    "scientificName": "Triadica sebifera",
+    "realm": "terrestrial"
   },
   {
     "colId": "5B9WT",
-    "scientificName": "Vespa mandarinia"
+    "scientificName": "Vespa mandarinia",
+    "realm": "terrestrial"
   },
   {
     "colId": "5BV4H",
-    "scientificName": "Wasmannia auropunctata"
+    "scientificName": "Wasmannia auropunctata",
+    "realm": "terrestrial"
   },
   {
     "colId": "5CBC9",
-    "scientificName": "Xenopus laevis"
+    "scientificName": "Xenopus laevis",
+    "realm": "terrestrial"
   },
   {
     "colId": "9CMQ7",
-    "scientificName": "Acacia cyanophylla"
+    "scientificName": "Acacia cyanophylla",
+    "realm": "terrestrial"
   },
   {
     "colId": "P84JF",
-    "scientificName": "Eutamias sibiricus"
+    "scientificName": "Eutamias sibiricus",
+    "realm": "terrestrial"
   },
   {
     "colId": "7TVRJ",
-    "scientificName": "Faxonius limosus"
+    "scientificName": "Faxonius limosus",
+    "realm": "freshwater"
   },
   {
     "colId": "7TVTY",
-    "scientificName": "Faxonius virilis"
+    "scientificName": "Faxonius virilis",
+    "realm": "freshwater"
   },
   {
     "colId": "76LLN",
-    "scientificName": "Pennisetum setaceum"
+    "scientificName": "Pennisetum setaceum",
+    "realm": "terrestrial"
   },
   {
     "colId": "4L9ST",
-    "scientificName": "Polygonum perfoliatum"
+    "scientificName": "Polygonum perfoliatum",
+    "realm": "terrestrial"
   },
   {
     "colId": "7WLYV",
-    "scientificName": "Procambarus virginalis"
+    "scientificName": "Procambarus virginalis",
+    "realm": "freshwater"
   },
   {
     "colId": "4QFVR",
-    "scientificName": "Pueraria lobata"
+    "scientificName": "Pueraria lobata",
+    "realm": "terrestrial"
   },
   {
     "colId": "79GL5",
-    "scientificName": "Salvinia adnata"
+    "scientificName": "Salvinia adnata",
+    "realm": "freshwater"
   },
   {
     "colId": "SP7GH",
-    "scientificName": "Sapium sebiferum"
+    "scientificName": "Sapium sebiferum",
+    "realm": "terrestrial"
   }
 ]

@@ -1,94 +1,117 @@
 [
   {
     "colId": "9JR7Z",
-    "scientificName": "Alectoris barbara"
+    "scientificName": "Alectoris barbara",
+    "realm": "terrestrial"
   },
   {
     "colId": "BLSJ",
-    "scientificName": "Alectoris rufa"
+    "scientificName": "Alectoris rufa",
+    "realm": "terrestrial"
   },
   {
     "colId": "DGMX",
-    "scientificName": "Anas acuta"
+    "scientificName": "Anas acuta",
+    "realm": "terrestrial"
   },
   {
     "colId": "VJFBC",
-    "scientificName": "Anas clypeata"
+    "scientificName": "Anas clypeata",
+    "realm": "terrestrial"
   },
   {
     "colId": "DGND",
-    "scientificName": "Anas crecca"
+    "scientificName": "Anas crecca",
+    "realm": "terrestrial"
   },
   {
     "colId": "VJFB8",
-    "scientificName": "Anas penelope"
+    "scientificName": "Anas penelope",
+    "realm": "terrestrial"
   },
   {
     "colId": "DGP6",
-    "scientificName": "Anas platyrhynchos"
+    "scientificName": "Anas platyrhynchos",
+    "realm": "terrestrial"
   },
   {
     "colId": "679X7",
-    "scientificName": "Anser anser"
+    "scientificName": "Anser anser",
+    "realm": "terrestrial"
   },
   {
     "colId": "K56T",
-    "scientificName": "Aythya ferina"
+    "scientificName": "Aythya ferina",
+    "realm": "terrestrial"
   },
   {
     "colId": "5VYJV",
-    "scientificName": "Aythya fuligula"
+    "scientificName": "Aythya fuligula",
+    "realm": "terrestrial"
   },
   {
     "colId": "K56W",
-    "scientificName": "Aythya marila"
+    "scientificName": "Aythya marila",
+    "realm": "terrestrial"
   },
   {
     "colId": "XBGG",
-    "scientificName": "Columba palumbus"
+    "scientificName": "Columba palumbus",
+    "realm": "terrestrial"
   },
   {
     "colId": "6K3W6",
-    "scientificName": "Fulica atra"
+    "scientificName": "Fulica atra",
+    "realm": "terrestrial"
   },
   {
     "colId": "3F6V9",
-    "scientificName": "Gallinago gallinago"
+    "scientificName": "Gallinago gallinago",
+    "realm": "terrestrial"
   },
   {
     "colId": "3RXRB",
-    "scientificName": "Lagopus muta"
+    "scientificName": "Lagopus muta",
+    "realm": "terrestrial"
   },
   {
     "colId": "3WSC2",
-    "scientificName": "Lymnocryptes minimus"
+    "scientificName": "Lymnocryptes minimus",
+    "realm": "terrestrial"
   },
   {
     "colId": "3Z83C",
-    "scientificName": "Melanitta nigra"
+    "scientificName": "Melanitta nigra",
+    "realm": "terrestrial"
   },
   {
     "colId": "6V58Q",
-    "scientificName": "Perdix perdix"
+    "scientificName": "Perdix perdix",
+    "realm": "terrestrial"
   },
   {
     "colId": "4FWMN",
-    "scientificName": "Phasianus colchicus"
+    "scientificName": "Phasianus colchicus",
+    "realm": "terrestrial"
   },
   {
     "colId": "4KKPV",
-    "scientificName": "Pluvialis apricaria"
+    "scientificName": "Pluvialis apricaria",
+    "realm": "terrestrial"
   },
   {
     "colId": "4VS4Z",
-    "scientificName": "Scolopax rusticola"
+    "scientificName": "Scolopax rusticola",
+    "realm": "terrestrial"
   },
   {
     "colId": "6Z4ZB",
-    "scientificName": "Somateria mollissima"
+    "scientificName": "Somateria mollissima",
+    "realm": "terrestrial"
   },
   {
     "colId": "55QS7",
-    "scientificName": "Tetrao urogallus"
+    "scientificName": "Tetrao urogallus",
+    "realm": "terrestrial"
   }
 ]

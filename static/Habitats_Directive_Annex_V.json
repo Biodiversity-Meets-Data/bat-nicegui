@@ -1,242 +1,267 @@
 [
   {
-    "colId": "C64DY",
-    "scientificName": "Alyssum"
-  },
-  {
     "colId": "66KMB",
-    "scientificName": "Anarrhinum longipedicellatum"
+    "scientificName": "Anarrhinum longipedicellatum",
+    "realm": "terrestrial"
   },
   {
     "colId": "9CVSF",
-    "scientificName": "Anthyllis lusitanica"
-  },
-  {
-    "colId": "332R",
-    "scientificName": "Armeria"
+    "scientificName": "Anthyllis lusitanica",
+    "realm": "terrestrial"
   },
   {
     "colId": "GT52",
-    "scientificName": "Arnica montana"
+    "scientificName": "Arnica montana",
+    "realm": "terrestrial"
   },
   {
     "colId": "5VSLK",
-    "scientificName": "Artemisia eriantha"
+    "scientificName": "Artemisia eriantha",
+    "realm": "terrestrial"
   },
   {
     "colId": "B3MH7",
-    "scientificName": "Artemisia genipi"
+    "scientificName": "Artemisia genipi",
+    "realm": "terrestrial"
   },
   {
     "colId": "HJNT",
-    "scientificName": "Aspius aspius"
+    "scientificName": "Aspius aspius",
+    "realm": "freshwater"
   },
   {
     "colId": "7R7BP",
-    "scientificName": "Astacus astacus"
+    "scientificName": "Astacus astacus",
+    "realm": "freshwater"
   },
   {
     "colId": "7RCB7",
-    "scientificName": "Austropotamobius pallipes"
+    "scientificName": "Austropotamobius pallipes",
+    "realm": "freshwater"
   },
   {
     "colId": "7RCBB",
-    "scientificName": "Austropotamobius torrentium"
+    "scientificName": "Austropotamobius torrentium",
+    "realm": "freshwater"
   },
   {
     "colId": "QLX7",
-    "scientificName": "Canis aureus"
+    "scientificName": "Canis aureus",
+    "realm": "terrestrial"
   },
   {
     "colId": "QLXL",
-    "scientificName": "Canis lupus"
+    "scientificName": "Canis lupus",
+    "realm": "terrestrial"
   },
   {
     "colId": "QS69",
-    "scientificName": "Capra ibex"
+    "scientificName": "Capra ibex",
+    "realm": "terrestrial"
   },
   {
     "colId": "QS6C",
-    "scientificName": "Capra pyrenaica"
+    "scientificName": "Capra pyrenaica",
+    "realm": "terrestrial"
   },
   {
     "colId": "5ZZLR",
-    "scientificName": "Corallium rubrum"
+    "scientificName": "Corallium rubrum",
+    "realm": "marine"
   },
   {
     "colId": "ZFXR",
-    "scientificName": "Cricetus cricetus"
-  },
-  {
-    "colId": "635G8",
-    "scientificName": "Euphrasia"
+    "scientificName": "Cricetus cricetus",
+    "realm": "terrestrial"
   },
   {
     "colId": "6JVSD",
-    "scientificName": "Galanthus nivalis"
+    "scientificName": "Galanthus nivalis",
+    "realm": "terrestrial"
   },
   {
     "colId": "3FKP4",
-    "scientificName": "Genetta genetta"
+    "scientificName": "Genetta genetta",
+    "realm": "terrestrial"
   },
   {
     "colId": "6KB7S",
-    "scientificName": "Gentiana lutea"
+    "scientificName": "Gentiana lutea",
+    "realm": "terrestrial"
   },
   {
     "colId": "3H5HG",
-    "scientificName": "Graellsia isabellae"
+    "scientificName": "Graellsia isabellae",
+    "realm": "terrestrial"
   },
   {
     "colId": "3HQWW",
-    "scientificName": "Gymnocephalus schraetzer"
+    "scientificName": "Gymnocephalus schraetzer",
+    "realm": "freshwater"
   },
   {
     "colId": "6LLM4",
-    "scientificName": "Helix pomatia"
+    "scientificName": "Helix pomatia",
+    "realm": "terrestrial"
   },
   {
     "colId": "3L2WF",
-    "scientificName": "Herpestes ichneumon"
+    "scientificName": "Herpestes ichneumon",
+    "realm": "terrestrial"
   },
   {
     "colId": "PT32H",
-    "scientificName": "Hirudo medicinalis"
+    "scientificName": "Hirudo medicinalis",
+    "realm": "freshwater"
   },
   {
     "colId": "3MSJL",
-    "scientificName": "Hucho hucho"
+    "scientificName": "Hucho hucho",
+    "realm": "freshwater"
   },
   {
     "colId": "3PZV3",
-    "scientificName": "Iris lusitanica"
+    "scientificName": "Iris lusitanica",
+    "realm": "terrestrial"
   },
   {
     "colId": "6NVLC",
-    "scientificName": "Lampetra fluviatilis"
+    "scientificName": "Lampetra fluviatilis",
+    "realm": "freshwater"
   },
   {
     "colId": "6PPQ3",
-    "scientificName": "Lepus timidus"
-  },
-  {
-    "colId": "KVG7H",
-    "scientificName": "Lethenteron"
+    "scientificName": "Lepus timidus",
+    "realm": "terrestrial"
   },
   {
     "colId": "L2895",
-    "scientificName": "Leucobryum glaucum"
+    "scientificName": "Leucobryum glaucum",
+    "realm": "terrestrial"
   },
   {
     "colId": "727FT",
-    "scientificName": "Leuzea rhaponticoides"
+    "scientificName": "Leuzea rhaponticoides",
+    "realm": "terrestrial"
   },
   {
     "colId": "6PY8B",
-    "scientificName": "Lilium rubrum"
-  },
-  {
-    "colId": "5FPL",
-    "scientificName": "Lithothamnium"
+    "scientificName": "Lilium rubrum",
+    "realm": "terrestrial"
   },
   {
     "colId": "6QR9T",
-    "scientificName": "Lynx lynx"
+    "scientificName": "Lynx lynx",
+    "realm": "terrestrial"
   },
   {
     "colId": "3Y44N",
-    "scientificName": "Margaritifera margaritifera"
+    "scientificName": "Margaritifera margaritifera",
+    "realm": "freshwater"
   },
   {
     "colId": "3Y9W2",
-    "scientificName": "Martes martes"
+    "scientificName": "Martes martes",
+    "realm": "terrestrial"
   },
   {
     "colId": "QHPTG",
-    "scientificName": "Microcondylaea compressa"
+    "scientificName": "Microcondylaea compressa",
+    "realm": "freshwater"
   },
   {
     "colId": "44QYC",
-    "scientificName": "Mustela putorius"
+    "scientificName": "Mustela putorius",
+    "realm": "terrestrial"
   },
   {
     "colId": "45PCB",
-    "scientificName": "Narcissus bulbocodium"
-  },
-  {
-    "colId": "8VZL3",
-    "scientificName": "Narcissus"
+    "scientificName": "Narcissus bulbocodium",
+    "realm": "terrestrial"
   },
   {
     "colId": "75YLX",
-    "scientificName": "Pelecus cultratus"
+    "scientificName": "Pelecus cultratus",
+    "realm": "freshwater"
   },
   {
     "colId": "RZ2Y2",
-    "scientificName": "Phymatholithon calcareum"
+    "scientificName": "Phymatholithon calcareum",
+    "realm": "marine"
   },
   {
     "colId": "4RDPJ",
-    "scientificName": "Rana esculenta"
+    "scientificName": "Rana esculenta",
+    "realm": "terrestrial"
   },
   {
     "colId": "7936C",
-    "scientificName": "Rana perezi"
+    "scientificName": "Rana perezi",
+    "realm": "terrestrial"
   },
   {
     "colId": "7938M",
-    "scientificName": "Rana ridibunda"
+    "scientificName": "Rana ridibunda",
+    "realm": "terrestrial"
   },
   {
     "colId": "6WR99",
-    "scientificName": "Rana temporaria"
+    "scientificName": "Rana temporaria",
+    "realm": "terrestrial"
   },
   {
     "colId": "4TQLC",
-    "scientificName": "Rupicapra rupicapra"
+    "scientificName": "Rupicapra rupicapra",
+    "realm": "terrestrial"
   },
   {
     "colId": "4TR9P",
-    "scientificName": "Ruscus aculeatus"
+    "scientificName": "Ruscus aculeatus",
+    "realm": "terrestrial"
   },
   {
     "colId": "4TTHN",
-    "scientificName": "Rutilus pigus"
+    "scientificName": "Rutilus pigus",
+    "realm": "freshwater"
   },
   {
     "colId": "6XCXT",
-    "scientificName": "Salmo salar"
-  },
-  {
-    "colId": "6458C",
-    "scientificName": "Scrophularia"
+    "scientificName": "Salmo salar",
+    "realm": "freshwater"
   },
   {
     "colId": "4VZK9",
-    "scientificName": "Scrophularia sublyrata"
+    "scientificName": "Scrophularia sublyrata",
+    "realm": "terrestrial"
   },
   {
     "colId": "854SN",
-    "scientificName": "Scyllarides latus"
+    "scientificName": "Scyllarides latus",
+    "realm": "marine"
   },
   {
     "colId": "6YQ6H",
-    "scientificName": "Silurus aristotelis"
+    "scientificName": "Silurus aristotelis",
+    "realm": "freshwater"
   },
   {
     "colId": "56Q8K",
-    "scientificName": "Thymallus thymallus"
+    "scientificName": "Thymallus thymallus",
+    "realm": "freshwater"
   },
   {
     "colId": "7DFVQ",
-    "scientificName": "Ulex densus"
+    "scientificName": "Ulex densus",
+    "realm": "terrestrial"
   },
   {
     "colId": "7DL7C",
-    "scientificName": "Unio elongatulus"
+    "scientificName": "Unio elongatulus",
+    "realm": "freshwater"
   },
   {
     "colId": "5D5BG",
-    "scientificName": "Zingel zingel"
+    "scientificName": "Zingel zingel",
+    "realm": "freshwater"
   }
 ]

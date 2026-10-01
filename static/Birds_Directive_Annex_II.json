@@ -1,294 +1,367 @@
 [
   {
     "colId": "BFFT",
-    "scientificName": "Alauda arvensis"
+    "scientificName": "Alauda arvensis",
+    "realm": "terrestrial"
   },
   {
     "colId": "BLSD",
-    "scientificName": "Alectoris chukar"
+    "scientificName": "Alectoris chukar",
+    "realm": "terrestrial"
   },
   {
     "colId": "BLSJ",
-    "scientificName": "Alectoris rufa"
+    "scientificName": "Alectoris rufa",
+    "realm": "terrestrial"
   },
   {
     "colId": "DGMX",
-    "scientificName": "Anas acuta"
+    "scientificName": "Anas acuta",
+    "realm": "terrestrial"
   },
   {
     "colId": "VJFBC",
-    "scientificName": "Anas clypeata"
+    "scientificName": "Anas clypeata",
+    "realm": "terrestrial"
   },
   {
     "colId": "DGND",
-    "scientificName": "Anas crecca"
+    "scientificName": "Anas crecca",
+    "realm": "terrestrial"
   },
   {
     "colId": "VJFB8",
-    "scientificName": "Anas penelope"
+    "scientificName": "Anas penelope",
+    "realm": "terrestrial"
   },
   {
     "colId": "DGP6",
-    "scientificName": "Anas platyrhynchos"
+    "scientificName": "Anas platyrhynchos",
+    "realm": "terrestrial"
   },
   {
     "colId": "VJFBB",
-    "scientificName": "Anas querquedula"
+    "scientificName": "Anas querquedula",
+    "realm": "terrestrial"
   },
   {
     "colId": "DGPL",
-    "scientificName": "Anas strepera"
+    "scientificName": "Anas strepera",
+    "realm": "terrestrial"
   },
   {
     "colId": "679WV",
-    "scientificName": "Anser albifrons"
+    "scientificName": "Anser albifrons",
+    "realm": "terrestrial"
   },
   {
     "colId": "679X7",
-    "scientificName": "Anser anser"
+    "scientificName": "Anser anser",
+    "realm": "terrestrial"
   },
   {
     "colId": "5V9X4",
-    "scientificName": "Anser brachyrhynchus"
+    "scientificName": "Anser brachyrhynchus",
+    "realm": "terrestrial"
   },
   {
     "colId": "679WS",
-    "scientificName": "Anser fabalis"
+    "scientificName": "Anser fabalis",
+    "realm": "terrestrial"
   },
   {
     "colId": "K56T",
-    "scientificName": "Aythya ferina"
+    "scientificName": "Aythya ferina",
+    "realm": "terrestrial"
   },
   {
     "colId": "5VYJV",
-    "scientificName": "Aythya fuligula"
+    "scientificName": "Aythya fuligula",
+    "realm": "terrestrial"
   },
   {
     "colId": "K56W",
-    "scientificName": "Aythya marila"
+    "scientificName": "Aythya marila",
+    "realm": "terrestrial"
   },
   {
     "colId": "N749",
-    "scientificName": "Branta bernicla"
+    "scientificName": "Branta bernicla",
+    "realm": "terrestrial"
   },
   {
     "colId": "5WRC3",
-    "scientificName": "Branta canadensis"
+    "scientificName": "Branta canadensis",
+    "realm": "terrestrial"
   },
   {
     "colId": "NM25",
-    "scientificName": "Bucephala clangula"
+    "scientificName": "Bucephala clangula",
+    "realm": "terrestrial"
   },
   {
     "colId": "PK44",
-    "scientificName": "Calidris canutus"
+    "scientificName": "Calidris canutus",
+    "realm": "terrestrial"
   },
   {
     "colId": "5YVVD",
-    "scientificName": "Clangula hyemalis"
+    "scientificName": "Clangula hyemalis",
+    "realm": "terrestrial"
   },
   {
     "colId": "XBFW",
-    "scientificName": "Columba livia"
+    "scientificName": "Columba livia",
+    "realm": "terrestrial"
   },
   {
     "colId": "5ZQ9C",
-    "scientificName": "Columba oenas"
+    "scientificName": "Columba oenas",
+    "realm": "terrestrial"
   },
   {
     "colId": "XBGG",
-    "scientificName": "Columba palumbus"
+    "scientificName": "Columba palumbus",
+    "realm": "terrestrial"
   },
   {
     "colId": "YNHJ",
-    "scientificName": "Corvus corone"
+    "scientificName": "Corvus corone",
+    "realm": "terrestrial"
   },
   {
     "colId": "YNHT",
-    "scientificName": "Corvus frugilegus"
+    "scientificName": "Corvus frugilegus",
+    "realm": "terrestrial"
   },
   {
     "colId": "YNJ8",
-    "scientificName": "Corvus monedula"
+    "scientificName": "Corvus monedula",
+    "realm": "terrestrial"
   },
   {
     "colId": "YYSJ",
-    "scientificName": "Coturnix coturnix"
+    "scientificName": "Coturnix coturnix",
+    "realm": "terrestrial"
   },
   {
     "colId": "32ZQB",
-    "scientificName": "Cygnus olor"
+    "scientificName": "Cygnus olor",
+    "realm": "terrestrial"
   },
   {
     "colId": "6JLDS",
-    "scientificName": "Francolinus francolinus"
+    "scientificName": "Francolinus francolinus",
+    "realm": "terrestrial"
   },
   {
     "colId": "6K3W6",
-    "scientificName": "Fulica atra"
+    "scientificName": "Fulica atra",
+    "realm": "terrestrial"
   },
   {
     "colId": "3F6V9",
-    "scientificName": "Gallinago gallinago"
+    "scientificName": "Gallinago gallinago",
+    "realm": "terrestrial"
   },
   {
     "colId": "3F6VX",
-    "scientificName": "Gallinula chloropus"
+    "scientificName": "Gallinula chloropus",
+    "realm": "terrestrial"
   },
   {
     "colId": "6JYHZ",
-    "scientificName": "Garrulus glandarius"
+    "scientificName": "Garrulus glandarius",
+    "realm": "terrestrial"
   },
   {
     "colId": "3J8XQ",
-    "scientificName": "Haematopus ostralegus"
+    "scientificName": "Haematopus ostralegus",
+    "realm": "terrestrial"
   },
   {
     "colId": "3RXRB",
-    "scientificName": "Lagopus muta"
+    "scientificName": "Lagopus muta",
+    "realm": "terrestrial"
   },
   {
     "colId": "3SBPN",
-    "scientificName": "Larus argentatus"
+    "scientificName": "Larus argentatus",
+    "realm": "terrestrial"
   },
   {
     "colId": "3SBPX",
-    "scientificName": "Larus cachinnans"
+    "scientificName": "Larus cachinnans",
+    "realm": "terrestrial"
   },
   {
     "colId": "3SBPZ",
-    "scientificName": "Larus canus"
+    "scientificName": "Larus canus",
+    "realm": "terrestrial"
   },
   {
     "colId": "3SBQ9",
-    "scientificName": "Larus fuscus"
+    "scientificName": "Larus fuscus",
+    "realm": "terrestrial"
   },
   {
     "colId": "3SBQM",
-    "scientificName": "Larus marinus"
+    "scientificName": "Larus marinus",
+    "realm": "terrestrial"
   },
   {
     "colId": "3SBQY",
-    "scientificName": "Larus ridibundus"
+    "scientificName": "Larus ridibundus",
+    "realm": "terrestrial"
   },
   {
     "colId": "72FCR",
-    "scientificName": "Limosa limosa"
+    "scientificName": "Limosa limosa",
+    "realm": "terrestrial"
   },
   {
     "colId": "3WSC2",
-    "scientificName": "Lymnocryptes minimus"
+    "scientificName": "Lymnocryptes minimus",
+    "realm": "terrestrial"
   },
   {
     "colId": "3Z83B",
-    "scientificName": "Melanitta fusca"
+    "scientificName": "Melanitta fusca",
+    "realm": "terrestrial"
   },
   {
     "colId": "3Z83C",
-    "scientificName": "Melanitta nigra"
+    "scientificName": "Melanitta nigra",
+    "realm": "terrestrial"
   },
   {
     "colId": "3ZDJV",
-    "scientificName": "Meleagris gallopavo"
+    "scientificName": "Meleagris gallopavo",
+    "realm": "terrestrial"
   },
   {
     "colId": "3ZTRN",
-    "scientificName": "Mergus merganser"
+    "scientificName": "Mergus merganser",
+    "realm": "terrestrial"
   },
   {
     "colId": "3ZTRQ",
-    "scientificName": "Mergus serrator"
+    "scientificName": "Mergus serrator",
+    "realm": "terrestrial"
   },
   {
     "colId": "479P3",
-    "scientificName": "Netta rufina"
+    "scientificName": "Netta rufina",
+    "realm": "terrestrial"
   },
   {
     "colId": "483SZ",
-    "scientificName": "Numenius arquata"
+    "scientificName": "Numenius arquata",
+    "realm": "terrestrial"
   },
   {
     "colId": "483T6",
-    "scientificName": "Numenius phaeopus"
+    "scientificName": "Numenius phaeopus",
+    "realm": "terrestrial"
   },
   {
     "colId": "6V58Q",
-    "scientificName": "Perdix perdix"
+    "scientificName": "Perdix perdix",
+    "realm": "terrestrial"
   },
   {
     "colId": "4FWMN",
-    "scientificName": "Phasianus colchicus"
+    "scientificName": "Phasianus colchicus",
+    "realm": "terrestrial"
   },
   {
     "colId": "4HPXM",
-    "scientificName": "Pica pica"
+    "scientificName": "Pica pica",
+    "realm": "terrestrial"
   },
   {
     "colId": "4KKPY",
-    "scientificName": "Pluvialis squatarola"
+    "scientificName": "Pluvialis squatarola",
+    "realm": "terrestrial"
   },
   {
     "colId": "4RB9P",
-    "scientificName": "Rallus aquaticus"
+    "scientificName": "Rallus aquaticus",
+    "realm": "terrestrial"
   },
   {
     "colId": "4VS4Z",
-    "scientificName": "Scolopax rusticola"
+    "scientificName": "Scolopax rusticola",
+    "realm": "terrestrial"
   },
   {
     "colId": "6Z4ZB",
-    "scientificName": "Somateria mollissima"
+    "scientificName": "Somateria mollissima",
+    "realm": "terrestrial"
   },
   {
     "colId": "6ZXPP",
-    "scientificName": "Streptopelia decaocto"
+    "scientificName": "Streptopelia decaocto",
+    "realm": "terrestrial"
   },
   {
     "colId": "6ZXPY",
-    "scientificName": "Streptopelia turtur"
+    "scientificName": "Streptopelia turtur",
+    "realm": "terrestrial"
   },
   {
     "colId": "5384V",
-    "scientificName": "Sturnus vulgaris"
+    "scientificName": "Sturnus vulgaris",
+    "realm": "terrestrial"
   },
   {
     "colId": "55QS6",
-    "scientificName": "Tetrao tetrix"
+    "scientificName": "Tetrao tetrix",
+    "realm": "terrestrial"
   },
   {
     "colId": "58VJ2",
-    "scientificName": "Tringa erythropus"
+    "scientificName": "Tringa erythropus",
+    "realm": "terrestrial"
   },
   {
     "colId": "58VJB",
-    "scientificName": "Tringa nebularia"
+    "scientificName": "Tringa nebularia",
+    "realm": "terrestrial"
   },
   {
     "colId": "58VJH",
-    "scientificName": "Tringa totanus"
+    "scientificName": "Tringa totanus",
+    "realm": "terrestrial"
   },
   {
     "colId": "59PLT",
-    "scientificName": "Turdus iliacus"
+    "scientificName": "Turdus iliacus",
+    "realm": "terrestrial"
   },
   {
     "colId": "7CYVX",
-    "scientificName": "Turdus merula"
+    "scientificName": "Turdus merula",
+    "realm": "terrestrial"
   },
   {
     "colId": "59PMR",
-    "scientificName": "Turdus philomelos"
+    "scientificName": "Turdus philomelos",
+    "realm": "terrestrial"
   },
   {
     "colId": "59PMS",
-    "scientificName": "Turdus pilaris"
+    "scientificName": "Turdus pilaris",
+    "realm": "terrestrial"
   },
   {
     "colId": "59PNF",
-    "scientificName": "Turdus viscivorus"
+    "scientificName": "Turdus viscivorus",
+    "realm": "terrestrial"
   },
   {
     "colId": "7FFJL",
-    "scientificName": "Vanellus vanellus"
+    "scientificName": "Vanellus vanellus",
+    "realm": "terrestrial"
   }
 ]
