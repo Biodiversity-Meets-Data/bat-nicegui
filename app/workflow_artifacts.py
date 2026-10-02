@@ -164,7 +164,7 @@ async def extract_workflow_artifacts(workflow_id: str) -> None:
                     async with httpx.AsyncClient(timeout=120.0) as client:
                         async with client.stream(
                             "GET",
-                            f"{WORKFLOW_API_URL}/{workflow_id}/download",
+                            f"{WORKFLOW_API_URL}/{workflow_id}/rocrate?profile=WRROC&attach_workflow_outputs=true",
                             headers=build_workflow_api_headers(),
                         ) as response:
                             response.raise_for_status()

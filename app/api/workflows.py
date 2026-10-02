@@ -81,7 +81,7 @@ async def api_submit_workflow(
                 WORKFLOW_API_URL,
                 data=data,
                 files={
-                    "rocratefile": (
+                    "rocrate_file": (
                         "rocrate.zip",
                         rocrate_zip,
                         "application/zip",
@@ -240,7 +240,7 @@ async def api_download_workflow_results(
         raise HTTPException(status_code=404, detail="Workflow not found")
 
     headers = build_workflow_api_headers()
-    url = f"{WORKFLOW_API_URL}/{workflow_id}/download"
+    url = f"{WORKFLOW_API_URL}/{workflow_id}/rocrate?profile=WRROC&attach_workflow_outputs=true"
     try:
         http_client = httpx.AsyncClient(timeout=60.0)
         request = http_client.build_request("GET", url, headers=headers)

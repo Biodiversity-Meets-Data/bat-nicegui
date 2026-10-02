@@ -4,6 +4,7 @@ from functools import lru_cache
 import tempfile
 import zipfile
 from pathlib import Path
+import json
 
 import yaml
 
@@ -89,15 +90,11 @@ def build_workflow_api_form_data(workflow: WorkflowSubmit) -> dict[str, str]:
     Fields prefixed with 'param-' set the Argo workflow parameter of the same
     name (without the prefix) in the BAT's workflow template.
     """
-    data: dict[str, str] = {
-        "dry_run": str(WORKFLOW_DRY_RUN).lower(),
-        "force": str(WORKFLOW_FORCE).lower(),
-    }
-    for name, value in workflow.parameters.items():
-        data[f"param-{name}"] = value
-
+    data: dict[str, str] = {}
+    workflow_parameters = {name: value for name, value in workflow.parameters.items()} 
+    data["workflow_parameters"] = json.dumps(workflow_parameters)
     if WORKFLOW_WEBHOOK_URL_TEMPLATE:
-        data["webhook_url"] = WORKFLOW_WEBHOOK_URL_TEMPLATE
+        data["callback_url"] = WORKFLOW_WEBHOOK_URL_TEMPLATE
     return data
 
 
