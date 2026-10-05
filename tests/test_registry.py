@@ -4,6 +4,7 @@ import pytest
 
 from bats.map_widget import MapSelectionMode
 from bats.registry import BAT_REGISTRY, Bat, EcosystemCategory
+from species import SpeciesList
 
 
 @pytest.mark.parametrize("bat", BAT_REGISTRY, ids=lambda bat: bat.name)
@@ -36,4 +37,16 @@ def test_registered_bats_enable_all_map_selection_modes() -> None:
     """Current BATs expose drawing, country, and Natura2000 selection."""
     assert all(
         bat.map_selection_modes == frozenset(MapSelectionMode) for bat in BAT_REGISTRY
+    )
+
+
+def test_freshwater_sdm_excludes_birds_directive_species_lists() -> None:
+    freshwater_sdm = next(bat for bat in BAT_REGISTRY if bat.name == "freshwater_sdm")
+
+    assert freshwater_sdm.species_lists == (
+        SpeciesList.HABITATS_ANNEX_II,
+        SpeciesList.HABITATS_ANNEX_IV,
+        SpeciesList.HABITATS_ANNEX_V,
+        SpeciesList.HABITATS_CHARACTERISTIC_ANNEX_I,
+        SpeciesList.IAS_UNION_CONCERN,
     )

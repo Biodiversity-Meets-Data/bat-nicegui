@@ -115,7 +115,13 @@ BAT_REGISTRY: tuple[Bat, ...] = (
         icon="water_drop",
         workflow_yaml_path="freshwater-sdm/workflow.yaml",
         rocrate_path="freshwater-sdm/ro-crate-metadata.json",
-        species_lists=ALL_SELECTABLE_SPECIES_LISTS,
+        species_lists=(
+            SpeciesList.HABITATS_ANNEX_II,
+            SpeciesList.HABITATS_ANNEX_IV,
+            SpeciesList.HABITATS_ANNEX_V,
+            SpeciesList.HABITATS_CHARACTERISTIC_ANNEX_I,
+            SpeciesList.IAS_UNION_CONCERN,
+        ),
     ),
 )
 
