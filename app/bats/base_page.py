@@ -69,6 +69,13 @@ class BasePage(ABC):
 
         with ui.column().classes("w-full max-w-6xl mx-auto p-6 gap-6"):
             page_title("Create New Workflow")
+            with ui.column().classes("gap-1 -mt-4"):
+                ui.label(self.BAT.label).classes(
+                    "text-xl sm:text-2xl font-semibold text-[#0F2F2A]"
+                )
+                ui.label(self.BAT.description).classes(
+                    "text-sm sm:text-base text-gray-600"
+                )
 
             # Add two columns with user-input widgets.
             with ui.row().classes("w-full gap-6 flex-wrap lg:flex-nowrap"):
