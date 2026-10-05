@@ -4,6 +4,7 @@ from species import (
     ALL_SELECTABLE_SPECIES_LISTS,
     SpeciesList,
     SPECIES_LIST_DEFINITIONS,
+    available_species_directives,
     load_species_options,
 )
 
@@ -25,6 +26,19 @@ def test_duplicate_col_ids_are_merged_with_multiple_list_memberships() -> None:
 
     assert duplicated
     assert all(option.scientific_name in option.html_label for option in duplicated)
+
+
+def test_available_directives_follow_configured_species_lists() -> None:
+    freshwater_lists = (
+        SpeciesList.IAS_UNION_CONCERN,
+        SpeciesList.HABITATS_ANNEX_II,
+    )
+
+    assert available_species_directives(freshwater_lists) == (
+        "invasive_species",
+        "habitat",
+    )
+    assert available_species_directives(()) == ()
 
 
 def test_species_options_filter_records_by_realm(monkeypatch) -> None:

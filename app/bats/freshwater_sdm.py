@@ -50,36 +50,6 @@ class FreshwaterSdmPage(BasePage):
 
     # ------------------------- Page Construction --------------------------- #
 
-    def add_species_directive_parameters(self) -> None:
-        """Add the directive filters used by the shared species selector."""
-        with ui.column().classes("w-full gap-1 mt-4"):
-            required_label("Choose EU Directive")
-            with ui.row().classes("w-full gap-4"):
-                self.invasive_cb = (
-                    ui.checkbox("Invasive Species Regulations", value=False)
-                    .props("checked-icon=check_box")
-                    .classes("flex-1")
-                )
-                self.habitat_cb = (
-                    ui.checkbox("Habitats", value=False)
-                    .props("checked-icon=check_box")
-                    .classes("flex-1")
-                )
-                self.bird_cb = (
-                    ui.checkbox("Bird", value=False)
-                    .props("checked-icon=check_box")
-                    .classes("flex-1")
-                )
-        self.invasive_cb.on_value_change(
-            lambda _: self.update_species_options(tuple(self.selected_directives()))
-        )
-        self.habitat_cb.on_value_change(
-            lambda _: self.update_species_options(tuple(self.selected_directives()))
-        )
-        self.bird_cb.on_value_change(
-            lambda _: self.update_species_options(tuple(self.selected_directives()))
-        )
-
     def add_specific_parameters(self) -> None:
         """Add the BAT-specific parameters (user-input widgets) to the page."""
 
@@ -121,16 +91,6 @@ class FreshwaterSdmPage(BasePage):
             #    include_historical=bool(self.include_historical.value),
             #    generate_report=bool(self.generate_report.value),
         )
-
-    def selected_directives(self) -> list[str]:
-        directive_types: list[str] = []
-        if self.invasive_cb.value:
-            directive_types.append("invasive_species")
-        if self.habitat_cb.value:
-            directive_types.append("habitat")
-        if self.bird_cb.value:
-            directive_types.append("bird")
-        return directive_types
 
 
 FreshwaterSdmPage.register()

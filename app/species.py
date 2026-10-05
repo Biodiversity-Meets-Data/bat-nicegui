@@ -63,18 +63,31 @@ ALL_SELECTABLE_SPECIES_LISTS: tuple[SpeciesList, ...] = tuple(SpeciesList)
 
 DIRECTIVE_SPECIES_LISTS: dict[str, tuple[SpeciesList, ...]] = {
     "invasive_species": (SpeciesList.IAS_UNION_CONCERN,),
-    "bird": (
-        SpeciesList.BIRDS_ANNEX_I,
-        SpeciesList.BIRDS_ANNEX_II,
-        SpeciesList.BIRDS_ANNEX_III,
-    ),
     "habitat": (
         SpeciesList.HABITATS_ANNEX_II,
         SpeciesList.HABITATS_ANNEX_IV,
         SpeciesList.HABITATS_ANNEX_V,
         SpeciesList.HABITATS_CHARACTERISTIC_ANNEX_I,
     ),
+    "bird": (
+        SpeciesList.BIRDS_ANNEX_I,
+        SpeciesList.BIRDS_ANNEX_II,
+        SpeciesList.BIRDS_ANNEX_III,
+    ),
 }
+
+
+def available_species_directives(
+    species_lists: Iterable[SpeciesList],
+) -> tuple[str, ...]:
+    """Return directives represented by a BAT's configured species lists."""
+    configured_lists = set(species_lists)
+    return tuple(
+        directive
+        for directive, directive_lists in DIRECTIVE_SPECIES_LISTS.items()
+        if configured_lists.intersection(directive_lists)
+    )
+
 
 SPECIES_PILL_STYLES: dict[str, str] = {
     "species-pill--ias-union-concern": "background:rgba(220,38,38,.14);color:#b91c1c",

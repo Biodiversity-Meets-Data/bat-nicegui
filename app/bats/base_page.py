@@ -23,6 +23,7 @@ from bats.map_widget import MapGeometry, MapWidget
 from bats.registry import Bat
 from species import (
     SpeciesOption,
+    available_species_directives,
     load_species_options,
     species_lists_for_directives,
 )
@@ -44,6 +45,11 @@ from ui_widgets import (
 
 # Placeholder shown in the "Analysis Area" field until the user draws an area.
 NO_GEOMETRY_MSG = "WKT: None - Draw on map ->"
+SPECIES_DIRECTIVE_LABELS = {
+    "invasive_species": "Invasive Species Regulations",
+    "habitat": "Habitats",
+    "bird": "Bird",
+}
 
 
 class BasePage(ABC):
@@ -144,7 +150,35 @@ class BasePage(ABC):
             self.copy_wkt_button.disable()
 
     def add_species_directive_parameters(self) -> None:
-        """Add optional directive controls before the shared species selector."""
+        """Show directive filters represented in this BAT's species lists."""
+        self.directive_checkboxes: dict[str, ui.checkbox] = {}
+        directives = available_species_directives(self.BAT.species_lists)
+        if not directives:
+            return
+
+        with ui.column().classes("w-full gap-1 mt-4"):
+            required_label("Choose EU Directive")
+            with ui.row().classes("w-full gap-4"):
+                for directive in directives:
+                    checkbox = (
+                        ui.checkbox(SPECIES_DIRECTIVE_LABELS[directive], value=False)
+                        .props("checked-icon=check_box")
+                        .classes("flex-1")
+                    )
+                    checkbox.on_value_change(
+                        lambda _: self.update_species_options(
+                            tuple(self.selected_directives())
+                        )
+                    )
+                    self.directive_checkboxes[directive] = checkbox
+
+    def selected_directives(self) -> list[str]:
+        """Return the enabled directive filters for this BAT."""
+        return [
+            directive
+            for directive, checkbox in self.directive_checkboxes.items()
+            if checkbox.value
+        ]
 
     def add_species_selector(self) -> None:
         """Add the shared species selector when the BAT opts into species."""
