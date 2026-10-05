@@ -131,15 +131,23 @@ def _read_records(path: Path) -> list[dict[str, Any]]:
 
 @lru_cache(maxsize=None)
 def load_species_options(
-    list_ids: tuple[SpeciesList, ...],
+    list_ids: tuple[SpeciesList, ...], realm: str
 ) -> tuple[SpeciesOption, ...]:
-    """Load and merge species records from the configured static lists."""
+    """Load and merge species records for one realm and its configured lists."""
     merged: dict[str, tuple[str, list[str], list[str]]] = {}
     static_directory = _static_directory()
+    selected_realm = realm.strip().casefold()
+    if selected_realm not in {"terrestrial", "freshwater", "marine"}:
+        return ()
 
     for list_id in list_ids:
         definition = SPECIES_LIST_DEFINITIONS[list_id]
         for record in _read_records(static_directory / definition.filename):
+            record_realm = record.get("realm")
+            if not isinstance(record_realm, str) or (
+                record_realm.strip().casefold() != selected_realm
+            ):
+                continue
             col_id = str(record.get("colId", "")).strip()
             scientific_name = str(record.get("scientificName", "")).strip()
             if not col_id or not scientific_name:

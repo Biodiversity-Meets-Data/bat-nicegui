@@ -14,6 +14,11 @@ from shapely.geometry import mapping  # type: ignore[import-untyped]
 from shapely.wkt import loads  # type: ignore[import-untyped]
 
 from bats.map_data import MapDataError, MapFeature, get_map_data_store
+from bats.natura_metadata import (
+    NaturaMetadataError,
+    fetch_natura_site_metadata,
+    natura_metadata_rows,
+)
 from ui_widgets import card_header
 
 
@@ -94,8 +99,14 @@ class MapWidget:
         self._mode_selector: ui.radio | None = None
         self._country_select: ui.select | None = None
         self._natura_select: ui.select | None = None
+        self._metadata_button: ui.button | None = None
         self._country_container: Any = None
         self._natura_container: Any = None
+        self._metadata_dialog: ui.dialog | None = None
+        self._metadata_content: ui.column | None = None
+        self._metadata_title: ui.label | None = None
+        self._metadata_site_code: str | None = None
+        self._metadata_request_id = 0
         ui.on(self._event, self._on_geometry_change)
 
     @property
@@ -143,18 +154,27 @@ class MapWidget:
 
             with ui.column().classes("w-full gap-2 mb-4") as natura_container:
                 if MapSelectionMode.NATURA2000 in self._selection_modes:
-                    self._natura_select = (
-                        ui.select(
-                            options=self._load_natura_options(),
-                            label="Natura2000 site",
+                    with ui.row().classes("w-full items-end gap-2"):
+                        self._natura_select = (
+                            ui.select(
+                                options=self._load_natura_options(),
+                                label="Natura2000 site",
+                            )
+                            .props("outlined use-input input-debounce=300 clearable")
+                            .classes("flex-1 min-w-0")
                         )
-                        .props("outlined use-input input-debounce=300 clearable")
-                        .classes("w-full")
-                    )
+                        self._metadata_button = ui.button(
+                            icon="info", on_click=self._open_selected_natura_metadata
+                        ).props('flat round aria-label="Show site metadata"')
+                        self._metadata_button.tooltip(
+                            "Select a Natura2000 site to view its metadata"
+                        )
+                        self._metadata_button.disable()
                     self._natura_select.on_value_change(self._on_natura_selected)
 
             self._country_container = country_container
             self._natura_container = natura_container
+            self._build_natura_metadata_dialog()
             if self._mode_selector is not None:
                 self._set_mode_visibility()
             else:
@@ -225,6 +245,8 @@ class MapWidget:
     async def _on_natura_selected(self, event: Any) -> None:
         """Fetch and apply the selected Natura2000 site geometry."""
         identifier = event.value
+        if self._metadata_button is not None:
+            self._metadata_button.set_enabled(bool(identifier))
         if not identifier:
             return
         try:
@@ -234,6 +256,110 @@ class MapWidget:
             self._apply_feature(feature)
         except MapDataError as exc:
             ui.notify(str(exc), type="negative")
+
+    def _build_natura_metadata_dialog(self) -> None:
+        """Create the shared dialog used to display one site's metadata."""
+        with (
+            ui.dialog() as dialog,
+            ui.card().classes(
+                "bmd-card w-full max-w-2xl max-h-[85vh] overflow-hidden p-5 sm:p-6"
+            ),
+        ):
+            with ui.row().classes("w-full items-center justify-between mb-2"):
+                self._metadata_title = ui.label("Natura2000 site metadata").classes(
+                    "text-xl font-semibold"
+                )
+                ui.button(icon="close", on_click=dialog.close).props(
+                    'flat round dense aria-label="Close metadata"'
+                )
+            self._metadata_content = ui.column().classes(
+                "w-full gap-3 overflow-y-auto pr-1"
+            )
+        self._metadata_dialog = dialog
+
+    def _show_metadata_loading(self) -> None:
+        """Render animated placeholders while the site metadata is loading."""
+        if self._metadata_content is None:
+            return
+        self._metadata_content.clear()
+        with self._metadata_content:
+            for index in range(6):
+                with ui.column().classes("w-full gap-2"):
+                    ui.skeleton(
+                        type="text", width="8rem", height="0.9rem", animation="wave"
+                    )
+                    ui.skeleton(
+                        type="text",
+                        width="100%" if index == 5 else "70%",
+                        height="1.1rem" if index == 5 else "0.9rem",
+                        animation="wave",
+                    )
+
+    async def _open_selected_natura_metadata(self) -> None:
+        """Open the metadata dialog for the currently selected site."""
+        if self._natura_select is None:
+            return
+        site_code = self._natura_select.value
+        if not isinstance(site_code, str) or not site_code.strip():
+            return
+        self._metadata_site_code = site_code.strip()
+        self._metadata_request_id += 1
+        request_id = self._metadata_request_id
+        if self._metadata_title is not None:
+            self._metadata_title.text = f"Natura2000 site {self._metadata_site_code}"
+        self._show_metadata_loading()
+        if self._metadata_dialog is not None:
+            self._metadata_dialog.open()
+        await self._load_natura_metadata(self._metadata_site_code, request_id)
+
+    async def _retry_natura_metadata(self) -> None:
+        """Retry loading metadata for the site currently shown in the dialog."""
+        if self._metadata_site_code is None:
+            return
+        self._metadata_request_id += 1
+        request_id = self._metadata_request_id
+        self._show_metadata_loading()
+        await self._load_natura_metadata(self._metadata_site_code, request_id)
+
+    async def _load_natura_metadata(self, site_code: str, request_id: int) -> None:
+        """Fetch metadata and replace the loading or error view with its result."""
+        try:
+            metadata = await fetch_natura_site_metadata(site_code)
+        except NaturaMetadataError:
+            if request_id != self._metadata_request_id:
+                return
+            self._show_metadata_error()
+            return
+
+        if request_id != self._metadata_request_id:
+            return
+        self._show_metadata_values(metadata)
+
+    def _show_metadata_error(self) -> None:
+        """Render a retry action when metadata retrieval fails."""
+        if self._metadata_content is None:
+            return
+        self._metadata_content.clear()
+        with self._metadata_content:
+            ui.label("Site metadata could not be loaded. Please try again.").classes(
+                "text-sm text-red-700"
+            )
+            ui.button("Retry", on_click=self._retry_natura_metadata).classes(
+                "bmd-btn bmd-btn-primary self-end"
+            ).props("icon=refresh")
+
+    def _show_metadata_values(self, metadata: dict[str, Any]) -> None:
+        """Render site metadata as accessible label/value rows."""
+        if self._metadata_content is None:
+            return
+        self._metadata_content.clear()
+        with self._metadata_content:
+            for label, value in natura_metadata_rows(metadata):
+                with ui.column().classes("w-full gap-0.5"):
+                    ui.label(label).classes("text-xs font-semibold text-gray-500")
+                    ui.label(value).classes(
+                        "text-sm text-gray-900 whitespace-pre-wrap break-words"
+                    ).style("overflow-wrap: anywhere;")
 
     def _apply_feature(self, feature: MapFeature) -> None:
         self._geometry = MapGeometry(type=feature.geometry_type, wkt=feature.wkt)
@@ -249,6 +375,8 @@ class MapWidget:
             self._country_select.set_value(None)
         if self._natura_select is not None:
             self._natura_select.set_value(None)
+        if self._metadata_button is not None:
+            self._metadata_button.disable()
 
     def _clear_drawing(self) -> None:
         """Clear the selected feature or drawn shape."""

@@ -164,7 +164,7 @@ class BasePage(ABC):
         if self.species_select is None:
             return
         list_ids = species_lists_for_directives(directives, self.BAT.species_lists)
-        options = load_species_options(list_ids)
+        options = load_species_options(list_ids, self.BAT.category.slug)
         self._species_by_col_id = {option.col_id: option for option in options}
         self.species_select.options = {
             option.col_id: option.html_label for option in options
