@@ -116,9 +116,12 @@ it submit-ready.
 
 ### Configuring the shared species selector
 
-The updated species assets in `static/` use records with `colId` and
-`scientificName`. Configure the lists in `bats/registry.py`; do not load JSON
-files directly from an individual BAT page:
+The updated species assets in `static/` use records with `colId`,
+`scientificName`, and `realm`. The `realm` value must match the BAT category
+slug (`terrestrial`, `freshwater`, or `marine`); the shared selector excludes
+records from other realms before merging species across selected directives.
+Configure the lists in `bats/registry.py`; do not load JSON files directly
+from an individual BAT page:
 
 ```py
 from species import ALL_SELECTABLE_SPECIES_LISTS
@@ -174,7 +177,8 @@ Species assets must contain records in this shape:
 ```json
 {
   "colId": "9606",
-  "scientificName": "Homo sapiens"
+  "scientificName": "Homo sapiens",
+  "realm": "terrestrial"
 }
 ```
 
