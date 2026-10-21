@@ -46,6 +46,9 @@ spec:
               artifacts:
                 - name: sdm-results
                   from: "{{steps.run-sdm.outputs.artifacts.sdm-results}}"
+              parameters:
+                - name: climate_period
+                  value: "{{workflow.parameters.climate_period}}"
           
     - name: download-occurences
       inputs:
@@ -132,10 +135,14 @@ spec:
         artifacts:
           - name: sdm-results
             path: /freshwater_sdm_IAS/outputs/
+        parameters:
+          - name: climate_period
       container:
         image: ghcr.io/gabrieldansereau/freshwater-sdm-dashboard:latest
         command: ["quarto", "render", "fw_sdm_quarto_dashboard.qmd", "--output-dir", "/freshwater_sdm_IAS/outputs"]
         workingDir: /freshwater_sdm_IAS/dashboard
+        args:
+          - "--execute-param=climate_period:{{inputs.parameters.climate_period}}"
       outputs:
         artifacts:
           - name: results
