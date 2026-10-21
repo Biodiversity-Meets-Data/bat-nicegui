@@ -52,7 +52,7 @@ spec:
         parameters:
           - name: target_species
       container:
-        image: ghcr.io/lenipe/freshwater-sdm:latest
+        image: ghcr.io/gabrieldansereau/freshwater-sdm:latest
         workingDir: /
         env:
           - name: GBIF_USER
@@ -101,7 +101,7 @@ spec:
           - name: climate_period
           - name: aoi_wkt
       container:
-        image: ghcr.io/lenipe/freshwater-sdm:latest
+        image: ghcr.io/gabrieldansereau/freshwater-sdm:latest
         command: ["Rscript", "freshwater_sdm_IAS/scripts/02_sdm.R"]
         workingDir: /
         args:
@@ -133,7 +133,7 @@ spec:
           - name: sdm-results
             path: /freshwater_sdm_IAS/outputs/
       container:
-        image: ghcr.io/lenipe/render-dashboard:latest
+        image: ghcr.io/gabrieldansereau/freshwater-sdm-dashboard:latest
         command: ["quarto", "render", "fw_sdm_quarto_dashboard.qmd", "--output-dir", "/freshwater_sdm_IAS/outputs"]
         workingDir: /freshwater_sdm_IAS/dashboard
       outputs:
