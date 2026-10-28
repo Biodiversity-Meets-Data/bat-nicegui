@@ -40,6 +40,9 @@
                 },
                 {
                     "@id": "https://orcid.org/0000-0002-0577-6217"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0002-2212-3584"
                 }
             ],
             "license": {
@@ -69,6 +72,11 @@
             "@id": "https://orcid.org/0000-0002-0577-6217",
             "@type": "Person",
             "name": "Namsrai Jargal"
+        },
+        {
+            "@id": "https://orcid.org/0000-0002-2212-3584",
+            "@type": "Person",
+            "name": "Gabriel Dansereau"
         },
         {
             "@id": "workflow.yaml",
