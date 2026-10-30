@@ -101,3 +101,23 @@ def test_no_webhook_url_when_template_is_empty(
     workflow = submitted(OwnWorkflowParameters(parameters={}))
 
     assert "webhook_url" not in build_workflow_api_form_data(workflow)
+
+
+def test_camera_workflow_can_submit_without_geometry() -> None:
+    workflow = WorkflowSubmit(
+        **WorkflowPayload(
+            name="camera",
+            description="",
+            bat_name="terrestrial_camtrap",
+            species_name=None,
+            species_col_id=None,
+            ecosystem_type=EcosystemCategory.TERRESTRIAL,
+            geometry=None,
+            bat_specific=OwnWorkflowParameters(
+                parameters={"url": "https://example.test/data.zip"}
+            ),
+        ).to_api_dict()
+    )
+
+    assert workflow.geometry_wkt == ""
+    assert workflow.parameters["url"] == "https://example.test/data.zip"

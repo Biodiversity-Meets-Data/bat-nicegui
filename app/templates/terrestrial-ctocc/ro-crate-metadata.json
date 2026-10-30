@@ -1,0 +1,65 @@
+{
+  "@context": ["https://w3id.org/ro/crate/1.1/context"],
+  "@graph": [
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "about": {"@id": "./"},
+      "conformsTo": [
+        {"@id": "https://w3id.org/ro/crate/1.1"},
+        {"@id": "https://w3id.org/workflowhub/workflow-ro-crate/1.0"}
+      ]
+    },
+    {
+      "@id": "./",
+      "@type": "Dataset",
+      "name": "Camera-trap occupancy trend workflow",
+      "description": "An Argo workflow that downloads a Camtrap DP archive, fits a multi-season occupancy trend model for one species, and renders a Quarto dashboard.",
+      "conformsTo": [{"@id": "https://w3id.org/workflowhub/workflow-ro-crate/1.0"}],
+      "hasPart": [{"@id": "workflow.yaml"}],
+      "keywords": ["Occupancy", "Camera traps", "Camtrap DP", "Workflow"],
+      "license": {"@id": "https://spdx.org/licenses/CC-BY-SA-4.0"},
+      "mainEntity": {"@id": "workflow.yaml"}
+    },
+    {
+      "@id": "workflow.yaml",
+      "@type": ["File", "ComputationalWorkflow", "SoftwareSourceCode"],
+      "name": "workflow.yaml",
+      "description": "Argo workflow for camera-trap occupancy trend analysis.",
+      "encodingFormat": "text/yaml",
+      "programmingLanguage": {"@id": "https://argoproj.github.io/workflows"},
+      "input": [{"@id": "#url"}, {"@id": "#target_species"}],
+      "output": [{"@id": "#dashboard-results"}]
+    },
+    {
+      "@id": "#url",
+      "@type": "FormalParameter",
+      "additionalType": "Text",
+      "name": "url",
+      "description": "Direct URL of the Camtrap DP ZIP archive.",
+      "valueRequired": "true"
+    },
+    {
+      "@id": "#target_species",
+      "@type": "FormalParameter",
+      "additionalType": "Text",
+      "name": "target_species",
+      "description": "Scientific name of the target species.",
+      "valueRequired": "true"
+    },
+    {
+      "@id": "#dashboard-results",
+      "@type": "FormalParameter",
+      "additionalType": "File",
+      "name": "dashboard-results",
+      "description": "Occupancy trend outputs and rendered dashboard.",
+      "valueRequired": "false"
+    },
+    {
+      "@id": "https://argoproj.github.io/workflows",
+      "@type": "ComputerLanguage",
+      "name": "Argo",
+      "url": "https://argoproj.github.io/workflows"
+    }
+  ]
+}

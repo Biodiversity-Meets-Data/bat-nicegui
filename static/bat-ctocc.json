@@ -1,0 +1,14 @@
+[
+  {
+    "dataset": "MICA - Muskrat and coypu camera trap observations in Belgium, the Netherlands and Germany",
+    "datasetKey": "8a5cbaec-2839-4471-9e1d-98df301095dd",
+    "species": ["Anas platyrhynchos", "Anser anser", "Ardea cinerea", "Fulica atra", "Gallinula chloropus", "Ondatra zibethicus", "Phalacrocorax carbo", "Rattus norvegicus"],
+    "url": "https://ipt.inbo.be/archive.do?r=mica-agouti"
+  },
+  {
+    "dataset": "GMU8_LEUVEN - Camera trap observations in natural habitats south of Leuven (Belgium)",
+    "datasetKey": "c9cbc586-660e-4d89-ba14-0000c5770de1",
+    "species": ["Anas platyrhynchos", "Apodemus sylvaticus", "Buteo buteo", "Capreolus capreolus", "Castor fiber", "Columba palumbus", "Corvus corone", "Cyanistes caeruleus", "Dama dama", "Erinaceus europaeus", "Erithacus rubecula", "Felis catus", "Garrulus glandarius", "Lepus europaeus", "Martes foina", "Parus major", "Phasianus colchicus", "Rattus norvegicus", "Sciurus vulgaris", "Sus scrofa", "Turdus merula", "Vulpes vulpes"],
+    "url": "https://ipt.inbo.be/archive.do?r=gmu8_leuven"
+  }
+]

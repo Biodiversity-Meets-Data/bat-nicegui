@@ -62,10 +62,12 @@ class BasePage(ABC):
     BAT: ClassVar[Bat]
 
     def __init__(self) -> None:
-        self.map = MapWidget(
-            on_change=self.update_geometry,
-            selection_modes=self.BAT.map_selection_modes,
-        )
+        self.map: MapWidget | None = None
+        if self.BAT.map_selection_modes:
+            self.map = MapWidget(
+                on_change=self.update_geometry,
+                selection_modes=self.BAT.map_selection_modes,
+            )
         self.build_page()
 
     # ------------------------- Page Construction --------------------------- #
@@ -97,8 +99,9 @@ class BasePage(ABC):
                         "w-full bmd-btn bmd-btn-primary text-lg py-3 mt-6"
                     ).props("icon=send")
 
-                # Add "Analysis Area" selection widget.
-                self.map.build_widget()
+                # Add the analysis-area selector for spatial BATs.
+                if self.map is not None:
+                    self.map.build_widget()
 
     def add_shared_parameters(self) -> None:
         """Add parameters (user-input widgets) common to all BAT pages."""
@@ -113,6 +116,9 @@ class BasePage(ABC):
         self.desc_input = optional_textarea_input(
             label="Description", placeholder="Describe your analysis..."
         )
+
+        if self.map is None:
+            return
 
         # Workflow analysis extent. The label is updated whenever the user
         # draws or clears an area on the map.
@@ -226,7 +232,7 @@ class BasePage(ABC):
 
     async def copy_geometry_wkt(self) -> None:
         """Copy the selected analysis-area WKT to the browser clipboard."""
-        geometry = self.map.geometry
+        geometry = self.map.geometry if self.map is not None else None
         if geometry is None:
             ui.notify("Select an analysis area first", type="warning")
             return
@@ -265,6 +271,10 @@ class BasePage(ABC):
         """Whether the user must select a species for this BAT."""
         return bool(self.BAT.species_lists)
 
+    def requires_geometry(self) -> bool:
+        """Whether this BAT requires an analysis-area selection."""
+        return bool(self.BAT.map_selection_modes)
+
     async def on_submit(self) -> None:
         """Validate the user inputs, then submit the workflow."""
         try:
@@ -274,10 +284,11 @@ class BasePage(ABC):
                 bat_name=self.BAT.name,
                 ecosystem_type=self.BAT.category,
                 bat_specific_parameters=self.get_specific_parameters(),
-                geometry=self.map.geometry,
+                geometry=self.map.geometry if self.map is not None else None,
                 species_name=self.species_name(),
                 species_col_id=self.species_col_id(),
                 require_species=self.requires_species(),
+                require_geometry=self.requires_geometry(),
             )
         except WorkflowValidationError as exc:
             ui.notify(str(exc), type="warning")
@@ -311,5 +322,6 @@ class BasePage(ABC):
             # Wait for the browser's websocket connection before running
             # client-side JS code to render the map widget.
             await client.connected()
-            page.map.initialize_map_widget()
+            if page.map is not None:
+                page.map.initialize_map_widget()
             return None

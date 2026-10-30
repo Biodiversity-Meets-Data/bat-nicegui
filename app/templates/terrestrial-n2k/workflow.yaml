@@ -1,0 +1,150 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: terrestrial-n2k-
+spec:
+  arguments:
+    parameters:
+      - name: aoi_wkt
+        description: Natura 2000 analysis area as a WGS84 WKT polygon.
+        value: "POLYGON ((13.19458 48.862908, 13.625793 48.862908, 13.625793 49.122422, 13.19458 49.122422, 13.19458 48.862908))"
+      - name: min_year
+        description: First observation year to include.
+        value: "2020"
+      - name: max_year
+        description: Last observation year to include.
+        value: "2026"
+  artifactGC:
+    forceFinalizerRemoval: true
+  podGC:
+    strategy: OnWorkflowSuccess
+  entrypoint: main-workflow
+  templates:
+    - name: main-workflow
+      steps:
+        - - name: download-occurrences
+            template: download-occurrences
+            arguments:
+              parameters:
+                - name: aoi_wkt
+                  value: "{{workflow.parameters.aoi_wkt}}"
+                - name: min_year
+                  value: "{{workflow.parameters.min_year}}"
+                - name: max_year
+                  value: "{{workflow.parameters.max_year}}"
+        - - name: summarize-n2k
+            template: summarize-n2k
+            arguments:
+              artifacts:
+                - name: occurrence-data
+                  from: "{{steps.download-occurrences.outputs.artifacts.occurrence-data}}"
+              parameters:
+                - name: aoi_wkt
+                  value: "{{workflow.parameters.aoi_wkt}}"
+                - name: min_year
+                  value: "{{workflow.parameters.min_year}}"
+                - name: max_year
+                  value: "{{workflow.parameters.max_year}}"
+        - - name: render-dashboard
+            template: render-dashboard
+            arguments:
+              artifacts:
+                - name: n2k-results
+                  from: "{{steps.summarize-n2k.outputs.artifacts.n2k-results}}"
+
+    - name: download-occurrences
+      inputs:
+        parameters:
+          - name: aoi_wkt
+          - name: min_year
+          - name: max_year
+      container:
+        image: "taimurhk/bat-n2k-s3:latest"
+        command: ["Rscript", "/app/scripts/01_download.R"]
+        args:
+          - "--aoi_wkt={{inputs.parameters.aoi_wkt}}"
+          - "--min_year={{inputs.parameters.min_year}}"
+          - "--max_year={{inputs.parameters.max_year}}"
+        workingDir: /app/scripts
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: bmd-dataspace-s3
+                key: accessKey
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: bmd-dataspace-s3
+                key: secretKey
+          - name: AWS_DEFAULT_REGION
+            value: eu-north-1
+          - name: AWS_BUCKET_ADDRESS
+            value: s3://bii-bmd-workflow-engine-production
+          - name: GBIF_SNAPSHOT_VERSION
+            value: ""
+      outputs:
+        artifacts:
+          - name: occurrence-data
+            path: /app/scripts/outputs/occurrences.csv
+            archive:
+              none: {}
+            artifactGC:
+              strategy: OnWorkflowCompletion
+
+    - name: summarize-n2k
+      inputs:
+        artifacts:
+          - name: occurrence-data
+            path: /app/scripts/outputs/occurrences.csv
+        parameters:
+          - name: aoi_wkt
+          - name: min_year
+          - name: max_year
+      container:
+        image: "taimurhk/bat-n2k-s3:latest"
+        command: ["Rscript", "/app/scripts/02_summary.R"]
+        args:
+          - "--aoi_wkt={{inputs.parameters.aoi_wkt}}"
+          - "--min_year={{inputs.parameters.min_year}}"
+          - "--max_year={{inputs.parameters.max_year}}"
+        workingDir: /app/scripts
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: bmd-dataspace-s3
+                key: accessKey
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: bmd-dataspace-s3
+                key: secretKey
+          - name: AWS_DEFAULT_REGION
+            value: eu-north-1
+          - name: AWS_BUCKET_ADDRESS
+            value: s3://bii-bmd-workflow-engine-production
+      outputs:
+        artifacts:
+          - name: n2k-results
+            path: /app/scripts/outputs/
+            archive:
+              none: {}
+            artifactGC:
+              strategy: OnWorkflowCompletion
+
+    - name: render-dashboard
+      inputs:
+        artifacts:
+          - name: n2k-results
+            path: /app/scripts/outputs/
+      container:
+        image: "taimurhk/bat-n2k-s3:latest"
+        command: ["Rscript", "/app/scripts/03_render_dashboard.R"]
+        workingDir: /app/scripts
+      outputs:
+        artifacts:
+          - name: dashboard-results
+            path: /app/scripts/outputs/
+            archive:
+              none: {}

@@ -1,0 +1,77 @@
+{
+  "@context": ["https://w3id.org/ro/crate/1.1/context"],
+  "@graph": [
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "about": {"@id": "./"},
+      "conformsTo": [
+        {"@id": "https://w3id.org/ro/crate/1.1"},
+        {"@id": "https://w3id.org/workflowhub/workflow-ro-crate/1.0"}
+      ]
+    },
+    {
+      "@id": "./",
+      "@type": "Dataset",
+      "name": "Natura 2000 species and habitat mapping workflow",
+      "description": "An Argo workflow that downloads GBIF occurrences for a Natura 2000 area, maps EUNIS habitats and Annex I correspondences, and renders a Quarto dashboard.",
+      "conformsTo": [{"@id": "https://w3id.org/workflowhub/workflow-ro-crate/1.0"}],
+      "hasPart": [{"@id": "workflow.yaml"}],
+      "keywords": ["Natura 2000", "EUNIS", "GBIF", "Habitat mapping", "Workflow"],
+      "license": {"@id": "https://spdx.org/licenses/CC-BY-SA-4.0"},
+      "mainEntity": {"@id": "workflow.yaml"}
+    },
+    {
+      "@id": "workflow.yaml",
+      "@type": ["File", "ComputationalWorkflow", "SoftwareSourceCode"],
+      "name": "workflow.yaml",
+      "description": "Argo workflow for Natura 2000 occurrence and habitat mapping.",
+      "encodingFormat": "text/yaml",
+      "programmingLanguage": {"@id": "https://argoproj.github.io/workflows"},
+      "input": [
+        {"@id": "#aoi_wkt"},
+        {"@id": "#min_year"},
+        {"@id": "#max_year"}
+      ],
+      "output": [{"@id": "#dashboard-results"}]
+    },
+    {
+      "@id": "#aoi_wkt",
+      "@type": "FormalParameter",
+      "additionalType": "Text",
+      "name": "aoi_wkt",
+      "description": "Selected Natura 2000 area as a WGS84 WKT polygon.",
+      "valueRequired": "true"
+    },
+    {
+      "@id": "#dashboard-results",
+      "@type": "FormalParameter",
+      "additionalType": "File",
+      "name": "dashboard-results",
+      "description": "Occurrence, habitat, Annex I, and rendered dashboard outputs.",
+      "valueRequired": "false"
+    },
+    {
+      "@id": "#min_year",
+      "@type": "FormalParameter",
+      "additionalType": "Integer",
+      "name": "min_year",
+      "description": "First observation year to include.",
+      "valueRequired": "true"
+    },
+    {
+      "@id": "#max_year",
+      "@type": "FormalParameter",
+      "additionalType": "Integer",
+      "name": "max_year",
+      "description": "Last observation year to include.",
+      "valueRequired": "true"
+    },
+    {
+      "@id": "https://argoproj.github.io/workflows",
+      "@type": "ComputerLanguage",
+      "name": "Argo",
+      "url": "https://argoproj.github.io/workflows"
+    }
+  ]
+}

@@ -98,15 +98,17 @@ BAT_REGISTRY: tuple[Bat, ...] = (
         rocrate_path="terrestrial-sdm/ro-crate-metadata.json",
         species_lists=ALL_SELECTABLE_SPECIES_LISTS,
     ),
-    Bat(
-        name="terrestrial_captain",
-        category=EcosystemCategory.TERRESTRIAL,
-        label="CAPTAIN",
-        description="Prioritize conservation areas",
-        icon="hub",
-        workflow_yaml_path="terrestrial-captain/workflow.yaml",
-        rocrate_path="terrestrial-captain/ro-crate-metadata.json",
-    ),
+    # CAPTAIN is temporarily hidden from the application registry.
+    # Its page implementation and workflow templates remain available here.
+    # Bat(
+    #     name="terrestrial_captain",
+    #     category=EcosystemCategory.TERRESTRIAL,
+    #     label="CAPTAIN",
+    #     description="Prioritize conservation areas",
+    #     icon="hub",
+    #     workflow_yaml_path="terrestrial-captain/workflow.yaml",
+    #     rocrate_path="terrestrial-captain/ro-crate-metadata.json",
+    # ),
     Bat(
         name="freshwater_sdm",
         category=EcosystemCategory.FRESHWATER,
@@ -122,6 +124,36 @@ BAT_REGISTRY: tuple[Bat, ...] = (
             SpeciesList.HABITATS_CHARACTERISTIC_ANNEX_I,
             SpeciesList.IAS_UNION_CONCERN,
         ),
+    ),
+    Bat(
+        name="terrestrial_camtrap",
+        category=EcosystemCategory.TERRESTRIAL,
+        label="Camera Trap Summaries",
+        description="Summarize camera-trap coverage, species, and activity",
+        icon="photo_camera",
+        workflow_yaml_path="terrestrial-camtrap/workflow.yaml",
+        rocrate_path="terrestrial-camtrap/ro-crate-metadata.json",
+        map_selection_modes=frozenset(),
+    ),
+    Bat(
+        name="terrestrial_ctocc",
+        category=EcosystemCategory.TERRESTRIAL,
+        label="Camera-Trap Occupancy Trends",
+        description="Estimate annual site-use trends from camera-trap monitoring",
+        icon="trending_up",
+        workflow_yaml_path="terrestrial-ctocc/workflow.yaml",
+        rocrate_path="terrestrial-ctocc/ro-crate-metadata.json",
+        map_selection_modes=frozenset(),
+    ),
+    Bat(
+        name="terrestrial_n2k",
+        category=EcosystemCategory.TERRESTRIAL,
+        label="Natura 2000 Habitat Mapping",
+        description="Map habitats and species records within Natura 2000 sites",
+        icon="park",
+        workflow_yaml_path="terrestrial-n2k/workflow.yaml",
+        rocrate_path="terrestrial-n2k/ro-crate-metadata.json",
+        map_selection_modes=frozenset({MapSelectionMode.NATURA2000}),
     ),
 )
 

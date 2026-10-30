@@ -50,14 +50,15 @@ class WorkflowPayload:
     species_name: str | None
     species_col_id: str | None
     ecosystem_type: EcosystemCategory
-    geometry: MapGeometry
+    geometry: MapGeometry | None
     bat_specific: BatSpecificParameters
 
     def to_api_dict(self) -> dict[str, Any]:
         """Serialize to the JSON shape expected by /api/workflows/submit."""
         parameters = dict(self.bat_specific.to_workflow_parameters())
-        parameters["aoi_wkt"] = self.geometry.wkt
-        if self.species_col_id:
+        if self.geometry is not None:
+            parameters["aoi_wkt"] = self.geometry.wkt
+        if self.species_col_id and "target_species" not in parameters:
             parameters["target_species"] = self.species_col_id
         return {
             "name": self.name,
@@ -66,8 +67,8 @@ class WorkflowPayload:
             "species_name": self.species_name or "",
             "species_col_id": self.species_col_id or "",
             "ecosystem_type": self.ecosystem_type.slug,  # enum -> "terrestrial"
-            "geometry_type": self.geometry.type,
-            "geometry_wkt": self.geometry.wkt,
+            "geometry_type": self.geometry.type if self.geometry else "",
+            "geometry_wkt": self.geometry.wkt if self.geometry else "",
             "parameters": parameters,
             "parameter_metadata": self.bat_specific.to_parameter_metadata(),
         }
@@ -83,6 +84,7 @@ def build_workflow_payload(
     species_name: str | None = None,
     species_col_id: str | None = None,
     require_species: bool = True,
+    require_geometry: bool = True,
 ) -> WorkflowPayload:
     """Validate the common workflow inputs and return a new WorkflowPayload.
 
@@ -93,7 +95,7 @@ def build_workflow_payload(
     # Validate inputs in the order they appear on the form.
     if not name:
         raise WorkflowValidationError("Please enter a workflow name")
-    if geometry is None:
+    if require_geometry and geometry is None:
         raise WorkflowValidationError("Please draw an area on the map")
     if require_species and (not species_name or not species_col_id):
         raise WorkflowValidationError("Please select a species")
