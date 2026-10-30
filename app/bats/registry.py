@@ -98,15 +98,17 @@ BAT_REGISTRY: tuple[Bat, ...] = (
         rocrate_path="terrestrial-sdm/ro-crate-metadata.json",
         species_lists=ALL_SELECTABLE_SPECIES_LISTS,
     ),
-    Bat(
-        name="terrestrial_captain",
-        category=EcosystemCategory.TERRESTRIAL,
-        label="CAPTAIN",
-        description="Prioritize conservation areas",
-        icon="hub",
-        workflow_yaml_path="terrestrial-captain/workflow.yaml",
-        rocrate_path="terrestrial-captain/ro-crate-metadata.json",
-    ),
+    # CAPTAIN is temporarily hidden from the application registry.
+    # Its page implementation and workflow templates remain available here.
+    # Bat(
+    #     name="terrestrial_captain",
+    #     category=EcosystemCategory.TERRESTRIAL,
+    #     label="CAPTAIN",
+    #     description="Prioritize conservation areas",
+    #     icon="hub",
+    #     workflow_yaml_path="terrestrial-captain/workflow.yaml",
+    #     rocrate_path="terrestrial-captain/ro-crate-metadata.json",
+    # ),
     Bat(
         name="freshwater_sdm",
         category=EcosystemCategory.FRESHWATER,
