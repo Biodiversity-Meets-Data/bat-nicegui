@@ -123,6 +123,36 @@ BAT_REGISTRY: tuple[Bat, ...] = (
             SpeciesList.IAS_UNION_CONCERN,
         ),
     ),
+    Bat(
+        name="terrestrial_camtrap",
+        category=EcosystemCategory.TERRESTRIAL,
+        label="Camera Trap Summaries",
+        description="Summarize camera-trap coverage, species, and activity",
+        icon="photo_camera",
+        workflow_yaml_path="terrestrial-camtrap/workflow.yaml",
+        rocrate_path="terrestrial-camtrap/ro-crate-metadata.json",
+        map_selection_modes=frozenset(),
+    ),
+    Bat(
+        name="terrestrial_ctocc",
+        category=EcosystemCategory.TERRESTRIAL,
+        label="Camera-Trap Occupancy Trends",
+        description="Estimate annual site-use trends from camera-trap monitoring",
+        icon="trending_up",
+        workflow_yaml_path="terrestrial-ctocc/workflow.yaml",
+        rocrate_path="terrestrial-ctocc/ro-crate-metadata.json",
+        map_selection_modes=frozenset(),
+    ),
+    Bat(
+        name="terrestrial_n2k",
+        category=EcosystemCategory.TERRESTRIAL,
+        label="Natura 2000 Habitat Mapping",
+        description="Map habitats and species records within Natura 2000 sites",
+        icon="park",
+        workflow_yaml_path="terrestrial-n2k/workflow.yaml",
+        rocrate_path="terrestrial-n2k/ro-crate-metadata.json",
+        map_selection_modes=frozenset({MapSelectionMode.NATURA2000}),
+    ),
 )
 
 

@@ -78,7 +78,7 @@ async def select_workflow_page() -> RedirectResponse | None:
                             "text-sm text-gray-500 p-4"
                         )
                     else:
-                        with ui.row().classes("w-full gap-4 flex-wrap p-2"):
+                        with ui.row().classes("bat-grid w-full p-2"):
                             for bat in bats:
                                 render_bat_card(bat)
 

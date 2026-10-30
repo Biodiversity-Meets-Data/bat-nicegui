@@ -1,0 +1,99 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: terrestrial-ctocc-
+spec:
+  arguments:
+    parameters:
+      - name: url
+        description: Direct URL of the Camtrap DP ZIP archive.
+        value: "https://ipt.inbo.be/archive.do?r=gmu8_leuven"
+      - name: target_species
+        description: Scientific species name to model.
+        value: "Sus scrofa"
+  artifactGC:
+    forceFinalizerRemoval: true
+  podGC:
+    strategy: OnWorkflowSuccess
+  entrypoint: main-workflow
+  templates:
+    - name: main-workflow
+      steps:
+        - - name: download-camtrap
+            template: download-camtrap
+            arguments:
+              parameters:
+                - name: url
+                  value: "{{workflow.parameters.url}}"
+        - - name: run-occupancy
+            template: run-occupancy
+            arguments:
+              artifacts:
+                - name: camtrap-input
+                  from: "{{steps.download-camtrap.outputs.artifacts.camtrap-input}}"
+              parameters:
+                - name: target_species
+                  value: "{{workflow.parameters.target_species}}"
+        - - name: render-dashboard
+            template: render-dashboard
+            arguments:
+              artifacts:
+                - name: ctocc-results
+                  from: "{{steps.run-occupancy.outputs.artifacts.ctocc-results}}"
+
+    - name: download-camtrap
+      inputs:
+        parameters:
+          - name: url
+      container:
+        image: "taimurhk/bat-ctocc-s3:latest"
+        command: ["Rscript", "/app/scripts/01_download.R"]
+        args:
+          - "--url={{inputs.parameters.url}}"
+        workingDir: /app/scripts
+      outputs:
+        artifacts:
+          - name: camtrap-input
+            path: /app/scripts/inputs/camtrap_dp/
+            archive:
+              none: {}
+            artifactGC:
+              strategy: OnWorkflowCompletion
+
+    - name: run-occupancy
+      inputs:
+        artifacts:
+          - name: camtrap-input
+            path: /app/scripts/inputs/camtrap_dp/
+        parameters:
+          - name: target_species
+      container:
+        image: "taimurhk/bat-ctocc-s3:latest"
+        command: ["Rscript", "/app/scripts/02_occupancy.R"]
+        args:
+          - "--target_species={{inputs.parameters.target_species}}"
+        workingDir: /app/scripts
+      outputs:
+        artifacts:
+          - name: ctocc-results
+            path: /app/scripts/outputs/
+            archive:
+              none: {}
+            artifactGC:
+              strategy: OnWorkflowCompletion
+
+    - name: render-dashboard
+      inputs:
+        artifacts:
+          - name: ctocc-results
+            path: /app/scripts/outputs/
+      container:
+        image: "taimurhk/bat-ctocc-s3:latest"
+        command: ["Rscript", "/app/scripts/03_render_dashboard.R"]
+        workingDir: /app/scripts
+      outputs:
+        artifacts:
+          - name: dashboard-results
+            path: /app/scripts/outputs/
+            archive:
+              none: {}

@@ -1,0 +1,57 @@
+[
+  {
+    "dataset": "Camera trap based small rodent monitoring: Data from Norwegian alpine tundra",
+    "datasetKey": "13101e81-bc62-4553-9fd9-c5c8eb3fb9ab",
+    "url": "https://ipt.nina.no/archive.do?r=rodent_2025"
+  },
+  {
+    "dataset": "MICA - Muskrat and coypu camera trap observations in Belgium, the Netherlands and Germany",
+    "datasetKey": "8a5cbaec-2839-4471-9e1d-98df301095dd",
+    "url": "https://ipt.inbo.be/archive.do?r=mica-agouti"
+  },
+  {
+    "dataset": "GMU8_LEUVEN - Camera trap observations in natural habitats south of Leuven (Belgium)",
+    "datasetKey": "c9cbc586-660e-4d89-ba14-0000c5770de1",
+    "url": "https://ipt.inbo.be/archive.do?r=gmu8_leuven"
+  },
+  {
+    "dataset": "Luxembourg national monitoring (valerian) 2020-2022",
+    "datasetKey": "273ee7a0-4b59-4350-b220-3282b533ecde",
+    "url": "https://ipt.mnhn.lu/ipt/archive.do?r=luxvalmoni20202022"
+  },
+  {
+    "dataset": "Luxembourg national monitoring (valerian) 2023-2025",
+    "datasetKey": "fc3f505a-05d8-4b3e-908c-8880fc9899f7",
+    "url": "https://ipt.mnhn.lu/ipt/archive.do?r=luxvalmoni20223025"
+  },
+  {
+    "dataset": "Luxembourg farmland bird survey 2020 - 2024",
+    "datasetKey": "1290a78f-098c-4336-84e4-74de27a658f1",
+    "url": "https://ipt.mnhn.lu/ipt/archive.do?r=farmlandbirdsurveylux2025"
+  },
+  {
+    "dataset": "NPHK1 - Systematic random camera trap observations in National Park Hoge Kempen (Belgium)",
+    "datasetKey": "50cebe49-559b-42e8-955d-1df120b03f89",
+    "url": "https://ipt.inbo.be/archive.do?r=nphk1"
+  },
+  {
+    "dataset": "MUNTJAC_ANTWERP - Camera trap observations of Chinese muntjac in forested areas near Antwerp (Belgium)",
+    "datasetKey": "a209cef2-cfad-460b-8ed4-0ccf211a8240",
+    "url": "https://ipt.inbo.be/archive.do?r=muntjac_antwerp"
+  },
+  {
+    "dataset": "Camera trap data recorded during pilot studies in the Amsterdamse Waterleidingduinen - pilot 1",
+    "datasetKey": "74196cd9-7ebc-4b20-bc27-3c2d22e31ed7",
+    "url": "https://ipt.nlbif.nl/archive.do?r=awd_pilot1"
+  },
+  {
+    "dataset": "Camera trap data recorded during pilot studies in the Amsterdamse Waterleidingduinen - pilot 2",
+    "datasetKey": "f9ba3c2e-0636-4f66-a4b5-b8c138046e9e",
+    "url": "https://ipt.nlbif.nl/archive.do?r=awd_pilot2"
+  },
+  {
+    "dataset": "Camera trap data recorded during pilot studies in the Amsterdamse Waterleidingduinen - pilot 3",
+    "datasetKey": "bc0acb9a-131f-4085-93ae-a46e08564ac5",
+    "url": "https://ipt.nlbif.nl/archive.do?r=awd_pilot3"
+  }
+]

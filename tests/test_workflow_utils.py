@@ -31,6 +31,9 @@ def zip_contents(bat_name: str) -> dict[str, str]:
         ("terrestrial_sdm", "bmd-workflow-"),
         ("terrestrial_captain", "terrestrial-captain-"),
         ("freshwater_sdm", "freshwater-sdm-"),
+        ("terrestrial_camtrap", "terrestrial-camtrap-"),
+        ("terrestrial_ctocc", "terrestrial-ctocc-"),
+        ("terrestrial_n2k", "terrestrial-n2k-"),
     ],
 )
 def test_build_rocrate_zip_uses_bat_templates(
@@ -92,6 +95,24 @@ def test_yaml_declares_captain_parameters() -> None:
     declared = declared_workflow_parameters("terrestrial_captain")
 
     assert {"aoi_wkt", "analysis_type", "species_set", "time_steps"} <= declared
+
+
+def test_yaml_declares_camera_summary_parameters() -> None:
+    declared = declared_workflow_parameters("terrestrial_camtrap")
+
+    assert {"url"} <= declared
+
+
+def test_yaml_declares_ctocc_parameters() -> None:
+    declared = declared_workflow_parameters("terrestrial_ctocc")
+
+    assert {"url", "target_species"} <= declared
+
+
+def test_yaml_declares_n2k_parameters() -> None:
+    declared = declared_workflow_parameters("terrestrial_n2k")
+
+    assert {"aoi_wkt", "min_year", "max_year"} <= declared
 
 
 def test_unknown_yaml_parameter_is_rejected() -> None:

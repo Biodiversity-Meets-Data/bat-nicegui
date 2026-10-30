@@ -443,8 +443,31 @@ def apply_bmd_theme(
             border: 1px solid rgba(32, 166, 131, 0.15);
             transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
             cursor: pointer;
-            width: 220px;
+            width: auto;
             height: 210px;
+        }
+
+        .bat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .bat-grid .bat-card {
+            min-width: 0;
+            width: auto;
+        }
+
+        @media (max-width: 900px) {
+            .bat-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 600px) {
+            .bat-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
         }
 
         .ecosystem-tab {
