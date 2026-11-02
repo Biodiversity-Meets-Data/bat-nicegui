@@ -46,9 +46,9 @@ from ui_widgets import (
 # Placeholder shown in the "Analysis Area" field until the user draws an area.
 NO_GEOMETRY_MSG = "WKT: None - Draw on map ->"
 SPECIES_DIRECTIVE_LABELS = {
-    "invasive_species": "Invasive Species Regulations",
-    "habitat": "Habitats",
-    "bird": "Bird",
+    "invasive_species": "Invasive Species Regulation",
+    "habitat": "Habitats Directive",
+    "bird": "Birds Directive",
 }
 
 
@@ -163,7 +163,7 @@ class BasePage(ABC):
             return
 
         with ui.column().classes("w-full gap-1 mt-4"):
-            required_label("Choose EU Directive")
+            required_label("Choose EU Legislation")
             with ui.row().classes("w-full gap-4"):
                 for directive in directives:
                     checkbox = (
