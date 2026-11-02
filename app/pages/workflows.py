@@ -104,6 +104,7 @@ class UserWorkflowsPage:
                 "font-semibold w-48 shrink-0 min-w-0 whitespace-normal break-words"
             )
             ecosystem = (wf.get("ecosystem_type") or "unknown").lower()
+<<<<<<< HEAD
             ecosystem_color = {
                 "terrestrial": "#2f6b45",
                 "freshwater": "#4c91bd",
@@ -113,6 +114,15 @@ class UserWorkflowsPage:
                 "w-28 justify-center ecosystem-chip"
             ).style(
                 f"background-color: {ecosystem_color} !important;"
+=======
+            ecosystem_class = {
+                "terrestrial": "ecosystem-chip--terrestrial",
+                "freshwater": "ecosystem-chip--freshwater",
+                "marine": "ecosystem-chip--marine",
+            }.get(ecosystem, "ecosystem-chip--unknown")
+            ui.chip(ecosystem.upper()).classes(
+                f"w-28 justify-center ecosystem-chip {ecosystem_class}"
+>>>>>>> 4669a9189b46bd4fd214cb001ce19e7b17469bed
             )
             status = str(wf.get("status") or "unknown").lower()
             color = (

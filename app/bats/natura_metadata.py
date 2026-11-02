@@ -7,7 +7,7 @@ from urllib.parse import quote
 
 import httpx
 
-SITE_METADATA_URL = "https://dataspace.bmdproject.eu/sites/{site_code}/metadata/BISE"
+SITE_METADATA_URL = "https://dataspace.bmdproject.eu/sites/{site_code}/metadata"
 
 SITE_METADATA_FIELDS: tuple[tuple[str, str], ...] = (
     ("siteName", "Site name"),
@@ -33,7 +33,7 @@ class NaturaMetadataError(RuntimeError):
 
 
 async def fetch_natura_site_metadata(site_code: str) -> dict[str, Any]:
-    """Fetch a site's BISE metadata JSON from the BMD Dataspace."""
+    """Fetch a site's metadata JSON from the BMD Dataspace."""
     normalized_site_code = site_code.strip()
     if not normalized_site_code:
         raise NaturaMetadataError("A Natura2000 site code is required")

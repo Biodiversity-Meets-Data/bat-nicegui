@@ -82,15 +82,13 @@ class WorkflowResultsPage:
                 icon="arrow_back", on_click=lambda: ui.navigate.to("/workflows")
             ).props("flat round")
             with ui.column().classes("gap-0"):
-                page_title("Analysis Results")
+                page_title("Workflow Results")
                 ui.label(f"{self.workflow['name']}").classes("text-sm text-gray-500")
             ui.button(
                 "Download Results",
                 icon="download",
                 on_click=lambda: ui.navigate.to(self.download_url),
-            ).props("flat").classes(
-                "ml-auto bg-white border border-gray-200 text-orange-500 font-medium"
-            )
+            ).props("unelevated").classes("ml-auto bmd-btn bmd-btn-primary")
 
     def add_workflow_details_card(self) -> None:
         """Build the generic workflow-details card."""

@@ -29,7 +29,7 @@ def add_header(header: PageHeader = PageHeader.BASE) -> None:
 
     Arguments:
     * header: type of header to create. In headers for the workflow page, the
-        "Workflows" button is displayed as being pressed, indicating that the
+        "My Workflows" button is displayed as being pressed, indicating that the
         Workflow page is the currently active page.
     """
     user_name = app.storage.user.get("user_name", "User")
@@ -46,7 +46,7 @@ def add_header(header: PageHeader = PageHeader.BASE) -> None:
                 )
 
         with ui.row().classes("gap-3 items-center"):
-            ui.link("Workflows", "/workflows").classes(
+            ui.link("My Workflows", "/workflows").classes(
                 "nav-link" + (" active" if header is PageHeader.WORKFLOW_PAGE else "")
             )
             ui.button(
@@ -115,8 +115,8 @@ def add_feedback_widget() -> None:
         feedback_open = False
         with ui.card().classes("feedback-card feedback-popup p-5 gap-3") as popup:
             ui.label("Send feedback").classes("text-lg font-semibold")
-            ui.label(
-                "Tell us what worked well or what we can improve on this page."
+            ui.markdown(
+                "Tell us what worked well or what we can improve on **this page**."
             ).classes("text-sm text-gray-500")
             feedback_input = (
                 ui.textarea(
