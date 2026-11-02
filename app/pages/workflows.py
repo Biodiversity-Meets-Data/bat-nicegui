@@ -109,14 +109,21 @@ class UserWorkflowsPage:
                 "freshwater": "#4c91bd",
                 "marine": "#1746b8",
             }.get(ecosystem, "#6b7280")
-            ui.label(ecosystem.upper()).classes(
-                "w-28 justify-center ecosystem-chip"
-            ).style(
-                f"background-color: {ecosystem_color} !important;"
-            )
+            ecosystem_icon = {
+                "terrestrial": "forest",
+                "freshwater": "water_drop",
+                "marine": "waves",
+            }.get(ecosystem, "help_outline")
+            with ui.row().classes("w-28 shrink-0 items-center justify-center gap-1"):
+                ui.icon(ecosystem_icon).classes("text-base").style(
+                    f"color: {ecosystem_color};"
+                )
+                ui.label(ecosystem.upper()).classes(
+                    "text-sm font-semibold"
+                ).style(f"color: {ecosystem_color};")
             status = str(wf.get("status") or "unknown").lower()
             color = (
-                "teal"
+                "green"
                 if status == "completed"
                 else (
                     "blue"

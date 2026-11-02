@@ -494,15 +494,6 @@ def apply_bmd_theme(
             box-shadow: 0 4px 14px rgba(26, 58, 42, 0.25);
         }
 
-        .ecosystem-chip {
-            display: inline-flex;
-            align-items: center;
-            color: white !important;
-            font-weight: 600;
-            border-radius: 6px !important;
-            padding: 4px 12px;
-        }
-
         /* Clamp the description to 2 lines so a long one can't grow the card. */
         .bat-card-desc {
             display: -webkit-box;
