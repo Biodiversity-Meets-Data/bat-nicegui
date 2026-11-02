@@ -115,8 +115,8 @@ def add_feedback_widget() -> None:
         feedback_open = False
         with ui.card().classes("feedback-card feedback-popup p-5 gap-3") as popup:
             ui.label("Send feedback").classes("text-lg font-semibold")
-            ui.label(
-                "Tell us what worked well or what we can improve on this page."
+            ui.markdown(
+                "Tell us what worked well or what we can improve on **this page**."
             ).classes("text-sm text-gray-500")
             feedback_input = (
                 ui.textarea(
