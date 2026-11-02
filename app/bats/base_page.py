@@ -46,9 +46,9 @@ from ui_widgets import (
 # Placeholder shown in the "Analysis Area" field until the user draws an area.
 NO_GEOMETRY_MSG = "WKT: None - Draw on map ->"
 SPECIES_DIRECTIVE_LABELS = {
-    "invasive_species": "Invasive Species Regulations",
-    "habitat": "Habitats",
-    "bird": "Bird",
+    "invasive_species": "Invasive Species Regulation",
+    "habitat": "Habitats Directive",
+    "bird": "Birds Directive",
 }
 
 
@@ -111,7 +111,7 @@ class BasePage(ABC):
 
         # Workflow name and description inputs.
         self.name_input = required_text_input(
-            label="Workflow Name", placeholder="e.g. Alpine Species Survey"
+            label="Workflow Name", placeholder="Name your workflow..."
         )
         self.desc_input = optional_textarea_input(
             label="Description", placeholder="Describe your analysis..."
@@ -123,7 +123,7 @@ class BasePage(ABC):
         # Workflow analysis extent. The label is updated whenever the user
         # draws or clears an area on the map.
         with ui.column().classes("w-full gap-1 mt-3"):
-            required_label("Analysis Area")
+            required_label("Draw/select analysis area on the map")
             with ui.row().classes("w-full items-start gap-2 p-3 bg-gray-50 rounded-lg"):
                 self.area_label = (
                     ui.label(NO_GEOMETRY_MSG)
@@ -163,7 +163,7 @@ class BasePage(ABC):
             return
 
         with ui.column().classes("w-full gap-1 mt-4"):
-            required_label("Choose EU Directive")
+            required_label("Choose EU Legislation")
             with ui.row().classes("w-full gap-4"):
                 for directive in directives:
                     checkbox = (

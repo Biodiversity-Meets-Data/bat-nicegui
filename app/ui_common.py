@@ -29,7 +29,7 @@ def add_header(header: PageHeader = PageHeader.BASE) -> None:
 
     Arguments:
     * header: type of header to create. In headers for the workflow page, the
-        "Workflows" button is displayed as being pressed, indicating that the
+        "My Workflows" button is displayed as being pressed, indicating that the
         Workflow page is the currently active page.
     """
     user_name = app.storage.user.get("user_name", "User")
@@ -46,7 +46,7 @@ def add_header(header: PageHeader = PageHeader.BASE) -> None:
                 )
 
         with ui.row().classes("gap-3 items-center"):
-            ui.link("Workflows", "/workflows").classes(
+            ui.link("My Workflows", "/workflows").classes(
                 "nav-link" + (" active" if header is PageHeader.WORKFLOW_PAGE else "")
             )
             ui.button(
@@ -115,8 +115,8 @@ def add_feedback_widget() -> None:
         feedback_open = False
         with ui.card().classes("feedback-card feedback-popup p-5 gap-3") as popup:
             ui.label("Send feedback").classes("text-lg font-semibold")
-            ui.label(
-                "Tell us what worked well or what we can improve on this page."
+            ui.markdown(
+                "Tell us what worked well or what we can improve on **this page**."
             ).classes("text-sm text-gray-500")
             feedback_input = (
                 ui.textarea(
@@ -492,6 +492,28 @@ def apply_bmd_theme(
             opacity: 1;
             filter: grayscale(0);
             box-shadow: 0 4px 14px rgba(26, 58, 42, 0.25);
+        }
+
+        .ecosystem-chip {
+            color: white !important;
+            font-weight: 600;
+            border-radius: 6px !important;
+        }
+
+        .ecosystem-chip--terrestrial {
+            background: #2f6b45 !important;
+        }
+
+        .ecosystem-chip--freshwater {
+            background: #4c91bd !important;
+        }
+
+        .ecosystem-chip--marine {
+            background: #1746b8 !important;
+        }
+
+        .ecosystem-chip--unknown {
+            background: #6b7280 !important;
         }
 
         /* Clamp the description to 2 lines so a long one can't grow the card. */

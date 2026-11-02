@@ -1,4 +1,4 @@
-"""Tests for Natura2000 BISE metadata retrieval and presentation."""
+"""Tests for Natura2000 metadata retrieval and presentation."""
 
 from __future__ import annotations
 
@@ -68,7 +68,7 @@ def test_fetch_metadata_uses_the_selected_site_code(monkeypatch) -> None:
     assert result == {"siteCode": "DE8221341"}
     assert clients[0].timeout == 15.0
     assert clients[0].requested_urls == [
-        "https://dataspace.bmdproject.eu/sites/DE8221341/metadata/BISE"
+        "https://dataspace.bmdproject.eu/sites/DE8221341/metadata"
     ]
 
 

@@ -19,7 +19,6 @@ class FreshwaterSdmParameters(BatSpecificParameters):
     #   min_observations: float | None
     #   confidence_threshold: float | None
     #   include_historical: bool
-    #   generate_report: bool
 
     def validate_input(self) -> None:
         if not self.directive_types:
@@ -80,7 +79,6 @@ class FreshwaterSdmPage(BasePage):
         #      )
 
         #  self.include_historical = ui.checkbox("Include historical data", value=True)
-        self.generate_report = ui.checkbox("Generate PDF report", value=True)
 
     def get_specific_parameters(self) -> FreshwaterSdmParameters:
         return FreshwaterSdmParameters(
@@ -89,7 +87,6 @@ class FreshwaterSdmPage(BasePage):
             #    min_observations=self.min_obs.value,
             #    confidence_threshold=self.confidence.value,
             #    include_historical=bool(self.include_historical.value),
-            #    generate_report=bool(self.generate_report.value),
         )
 
 
