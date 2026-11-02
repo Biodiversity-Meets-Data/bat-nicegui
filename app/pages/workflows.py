@@ -104,17 +104,19 @@ class UserWorkflowsPage:
                 "font-semibold w-48 shrink-0 min-w-0 whitespace-normal break-words"
             )
             ecosystem = (wf.get("ecosystem_type") or "unknown").lower()
-            ecosystem_color = (
-                "green"
-                if ecosystem == "terrestrial"
-                else ("blue" if ecosystem == "freshwater" else "grey")
-            )
-            ui.badge(ecosystem.upper()).props(f"color={ecosystem_color}").classes(
-                "w-28"
+            ecosystem_color = {
+                "terrestrial": "#2f6b45",
+                "freshwater": "#4c91bd",
+                "marine": "#1746b8",
+            }.get(ecosystem, "#6b7280")
+            ui.label(ecosystem.upper()).classes(
+                "w-28 justify-center ecosystem-chip"
+            ).style(
+                f"background-color: {ecosystem_color} !important;"
             )
             status = str(wf.get("status") or "unknown").lower()
             color = (
-                "green"
+                "teal"
                 if status == "completed"
                 else (
                     "blue"
