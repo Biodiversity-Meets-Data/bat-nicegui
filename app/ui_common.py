@@ -29,7 +29,7 @@ def add_header(header: PageHeader = PageHeader.BASE) -> None:
 
     Arguments:
     * header: type of header to create. In headers for the workflow page, the
-        "Workflows" button is displayed as being pressed, indicating that the
+        "My Workflows" button is displayed as being pressed, indicating that the
         Workflow page is the currently active page.
     """
     user_name = app.storage.user.get("user_name", "User")
@@ -46,7 +46,7 @@ def add_header(header: PageHeader = PageHeader.BASE) -> None:
                 )
 
         with ui.row().classes("gap-3 items-center"):
-            ui.link("Workflows", "/workflows").classes(
+            ui.link("My Workflows", "/workflows").classes(
                 "nav-link" + (" active" if header is PageHeader.WORKFLOW_PAGE else "")
             )
             ui.button(
