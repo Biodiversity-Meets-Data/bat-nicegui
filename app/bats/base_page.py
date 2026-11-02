@@ -111,7 +111,7 @@ class BasePage(ABC):
 
         # Workflow name and description inputs.
         self.name_input = required_text_input(
-            label="Workflow Name", placeholder="e.g. Alpine Species Survey"
+            label="Workflow Name", placeholder="Name your workflow..."
         )
         self.desc_input = optional_textarea_input(
             label="Description", placeholder="Describe your analysis..."
