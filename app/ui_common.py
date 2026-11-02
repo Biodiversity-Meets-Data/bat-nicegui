@@ -494,6 +494,28 @@ def apply_bmd_theme(
             box-shadow: 0 4px 14px rgba(26, 58, 42, 0.25);
         }
 
+        .ecosystem-chip {
+            color: white !important;
+            font-weight: 600;
+            border-radius: 6px !important;
+        }
+
+        .ecosystem-chip--terrestrial {
+            background: #2f6b45 !important;
+        }
+
+        .ecosystem-chip--freshwater {
+            background: #4c91bd !important;
+        }
+
+        .ecosystem-chip--marine {
+            background: #1746b8 !important;
+        }
+
+        .ecosystem-chip--unknown {
+            background: #6b7280 !important;
+        }
+
         /* Clamp the description to 2 lines so a long one can't grow the card. */
         .bat-card-desc {
             display: -webkit-box;

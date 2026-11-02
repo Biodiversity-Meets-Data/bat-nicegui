@@ -104,13 +104,13 @@ class UserWorkflowsPage:
                 "font-semibold w-48 shrink-0 min-w-0 whitespace-normal break-words"
             )
             ecosystem = (wf.get("ecosystem_type") or "unknown").lower()
-            ecosystem_color = (
-                "green"
-                if ecosystem == "terrestrial"
-                else ("blue" if ecosystem == "freshwater" else "grey")
-            )
-            ui.badge(ecosystem.upper()).props(f"color={ecosystem_color}").classes(
-                "w-28"
+            ecosystem_class = {
+                "terrestrial": "ecosystem-chip--terrestrial",
+                "freshwater": "ecosystem-chip--freshwater",
+                "marine": "ecosystem-chip--marine",
+            }.get(ecosystem, "ecosystem-chip--unknown")
+            ui.chip(ecosystem.upper()).classes(
+                f"w-28 justify-center ecosystem-chip {ecosystem_class}"
             )
             status = str(wf.get("status") or "unknown").lower()
             color = (

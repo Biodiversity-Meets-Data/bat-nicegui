@@ -123,7 +123,7 @@ class BasePage(ABC):
         # Workflow analysis extent. The label is updated whenever the user
         # draws or clears an area on the map.
         with ui.column().classes("w-full gap-1 mt-3"):
-            required_label("Analysis Area")
+            required_label("Draw/select analysis area on the map")
             with ui.row().classes("w-full items-start gap-2 p-3 bg-gray-50 rounded-lg"):
                 self.area_label = (
                     ui.label(NO_GEOMETRY_MSG)
