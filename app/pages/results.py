@@ -109,7 +109,7 @@ class WorkflowResultsPage:
                                 "font-medium"
                             )
                         with ui.column().classes("gap-1"):
-                            ui.label("Realm").classes("text-xs text-gray-500")
+                            ui.label("Ecosystem").classes("text-xs text-gray-500")
                             ui.label(
                                 self.workflow.get("ecosystem_type") or "-"
                             ).classes("font-medium")
