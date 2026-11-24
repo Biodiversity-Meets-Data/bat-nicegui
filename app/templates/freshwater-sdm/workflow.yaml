@@ -56,7 +56,8 @@ spec:
           - name: target_species
       container:
         image: ghcr.io/gabrieldansereau/freshwater-sdm:latest
-        workingDir: /
+        workingDir: /freshwater_sdm_IAS
+        command: ["Rscript", "scripts/01_download.R"]
         env:
           - name: GBIF_USER
             valueFrom:
@@ -83,7 +84,6 @@ spec:
               secretKeyRef:
                 name: bmd-dataspace-s3
                 key: secretKey
-        command: ["Rscript", "freshwater_sdm_IAS/scripts/01_download.R"]
         args:
           - "--target_species={{inputs.parameters.target_species}}"
       outputs:
@@ -105,8 +105,8 @@ spec:
           - name: aoi_wkt
       container:
         image: ghcr.io/gabrieldansereau/freshwater-sdm:latest
-        command: ["Rscript", "freshwater_sdm_IAS/scripts/02_sdm.R"]
-        workingDir: /
+        workingDir: /freshwater_sdm_IAS
+        command: ["Rscript", "scripts/02_sdm.R"]
         args:
           - "--target_species={{inputs.parameters.target_species}}"
           - "--climate_period={{inputs.parameters.climate_period}}"
@@ -139,8 +139,8 @@ spec:
           - name: climate_period
       container:
         image: ghcr.io/gabrieldansereau/freshwater-sdm-dashboard:latest
-        command: ["Rscript", "/freshwater_sdm_IAS/scripts/03_render_dashboard.R"]
-        workingDir: /freshwater_sdm_IAS/dashboard
+        workingDir: /freshwater_sdm_IAS
+        command: ["Rscript", "scripts/03_render_dashboard.R"]
         args:
           - "--execute-param=climate_period:{{inputs.parameters.climate_period}}"
       outputs:
