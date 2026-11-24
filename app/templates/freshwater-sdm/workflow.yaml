@@ -139,7 +139,7 @@ spec:
           - name: climate_period
       container:
         image: ghcr.io/gabrieldansereau/freshwater-sdm-dashboard:latest
-        command: ["quarto", "render", "fw_sdm_quarto_dashboard.qmd", "--output-dir", "/freshwater_sdm_IAS/outputs"]
+        command: ["Rscript", "/freshwater_sdm_IAS/scripts/03_render_dashboard.R"]
         workingDir: /freshwater_sdm_IAS/dashboard
         args:
           - "--execute-param=climate_period:{{inputs.parameters.climate_period}}"
