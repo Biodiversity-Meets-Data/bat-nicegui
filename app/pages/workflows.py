@@ -118,9 +118,9 @@ class UserWorkflowsPage:
                 ui.icon(ecosystem_icon).classes("text-base").style(
                     f"color: {ecosystem_color};"
                 )
-                ui.label(ecosystem.upper()).classes(
-                    "text-sm font-semibold"
-                ).style(f"color: {ecosystem_color};")
+                ui.label(ecosystem.upper()).classes("text-sm font-semibold").style(
+                    f"color: {ecosystem_color};"
+                )
             status = str(wf.get("status") or "unknown").lower()
             color = (
                 "green"
