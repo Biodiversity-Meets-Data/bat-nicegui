@@ -66,12 +66,20 @@ spec:
           - name: aoi_wkt
       container:
         image: "rengler/captain-lite:latest"
+        # Parameter values are passed as environment variables rather than
+        # substituted into the script text, so that they cannot be interpreted
+        # as shell code.
+        env:
+          - name: SPECIES_SET
+            value: "{{inputs.parameters.species_set}}"
+          - name: AOI_WKT
+            value: "{{inputs.parameters.aoi_wkt}}"
         command: ["sh", "-c"]
         args:
           - |
             set -eu
-            echo "Retrieving data for species set: {{inputs.parameters.species_set}}"
-            echo "Area of interest: {{inputs.parameters.aoi_wkt}}"
+            echo "Retrieving data for species set: $SPECIES_SET"
+            echo "Area of interest: $AOI_WKT"
             echo "Using the example data bundled in the container image:"
             ls -R /app/test_data
       outputs:
@@ -94,6 +102,7 @@ spec:
         # The image must be available from a container registry. Its
         # entrypoint runs the CAPTAIN-lite script, which takes no arguments.
         image: "rengler/captain-lite:latest"
+        command: ["python", "/app/run_captain_lite.py"]
       outputs:
         artifacts:
           - name: captain-results

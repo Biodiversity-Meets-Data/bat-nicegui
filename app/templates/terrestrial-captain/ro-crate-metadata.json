@@ -31,7 +31,7 @@
           "@id": "https://w3id.org/workflowhub/workflow-ro-crate/1.0"
         }
       ],
-      "dateCreated": "2026-02-18T08:41:38.126Z",
+      "dateCreated": "2026-11-20T09:30:00.000Z",
       "hasPart": [
         {
           "@id": "workflow.yaml"
@@ -144,7 +144,7 @@
       "@type": "FormalParameter",
       "additionalType": "File",
       "name": "dashboard-results",
-      "description": "Workflow output directory containing the maps (PNG) and animations (GIF) produced by the CAPTAIN-lite analysis, and an HTML dashboard (index.html) that displays them.",
+      "description": "Workflow output directory containing the maps (PNG) and animations (GIF) produced by the CAPTAIN-lite analysis, and an HTML dashboard (dashboard.html) that displays them.",
       "valueRequired": "false"
     }
   ]
