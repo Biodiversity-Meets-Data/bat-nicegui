@@ -29,6 +29,7 @@ def zip_contents(bat_name: str) -> dict[str, str]:
     ("bat_name", "workflow_marker"),
     [
         ("terrestrial_sdm", "bmd-workflow-"),
+        ("terrestrial_captain", "terrestrial-captain-"),
         ("freshwater_sdm", "freshwater-sdm-"),
         ("terrestrial_camtrap", "terrestrial-camtrap-"),
         ("terrestrial_ctocc", "terrestrial-ctocc-"),
@@ -88,6 +89,18 @@ def test_yaml_declares_freshwater_sdm_parameters() -> None:
     declared = declared_workflow_parameters("freshwater_sdm")
 
     assert {"target_species", "climate_period", "aoi_wkt"} <= declared
+
+
+def test_yaml_declares_captain_parameters() -> None:
+    declared = declared_workflow_parameters("terrestrial_captain")
+
+    assert {
+        "aoi_wkt",
+        "analysis_type",
+        "species_set",
+        "time_steps",
+        "generate_report",
+    } <= declared
 
 
 def test_yaml_declares_camera_summary_parameters() -> None:
