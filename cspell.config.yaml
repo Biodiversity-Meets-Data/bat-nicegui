@@ -11,12 +11,14 @@ words:
   - authlib
   - autouse
   - bitshifted
+  - camtrap
   - certificatesresolvers
   - certresolver
   - CHELSA
   - circlemarker
   - classmethod
   - conftest
+  - ctocc
   - dataclass
   - Dataclasses
   - dataspace
