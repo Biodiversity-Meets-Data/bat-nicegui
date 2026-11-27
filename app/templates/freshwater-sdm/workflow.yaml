@@ -50,7 +50,7 @@ spec:
         parameters:
           - name: target_species
       container:
-        image: ghcr.io/gabrieldansereau/freshwater-sdm:latest
+        image: ghcr.io/biodiversity-meets-data/bat-freshwater-sdm:latest
         workingDir: /freshwater_sdm_IAS
         command: ["Rscript", "scripts/01_download.R"]
         env:
@@ -98,7 +98,7 @@ spec:
           - name: target_species
           - name: aoi_wkt
       container:
-        image: ghcr.io/gabrieldansereau/freshwater-sdm:latest
+        image: ghcr.io/biodiversity-meets-data/bat-freshwater-sdm:latest
         workingDir: /freshwater_sdm_IAS
         command: ["Rscript", "scripts/02_sdm.R"]
         args:
@@ -129,7 +129,7 @@ spec:
           - name: sdm-results
             path: /freshwater_sdm_IAS/outputs/
       container:
-        image: ghcr.io/gabrieldansereau/freshwater-sdm-dashboard:latest
+        image: ghcr.io/biodiversity-meets-data/bat-freshwater-sdm:latest
         workingDir: /freshwater_sdm_IAS
         command: ["Rscript", "scripts/03_render_dashboard.R"]
       outputs:
