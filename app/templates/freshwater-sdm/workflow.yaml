@@ -36,8 +36,6 @@ spec:
               parameters:
                 - name: target_species
                   value: "{{workflow.parameters.target_species}}"
-                - name: climate_period
-                  value: "{{workflow.parameters.climate_period}}"
                 - name: aoi_wkt
                   value: "{{workflow.parameters.aoi_wkt}}"
         - - name: render-dashboard
@@ -46,17 +44,15 @@ spec:
               artifacts:
                 - name: sdm-results
                   from: "{{steps.run-sdm.outputs.artifacts.sdm-results}}"
-              parameters:
-                - name: climate_period
-                  value: "{{workflow.parameters.climate_period}}"
           
     - name: download-occurences
       inputs:
         parameters:
           - name: target_species
       container:
-        image: ghcr.io/gabrieldansereau/freshwater-sdm:latest
-        workingDir: /
+        image: ghcr.io/biodiversity-meets-data/bat-freshwater-sdm:latest
+        workingDir: /freshwater_sdm_IAS
+        command: ["Rscript", "scripts/01_download.R"]
         env:
           - name: GBIF_USER
             valueFrom:
@@ -83,7 +79,6 @@ spec:
               secretKeyRef:
                 name: bmd-dataspace-s3
                 key: secretKey
-        command: ["Rscript", "freshwater_sdm_IAS/scripts/01_download.R"]
         args:
           - "--target_species={{inputs.parameters.target_species}}"
       outputs:
@@ -101,15 +96,13 @@ spec:
             path: /freshwater_sdm_IAS/outputs/presence_subcatchments.csv
         parameters:
           - name: target_species
-          - name: climate_period
           - name: aoi_wkt
       container:
-        image: ghcr.io/gabrieldansereau/freshwater-sdm:latest
-        command: ["Rscript", "freshwater_sdm_IAS/scripts/02_sdm.R"]
-        workingDir: /
+        image: ghcr.io/biodiversity-meets-data/bat-freshwater-sdm:latest
+        workingDir: /freshwater_sdm_IAS
+        command: ["Rscript", "scripts/02_sdm.R"]
         args:
           - "--target_species={{inputs.parameters.target_species}}"
-          - "--climate_period={{inputs.parameters.climate_period}}"
           - "--aoi_wkt={{inputs.parameters.aoi_wkt}}"
         env:
           - name: AWS_ACCESS_KEY_ID
@@ -135,14 +128,10 @@ spec:
         artifacts:
           - name: sdm-results
             path: /freshwater_sdm_IAS/outputs/
-        parameters:
-          - name: climate_period
       container:
-        image: ghcr.io/gabrieldansereau/freshwater-sdm-dashboard:latest
-        command: ["quarto", "render", "fw_sdm_quarto_dashboard.qmd", "--output-dir", "/freshwater_sdm_IAS/outputs"]
-        workingDir: /freshwater_sdm_IAS/dashboard
-        args:
-          - "--execute-param=climate_period:{{inputs.parameters.climate_period}}"
+        image: ghcr.io/biodiversity-meets-data/bat-freshwater-sdm:latest
+        workingDir: /freshwater_sdm_IAS
+        command: ["Rscript", "scripts/03_render_dashboard.R"]
       outputs:
         artifacts:
           - name: results
